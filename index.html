@@ -1,333 +1,491 @@
 <!DOCTYPE html>
 <html lang="sw">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAM TECH SOLUTIONS TV - Live Streaming</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BAM TECH SOLUTIONS TV</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>
+<style>
+:root{
+  --bg:#020409; --bg2:#080d1c; --bg3:#0d1428;
+  --gold:#c9a04d; --gold2:#f0cf86; --gold3:#7a5c1e;
+  --ice:#4fd1ff; --signal:#ff4757; --green:#2ed573;
+  --text:#eef1f8; --text2:#a8b3cc; --text3:#4a5568;
+  --border:rgba(201,160,77,0.18); --border2:rgba(255,255,255,0.06);
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,rgba(0,0,0,0.03) 0px,rgba(0,0,0,0.03) 1px,transparent 1px,transparent 2px);}
+#glow{position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(700px circle at var(--mx,50%) var(--my,30%),
+    rgba(201,160,77,0.12) 0%, rgba(79,209,255,0.06) 35%, transparent 65%);}
+.page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;}
 
-    <style>
-        :root {
-            --dark-bg: #030508;
-            --panel-bg: rgba(10, 15, 26, 0.6);
-            --border-color: rgba(201, 160, 77, 0.2);
-            --gold: linear-gradient(135deg, #c9a04d 0%, #f3d492 100%);
-            --gold-solid: #c9a04d;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --neon-blue: #38bdf8;
-        }
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;height:64px;border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(8,13,28,0.97),rgba(8,13,28,0.8));
+  backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:8px;}
+.logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+.logo-badge{width:40px;height:40px;border-radius:10px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold3),var(--gold),var(--gold2));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Sora',sans-serif;font-weight:900;color:#020409;font-size:15px;
+  box-shadow:0 0 24px rgba(201,160,77,0.45);position:relative;overflow:hidden;}
+.logo-badge::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,0.35),transparent 50%);}
+.logo-text .main{font-family:'Sora',sans-serif;font-size:15px;font-weight:800;letter-spacing:0.03em;}
+.logo-text .main em{font-style:normal;color:var(--gold2);}
+.logo-text .sub{font-size:9.5px;letter-spacing:0.18em;color:var(--text2);text-transform:uppercase;}
+.topbar-right{display:flex;align-items:center;gap:20px;}
+.live-pill{display:flex;align-items:center;gap:6px;background:rgba(255,71,87,0.12);
+  border:1px solid rgba(255,71,87,0.35);border-radius:20px;padding:5px 12px;
+  font-family:'Sora',sans-serif;font-size:11px;font-weight:700;letter-spacing:0.12em;color:var(--signal);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--signal);
+  box-shadow:0 0 8px var(--signal);animation:blink 1.4s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.2;}}
+.viewers{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);font-family:'JetBrains Mono',monospace;}
+.clock-box{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text2);
+  background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:8px;padding:6px 10px;}
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+/* HERO */
+.hero{text-align:center;padding:36px 20px 20px;
+  background:radial-gradient(ellipse 80% 200px at 50% 0%,rgba(201,160,77,0.07),transparent);
+  border-bottom:1px solid var(--border);}
+.hero .eyebrow{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:0.22em;color:var(--gold);border:1px solid var(--border);border-radius:20px;
+  padding:4px 14px;margin-bottom:14px;text-transform:uppercase;}
+.hero h1{font-family:'Sora',sans-serif;font-size:clamp(22px,5vw,48px);font-weight:900;
+  line-height:1.1;letter-spacing:-0.02em;margin-bottom:8px;
+  background:linear-gradient(135deg,var(--gold2) 0%,#fff 50%,var(--ice) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{font-size:13px;color:var(--text2);letter-spacing:0.03em;}
 
-        body {
-            background-color: var(--dark-bg);
-            color: var(--text-main);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-            position: relative;
-        }
+/* MAIN GRID */
+.main-grid{flex:1;display:grid;grid-template-columns:1fr 320px;gap:0;min-height:0;}
+@media(max-width:860px){.main-grid{grid-template-columns:1fr;}}
 
-        /* Ambient Glowing Backgrounds */
-        body::before {
-            content: '';
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(201, 160, 77, 0.08) 0%, transparent 70%);
-            top: -10%;
-            right: -10%;
-            z-index: -1;
-        }
+/* VIDEO COL */
+.video-col{padding:24px;display:flex;flex-direction:column;gap:16px;border-right:1px solid var(--border2);}
+.monitor{position:relative;border-radius:var(--r);overflow:hidden;background:#000;
+  aspect-ratio:16/9;border:1px solid var(--border);
+  box-shadow:0 0 0 1px rgba(255,255,255,0.03),0 40px 80px -20px rgba(0,0,0,0.9),0 0 80px -20px rgba(201,160,77,0.12);}
+video{width:100%;height:100%;display:block;background:#000;}
+.monitor-overlay{position:absolute;inset:0;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:14px;background:rgba(2,4,9,0.88);
+  font-family:'Sora',sans-serif;transition:opacity 0.4s;z-index:10;}
+.monitor-overlay.gone{opacity:0;pointer-events:none;}
+.loader-ring{width:44px;height:44px;border-radius:50%;border:2px solid rgba(201,160,77,0.2);
+  border-top-color:var(--gold);animation:spin 0.85s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ov-title{font-size:14px;font-weight:600;color:var(--text2);text-align:center;padding:0 10px;}
+.ov-sub{font-size:11px;color:var(--text3);text-align:center;padding:0 10px;}
+.channel-bug{position:absolute;top:12px;left:12px;z-index:2;display:flex;align-items:center;gap:7px;
+  background:rgba(2,4,9,0.72);border:1px solid var(--border);border-radius:8px;
+  padding:6px 10px;backdrop-filter:blur(6px);opacity:0;transition:opacity 0.6s 0.8s;}
+.channel-bug.show{opacity:1;}
+.bug-dot{width:6px;height:6px;border-radius:50%;background:var(--signal);
+  box-shadow:0 0 6px var(--signal);animation:blink 1.4s infinite;}
+.bug-label{font-family:'Sora',sans-serif;font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--gold2);}
 
-        body::after {
-            content: '';
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, rgba(56, 189, 248, 0.06) 0%, transparent 70%);
-            bottom: -20%;
-            left: -10%;
-            z-index: -1;
-        }
+.now-bar{display:flex;align-items:center;gap:14px;background:var(--bg2);
+  border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;}
+.now-icon{width:38px;height:38px;border-radius:9px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gold3),var(--gold));
+  display:flex;align-items:center;justify-content:center;font-size:18px;}
+.now-label{font-size:9.5px;letter-spacing:0.18em;color:var(--gold);margin-bottom:3px;font-family:'JetBrains Mono',monospace;}
+.now-title{font-family:'Sora',sans-serif;font-size:14px;font-weight:600;color:var(--text);}
+.now-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);margin-top:2px;}
 
-        /* Navigation Bar */
-        nav {
-            width: 100%;
-            padding: 20px 4%;
-            background: rgba(3, 5, 8, 0.8);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+.prog-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;}
+.prog-head{display:flex;justify-content:space-between;font-size:11px;color:var(--text2);margin-bottom:8px;}
+.prog-pct{color:var(--gold);font-family:'JetBrains Mono',monospace;}
+.prog-track{height:3px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold3),var(--gold2));border-radius:3px;transition:width 0.5s ease;width:0%;}
 
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;background:var(--bg2);}
+.sidebar-section{border-bottom:1px solid var(--border2);padding:20px;}
+.sidebar-title{font-family:'Sora',sans-serif;font-size:11px;font-weight:700;
+  letter-spacing:0.15em;color:var(--gold);text-transform:uppercase;margin-bottom:14px;}
+.ch-info{display:flex;flex-direction:column;gap:0;}
+.ch-stat{display:flex;justify-content:space-between;align-items:center;
+  padding:9px 0;border-bottom:1px solid var(--border2);}
+.ch-stat:last-child{border:none;}
+.ch-key{font-size:12px;color:var(--text2);}
+.ch-val{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text);}
+.status-online{color:var(--green)!important;}
 
-        .logo-text {
-            font-family: 'Sora', sans-serif;
-            font-weight: 700;
-            font-size: 1.3rem;
-            background: var(--gold);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+.epg-list{display:flex;flex-direction:column;}
+.epg-item{padding:10px 6px;border-bottom:1px solid var(--border2);display:flex;gap:12px;border-radius:8px;}
+.epg-item:last-child{border:none;}
+.epg-item.active{background:rgba(201,160,77,0.06);}
+.epg-time{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text2);flex-shrink:0;width:42px;padding-top:1px;}
+.epg-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;}
+.epg-name.active-name{color:var(--gold2);}
+.epg-desc{font-size:11px;color:var(--text3);line-height:1.4;}
+.epg-tag{display:inline-block;font-size:9px;letter-spacing:0.1em;
+  background:rgba(201,160,77,0.12);color:var(--gold);border-radius:4px;padding:2px 6px;margin-top:4px;}
+.past{opacity:0.4;}
 
-        .live-indicator {
-            background: rgba(239, 68, 68, 0.15);
-            border: 1px solid #ef4444;
-            color: #ef4444;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            letter-spacing: 1px;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
-        }
+.share-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;}
+.share-btn{flex:1;min-width:80px;padding:9px 10px;border-radius:9px;border:1px solid var(--border);
+  background:rgba(255,255,255,0.03);color:var(--text2);font-family:'Sora',sans-serif;
+  font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;text-align:center;letter-spacing:0.04em;}
+.share-btn:hover{border-color:var(--gold);color:var(--gold);background:rgba(201,160,77,0.07);}
+.copy-row{display:flex;gap:8px;}
+.copy-input{flex:1;background:rgba(255,255,255,0.03);border:1px solid var(--border2);
+  border-radius:8px;padding:8px 12px;color:var(--text2);font-family:'JetBrains Mono',monospace;font-size:10px;outline:none;}
+.copy-btn{padding:8px 14px;background:linear-gradient(135deg,var(--gold3),var(--gold));
+  border:none;border-radius:8px;color:#020409;font-weight:700;font-size:11px;
+  cursor:pointer;font-family:'Sora',sans-serif;transition:opacity 0.2s;white-space:nowrap;}
+.copy-btn:hover{opacity:0.85;}
+.about-text{font-size:12px;color:var(--text2);line-height:1.7;}
+.about-text strong{color:var(--gold2);}
 
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: #ef4444;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
-        }
+footer{text-align:center;padding:18px;border-top:1px solid var(--border2);
+  font-size:11px;color:var(--text3);letter-spacing:0.05em;}
+footer strong{color:var(--gold);}
 
-        /* Main Application Layout */
-        .app-container {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 24px;
-            padding: 24px 4%;
-            max-width: 1600px;
-            width: 100%;
-            margin: 0 auto;
-        }
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);
+  background:var(--bg3);border:1px solid var(--gold);border-radius:10px;
+  padding:10px 22px;font-size:12px;font-family:'Sora',sans-serif;color:var(--gold2);
+  z-index:9000;transition:transform 0.35s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
+.toast.show{transform:translateX(-50%) translateY(0);}
 
-        @media (min-width: 1024px) {
-            .app-container {
-                grid-template-columns: 3fr 1fr;
-            }
-        }
+@keyframes fadein{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+.fi{animation:fadein 0.55s ease both;}
+.fi1{animation-delay:0.05s;}.fi2{animation-delay:0.15s;}.fi3{animation-delay:0.25s;}
 
-        /* Left Side: Video Section */
-        .video-section {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .player-wrapper {
-            width: 100%;
-            aspect-ratio: 16 / 9;
-            background: #000;
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
-            position: relative;
-        }
-
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .stream-info-card {
-            background: var(--panel-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 20px;
-            border-radius: 16px;
-        }
-
-        .stream-title {
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: var(--text-main);
-        }
-
-        .stream-meta {
-            display: flex;
-            gap: 16px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        /* Right Side: Sidebar Panel */
-        .sidebar-section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .interactive-panel {
-            background: var(--panel-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 16px;
-            padding: 20px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .panel-header {
-            font-weight: 700;
-            font-size: 1rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--gold-solid);
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            margin-bottom: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .panel-body {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            color: var(--text-muted);
-            gap: 12px;
-        }
-
-        .chat-placeholder-icon {
-            width: 48px;
-            height: 48px;
-            stroke: var(--text-muted);
-            opacity: 0.4;
-        }
-
-        /* System Footer */
-        footer {
-            padding: 20px 4%;
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
-            background: rgba(3, 5, 8, 0.6);
-        }
-
-        /* Animations */
-        @keyframes pulse {
-            0% { opacity: 0.4; transform: scale(0.95); }
-            50% { opacity: 1; transform: scale(1.05); }
-            100% { opacity: 0.4; transform: scale(0.95); }
-        }
-    </style>
+@media(max-width:640px){
+  .topbar{padding:10px 16px;height:auto;}
+  .viewers,.clock-box{display:none;}
+  .hero{padding:24px 16px 16px;}
+  .video-col{padding:14px;}
+  .sidebar-section{padding:16px;}
+}
+</style>
 </head>
 <body>
+<div id="glow"></div>
+<div class="page">
 
-    <nav>
-        <div class="logo-area">
-            <span class="logo-text">BAM Tech Solutions</span>
+  <div class="topbar">
+    <a class="logo" href="#">
+      <div class="logo-badge">BT</div>
+      <div class="logo-text">
+        <div class="main">BAM TECH <em>SOLUTIONS</em></div>
+        <div class="sub">Television Network</div>
+      </div>
+    </a>
+    <div class="topbar-right">
+      <div class="live-pill"><span class="live-dot"></span>LIVE SASA</div>
+      <div class="viewers">👁 <span id="viewer-count">—</span></div>
+      <div class="clock-box" id="clock">--:--:-- EAT</div>
+    </div>
+  </div>
+
+  <div class="hero fi">
+    <div class="eyebrow">📡 &nbsp;Matangazo ya Moja kwa Moja</div>
+    <h1>BAM TECH SOLUTIONS TV</h1>
+    <p>Chaneli yako ya teknolojia, habari za kidijitali na burudani &mdash; Innovating Tanzania Digitally</p>
+  </div>
+
+  <div class="main-grid">
+
+    <div class="video-col">
+      <div class="monitor fi fi1">
+        <!-- IMEBORESHWA: Imeongezwa 'autoplay muted' ili kuzuia mkwamo wa simu kukataa kuplay yenyewe -->
+        <video id="video" controls autoplay muted playsinline></video>
+        <div class="channel-bug" id="channel-bug">
+          <span class="bug-dot"></span>
+          <span class="bug-label">BAM TECH TV</span>
         </div>
-        <div class="live-indicator">
-            <span class="live-dot"></span>
-            LIVE STREAM
+        <div class="monitor-overlay" id="overlay">
+          <div class="loader-ring"></div>
+          <div class="ov-title" id="ov-msg">Inaunganisha chaneli...</div>
+          <div class="ov-sub" id="ov-sub">Subiri kidogo</div>
         </div>
-    </nav>
+      </div>
 
-    <div class="app-container">
-        
-        <main class="video-section">
-            <div class="player-wrapper">
-                <video id="video" controls autoplay muted playsinline></video>
-            </div>
-            
-            <div class="stream-info-card">
-                <h1 class="stream-title">BAM Tech Solutions Official TV Channel</h1>
-                <div class="stream-meta">
-                    <div class="meta-item">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                        <span>Mubashara (HD)</span>
-                    </div>
-                    <div class="meta-item">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        <span>Salama na Imara</span>
-                    </div>
-                </div>
-            </div>
-        </main>
+      <div class="now-bar fi fi2">
+        <div class="now-icon">📺</div>
+        <div>
+          <div class="now-label">▶ INACHEZWA SASA</div>
+          <div class="now-title" id="now-title">Inapakia taarifa...</div>
+          <div class="now-time" id="now-time">&nbsp;</div>
+        </div>
+      </div>
 
-        <aside class="sidebar-section">
-            <div class="interactive-panel">
-                <div class="panel-header">
-                    <span>Ratiba & Matangazo</span>
-                </div>
-                <div class="panel-body">
-                    <svg class="chat-placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                    </svg>
-                    <p style="font-size: 0.9rem; font-weight: 500;">BAM Tech Special Program</p>
-                    <p style="font-size: 0.8rem; color: rgba(255,255,255,0.3);">Maudhui mapya ya kiteknolojia yanakuja hivi punde. Endelea kufuatilia matangazo yetu.</p>
-                </div>
-            </div>
-        </aside>
-
+      <div class="prog-wrap fi fi3">
+        <div class="prog-head">
+          <span id="prog-label">Ratiba</span>
+          <span class="prog-pct" id="prog-pct">—</span>
+        </div>
+        <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+      </div>
     </div>
 
-    <footer>
-        <p>© 2026 BAM Tech Solutions Companies Ltd. All Rights Reserved.</p>
-    </footer>
+    <div class="sidebar">
 
-    <script>
-        // Badilisha link hii kuweka stream yako halisi (.m3u8) pindi ukiwa tayari
-        const videoSrc = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
-        const video = document.getElementById('video');
+      <div class="sidebar-section">
+        <div class="sidebar-title">📊 Taarifa za Chaneli</div>
+        <div class="ch-info">
+          <div class="ch-stat"><span class="ch-key">Hali</span><span class="ch-val status-online">● HEWANI</span></div>
+          <div class="ch-stat"><span class="ch-key">Watazamaji</span><span class="ch-val" id="stat-viewers">—</span></div>
+          <div class="ch-stat"><span class="ch-key">Ubora</span><span class="ch-val">HD 720p</span></div>
+          <div class="ch-stat"><span class="ch-key">Saa</span><span class="ch-val" id="stat-clock">—</span></div>
+          <div class="ch-stat"><span class="ch-key">Lugha</span><span class="ch-val">Swahili / EN</span></div>
+        </div>
+      </div>
 
-        if (Hls.isSupported()) {
-            const hls = new Hls({
-                maxMaxBufferLength: 10,
-                enableWorker: true
-            });
-            hls.loadSource(videoSrc);
-            hls.attachMedia(video);
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = videoSrc;
-        }
-    </script>
+      <div class="sidebar-section">
+        <div class="sidebar-title">📅 Ratiba ya Leo</div>
+        <div class="epg-list" id="epg-list">
+          <div style="font-size:12px;color:var(--text3)">Inapakia ratiba...</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">🔗 Shiriki Chaneli</div>
+        <div class="share-row">
+          <button class="share-btn" onclick="shareWA()">📲 WhatsApp</button>
+          <button class="share-btn" onclick="copyLink()">🔗 Nakili Link</button>
+        </div>
+        <div class="copy-row">
+          <input class="copy-input" id="share-input" type="text" readonly>
+          <button class="copy-btn" onclick="copyLink()">Nakili</button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">ℹ️ Kuhusu Chaneli</div>
+        <div class="about-text">
+          <strong>BAM TECH SOLUTIONS TV</strong> ni chaneli ya kidijitali inayotolewa na
+          <strong>BAM Tech Solutions Companies Ltd</strong> &mdash; Tanzania.
+          Tunatoa maudhui ya teknolojia, habari za kidijitali, mwongozo wa biashara na burudani.
+          Kauli mbiu: <strong>Innovating Tanzania Digitally</strong>.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>&copy; 2026 <strong>BAM Tech Solutions Companies Ltd</strong> &nbsp;&middot;&nbsp; Dar es Salaam, Tanzania &nbsp;&middot;&nbsp; Haki zote zimehifadhiwa</footer>
+</div>
+
+<div class="toast" id="toast">✓ Imenakiliwa!</div>
+
+<script>
+// =========================================================================
+// ANGALIZO LA USALAMA WA HTTP/HTTPS:
+// Kwasababu unahost tovuti hii GitHub Pages (yenye HTTPS), hakikisha kuwa
+// "STREAM_URL" yako nayo inaanza na "https://" pindi utakapoweka IP halisi.
+// =========================================================================
+const STREAM_URL = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'; // Test Stream inayofanya kazi sasa hivi
+const EPG_URL    = 'epg.xml';
+
+// Hifadhi ya kipindi cha sasa kwa ajili ya thanh la maendeleo (Progress bar)
+let currentProgramGlobal = null; 
+
+// Mouse glow handler
+document.addEventListener('mousemove', e => {
+  const g = document.getElementById('glow');
+  if(g) {
+    g.style.setProperty('--mx', e.clientX + 'px');
+    g.style.setProperty('--my', e.clientY + 'px');
+  }
+});
+
+// Clock Logic
+const pad = n => String(n).padStart(2,'0');
+function tick() {
+  const eat = new Date(new Date().toLocaleString('en-US',{timeZone:'Africa/Dar_es_Salaam'}));
+  const s = `${pad(eat.getHours())}:${pad(eat.getMinutes())}:${pad(eat.getSeconds())} EAT`;
+  const clockEl = document.getElementById('clock');
+  const statClockEl = document.getElementById('stat-clock');
+  if(clockEl) clockEl.textContent = s;
+  if(statClockEl) statClockEl.textContent = s.slice(0,5);
+}
+tick(); setInterval(tick,1000);
+
+// Simulated Viewers Counter
+let viewers = Math.floor(Math.random()*120)+40;
+function updateViewers(){
+  viewers = Math.max(20, viewers + Math.floor(Math.random()*7)-3);
+  const v1 = document.getElementById('viewer-count');
+  const v2 = document.getElementById('stat-viewers');
+  if(v1) v1.textContent = viewers;
+  if(v2) v2.textContent = viewers;
+}
+updateViewers(); setInterval(updateViewers,8000);
+
+// Sharing Systems
+document.getElementById('share-input').value = window.location.href;
+function copyLink(){
+  navigator.clipboard.writeText(window.location.href)
+    .then(()=>showToast('✓ Link imenakiliwa!'))
+    .catch(()=>{ 
+       const input = document.getElementById('share-input');
+       input.select(); 
+       document.execCommand('copy'); 
+       showToast('✓ Link imenakiliwa!'); 
+    });
+}
+function shareWA(){
+  window.open('https://wa.me/?text=Tazama%20BAM%20TECH%20SOLUTIONS%20TV%20sasa%20hivi%20%F0%9F%93%BA%0A'+encodeURIComponent(window.location.href),'_blank');
+}
+function showToast(m){
+  const t=document.getElementById('toast'); if(!t) return;
+  t.textContent=m; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// HLS Player Core Control
+const video=document.getElementById('video');
+const overlay=document.getElementById('overlay');
+const bug=document.getElementById('channel-bug');
+
+function hideOverlay(){
+  if(overlay) overlay.classList.add('gone');
+  if(bug) bug.classList.add('show');
+}
+function setOverlay(m,s){
+  const msgEl = document.getElementById('ov-msg');
+  const subEl = document.getElementById('ov-sub');
+  if(msgEl) msgEl.textContent=m||'...';
+  if(subEl) subEl.textContent=s||'';
+  if(overlay) overlay.classList.remove('gone');
+}
+
+// IMEBORESHWA: Ina mfumo wa 'Auto-Recovery' mtandao ukikata kwa sekunde chache
+if(Hls.isSupported()){
+  const hls=new Hls({
+    maxBufferLength: 30,
+    liveSyncDurationCount: 3,
+    enableWorker: true
+  });
+  hls.loadSource(STREAM_URL);
+  hls.attachMedia(video);
+  hls.on(Hls.Events.MANIFEST_PARSED,()=>{
+    hideOverlay();
+    video.play().catch(()=>{
+      // Kama simu bado inagoma kucheza yenyewe, tunalazimisha iwe muted kabisa
+      video.muted = true;
+      video.play().catch(err => console.log("Playback interaction required"));
+    });
+  });
+  hls.on(Hls.Events.ERROR, (event, data) => {
+    if (data.fatal) {
+      switch (data.type) {
+        case Hls.ErrorTypes.NETWORK_ERROR:
+          setOverlay('Tatizo la Muunganiko', 'Tunajaribu kuunganisha tena...');
+          hls.startLoad();
+          break;
+        case Hls.ErrorTypes.MEDIA_ERROR:
+          setOverlay('Kosa la Maudhui', 'Tunajirudisha hewani...');
+          hls.recoverMediaError();
+          break;
+        default:
+          setOverlay('Kituo kimepata hitilafu', 'Tafadhali refresh ukurasa.');
+          break;
+      }
+    }
+  });
+}else if(video.canPlayType('application/vnd.apple.mpegurl')){
+  video.src=STREAM_URL;
+  video.addEventListener('loadedmetadata',hideOverlay);
+  video.addEventListener('error',()=>setOverlay('Tatizo la muunganiko','Heshima ya mtandao imeshuka.'));
+}else{
+  setOverlay('Browser haitumii mfumo huu','Tumia Chrome, Firefox au Safari');
+}
+
+// EPG Logic Controller
+function parseXMLTV(s){
+  if(!s)return null;
+  const[dp,tz]=s.trim().split(' ');
+  const[y,mo,d,h,mi,sc]=[dp.slice(0,4),dp.slice(4,6),dp.slice(6,8),dp.slice(8,10),dp.slice(10,12),dp.slice(12,14)];
+  const sign=tz?tz[0]:'+',tzh=tz?tz.slice(1,3):'00',tzm=tz?tz.slice(3,5):'00';
+  return new Date(`${y}-${mo}-${d}T${h}:${mi}:${sc}${sign}${tzh}:${tzm}`);
+}
+function fmt(d){return d.toLocaleTimeString('sw-TZ',{hour:'2-digit',minute:'2-digit'});}
+
+// IMEBORESHWA: Thanh la asilimia sasa linasogea lenyewe kila sekunde taratibu (Smooth Update)
+function updateLiveProgressBar() {
+  if (!currentProgramGlobal) return;
+  const now = new Date();
+  if (now >= currentProgramGlobal.start && now < currentProgramGlobal.stop) {
+    const totalMs = currentProgramGlobal.stop - currentProgramGlobal.start;
+    const currentMs = now - currentProgramGlobal.start;
+    const pct = Math.min(100, Math.max(0, Math.round((currentMs / totalMs) * 100)));
+    
+    const fillEl = document.getElementById('prog-fill');
+    const pctEl = document.getElementById('prog-pct');
+    const labelEl = document.getElementById('prog-label');
+    
+    if(fillEl) fillEl.style.width = pct + '%';
+    if(pctEl) pctEl.textContent = pct + '%';
+    
+    const remainingMin = Math.ceil((currentProgramGlobal.stop - now) / 60000);
+    if(labelEl) labelEl.textContent = `Imesalia dk ${remainingMin}`;
+  } else {
+    loadEPG(); // Kama muda umeisha, pakia upya XML
+  }
+}
+setInterval(updateLiveProgressBar, 1000);
+
+function loadEPG(){
+  fetch(EPG_URL).then(r=>r.text()).then(xml=>{
+    const doc=new DOMParser().parseFromString(xml,'text/xml');
+    const progs=Array.from(doc.getElementsByTagName('programme')).map(p=>({
+      title:p.getElementsByTagName('title')[0]?.textContent||'Kipindi',
+      desc:p.getElementsByTagName('desc')[0]?.textContent||'',
+      start:parseXMLTV(p.getAttribute('start')),
+      stop:parseXMLTV(p.getAttribute('stop'))
+    })).sort((a,b)=>a.start-b.start);
+    
+    const now=new Date();
+    const cur=progs.find(p=>now>=p.start&&now<p.stop);
+    currentProgramGlobal = cur; // Set Global Reference
+    
+    const titleEl = document.getElementById('now-title');
+    const timeEl = document.getElementById('now-time');
+    
+    if(titleEl) titleEl.textContent=cur?.title||'Maudhui Maalum';
+    if(timeEl) timeEl.textContent=cur?`${fmt(cur.start)} \u2013 ${fmt(cur.stop)}`:'Muda wa Kipindi';
+    
+    const today=progs.filter(p=>p.start.toDateString()===now.toDateString()).slice(0,8);
+    const list=document.getElementById('epg-list');
+    if(!list) return;
+    
+    if(!today.length){
+      list.innerHTML='<div style="font-size:12px;color:var(--text3)">Ongeza EPG kwenye epg.xml</div>';
+      return;
+    }
+    list.innerHTML=today.map(p=>{
+      const active=cur&&p.title===cur.title&&p.start.getTime()===cur.start.getTime();
+      const past=now>p.stop;
+      return`<div class="epg-item${active?' active':''}">
+        <div class="epg-time${past?' past':''}">${fmt(p.start)}</div>
+        <div>
+          <div class="epg-name${active?' active-name':''}${past?' past':''}">${active?'▶ ':''}${p.title}</div>
+          ${p.desc?`<div class="epg-desc">${p.desc.slice(0,65)}${p.desc.length>65?'...':''}</div>`:''}
+          ${active?'<span class="epg-tag">SASA HIVI</span>':''}
+        </div></div>`;
+    }).join('');
+  }).catch(()=>{
+    const titleEl = document.getElementById('now-title');
+    const listEl = document.getElementById('epg-list');
+    if(titleEl) titleEl.textContent='BAM TECH LIVE';
+    if(listEl) listEl.innerHTML='<div style="font-size:12px;color:var(--text3)">Weka epg.xml file ili uone ratiba hapa.</div>';
+  });
+}
+loadEPG(); setInterval(loadEPG,60000);
+</script>
 </body>
 </html>
