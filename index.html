@@ -3,21 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAM TECH SOLUTIONS TV</title>
+    <title>BAM TECH SOLUTIONS TV - Live Streaming</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>
+
     <style>
         :root {
-            --bg: #060913;
-            --card-bg: rgba(22, 27, 34, 0.4);
-            --gold: linear-gradient(135deg, #c9a04d 0%, #f0cf86 100%);
+            --dark-bg: #030508;
+            --panel-bg: rgba(10, 15, 26, 0.6);
+            --border-color: rgba(201, 160, 77, 0.2);
+            --gold: linear-gradient(135deg, #c9a04d 0%, #f3d492 100%);
             --gold-solid: #c9a04d;
-            --cyan-glow: rgba(79, 209, 255, 0.15);
-            --text: #f0f4f8;
-            --border: rgba(201, 160, 77, 0.25);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --neon-blue: #38bdf8;
         }
 
         * {
@@ -27,170 +30,298 @@
         }
 
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             overflow-x: hidden;
             position: relative;
         }
 
-        /* Ambient Background Glow (Mwangaza wa Nyuma) */
+        /* Ambient Glowing Backgrounds */
         body::before {
             content: '';
             position: absolute;
-            width: 350px;
-            height: 350px;
-            background: radial-gradient(circle, rgba(201, 160, 77, 0.12) 0%, transparent 70%);
-            top: 15%;
-            left: 10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(201, 160, 77, 0.08) 0%, transparent 70%);
+            top: -10%;
+            right: -10%;
             z-index: -1;
         }
+
         body::after {
             content: '';
             position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, var(--cyan-glow) 0%, transparent 70%);
-            bottom: 10%;
-            right: -5%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.06) 0%, transparent 70%);
+            bottom: -20%;
+            left: -10%;
             z-index: -1;
         }
 
-        /* Main Container */
-        .main-container {
-            width: 92%;
-            max-width: 720px;
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border);
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            text-align: center;
+        /* Navigation Bar */
+        nav {
+            width: 100%;
+            padding: 20px 4%;
+            background: rgba(3, 5, 8, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        /* Header / Logo Style */
-        .brand-header {
-            margin-bottom: 24px;
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .brand-title {
+        .logo-text {
             font-family: 'Sora', sans-serif;
             font-weight: 700;
-            font-size: 1.6rem;
-            letter-spacing: 1px;
+            font-size: 1.3rem;
             background: var(--gold);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            letter-spacing: 0.5px;
         }
 
-        /* Live Indicator Badge */
-        .status-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 8px;
-        }
-
-        .live-badge {
-            background: #ff3344;
-            color: #fff;
+        .live-indicator {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 0.75rem;
             font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 6px;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 0 12px rgba(255, 51, 68, 0.4);
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
         }
 
         .live-dot {
-            width: 7px;
-            height: 7px;
-            background-color: white;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
             border-radius: 50%;
-            display: inline-block;
-            animation: blink 1.2s infinite;
+            animation: pulse 1.5s infinite;
         }
 
-        /* Video Wrapper & Player */
-        .video-wrapper {
-            position: relative;
+        /* Main Application Layout */
+        .app-container {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            padding: 24px 4%;
+            max-width: 1600px;
             width: 100%;
-            border-radius: 16px;
-            overflow: hidden;
-            background: #000;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7);
+            margin: 0 auto;
+        }
+
+        @media (min-width: 1024px) {
+            .app-container {
+                grid-template-columns: 3fr 1fr;
+            }
+        }
+
+        /* Left Side: Video Section */
+        .video-section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .player-wrapper {
+            width: 100%;
             aspect-ratio: 16 / 9;
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            position: relative;
         }
 
         video {
             width: 100%;
             height: 100%;
-            display: block;
             object-fit: contain;
         }
 
-        /* Custom Footer Style */
-        .footer-text {
-            margin-top: 20px;
-            font-size: 0.8rem;
-            color: rgba(240, 244, 248, 0.4);
+        .stream-info-card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            border-radius: 16px;
+        }
+
+        .stream-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .stream-meta {
+            display: flex;
+            gap: 16px;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Right Side: Sidebar Panel */
+        .sidebar-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .interactive-panel {
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
             letter-spacing: 0.5px;
+            color: var(--gold-solid);
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: var(--text-muted);
+            gap: 12px;
+        }
+
+        .chat-placeholder-icon {
+            width: 48px;
+            height: 48px;
+            stroke: var(--text-muted);
+            opacity: 0.4;
+        }
+
+        /* System Footer */
+        footer {
+            padding: 20px 4%;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            background: rgba(3, 5, 8, 0.6);
         }
 
         /* Animations */
-        @keyframes blink {
-            0% { opacity: 0.3; transform: scale(0.9); }
-            50% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 0.3; transform: scale(0.9); }
-        }
-
-        /* Media Queries for Bigger Screens */
-        @media (min-width: 600px) {
-            .brand-title { font-size: 2.1rem; }
-            .main-container { padding: 32px; }
+        @keyframes pulse {
+            0% { opacity: 0.4; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.4; transform: scale(0.95); }
         }
     </style>
 </head>
 <body>
 
-    <div class="main-container">
-        <div class="brand-header">
-            <div class="status-container">
-                <span class="live-badge"><span class="live-dot"></span>LIVE</span>
+    <nav>
+        <div class="logo-area">
+            <span class="logo-text">BAM Tech Solutions</span>
+        </div>
+        <div class="live-indicator">
+            <span class="live-dot"></span>
+            LIVE STREAM
+        </div>
+    </nav>
+
+    <div class="app-container">
+        
+        <main class="video-section">
+            <div class="player-wrapper">
+                <video id="video" controls autoplay muted playsinline></video>
             </div>
-            <h1 class="brand-title">BAM Tech Solutions TV</h1>
-        </div>
+            
+            <div class="stream-info-card">
+                <h1 class="stream-title">BAM Tech Solutions Official TV Channel</h1>
+                <div class="stream-meta">
+                    <div class="meta-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span>Mubashara (HD)</span>
+                    </div>
+                    <div class="meta-item">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        <span>Salama na Imara</span>
+                    </div>
+                </div>
+            </div>
+        </main>
 
-        <div class="video-wrapper">
-            <video id="video" controls autoplay muted playsinline></video>
-        </div>
+        <aside class="sidebar-section">
+            <div class="interactive-panel">
+                <div class="panel-header">
+                    <span>Ratiba & Matangazo</span>
+                </div>
+                <div class="panel-body">
+                    <svg class="chat-placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    <p style="font-size: 0.9rem; font-weight: 500;">BAM Tech Special Program</p>
+                    <p style="font-size: 0.8rem; color: rgba(255,255,255,0.3);">Maudhui mapya ya kiteknolojia yanakuja hivi punde. Endelea kufuatilia matangazo yetu.</p>
+                </div>
+            </div>
+        </aside>
 
-        <p class="footer-text">© 2026 BAM Tech Solutions Companies Ltd. All Rights Reserved.</p>
     </div>
 
+    <footer>
+        <p>© 2026 BAM Tech Solutions Companies Ltd. All Rights Reserved.</p>
+    </footer>
+
     <script>
-        // Hapa ndipo utakapoweka link yako ya Live Stream (.m3u8) baadae
+        // Badilisha link hii kuweka stream yako halisi (.m3u8) pindi ukiwa tayari
         const videoSrc = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
         const video = document.getElementById('video');
 
         if (Hls.isSupported()) {
             const hls = new Hls({
-                maxMaxBufferLength: 10
+                maxMaxBufferLength: 10,
+                enableWorker: true
             });
             hls.loadSource(videoSrc);
             hls.attachMedia(video);
@@ -198,6 +329,5 @@
             video.src = videoSrc;
         }
     </script>
-
 </body>
 </html>
