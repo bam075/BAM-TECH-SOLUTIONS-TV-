@@ -1,1 +1,49 @@
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAM TECH SOLUTIONS TV</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/hls.js/1.5.13/hls.min.js"></script>
+    <style>
+        body {
+            background-color: #0d1117;
+            color: #eef1f8;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: #161b22;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        h1 { color: #c9a04d; margin-bottom: 20px; }
+        video { width: 100%; max-width: 600px; border-radius: 8px; background: #000; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BAM TECH SOLUTIONS TV</h1>
+        <video id="video" controls autoplay muted playsinline></video>
+    </div>
+    <script>
+        const videoSrc = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+        const video = document.getElementById('video');
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(videoSrc);
+            hls.attachMedia(video);
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = videoSrc;
+        }
+    </script>
+</body>
+</html>
 
