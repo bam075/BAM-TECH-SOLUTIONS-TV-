@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BAM TECH solutions TV | Live</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         /* Premium Core Styling (International Tech Interface) */
@@ -87,7 +91,7 @@
             filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.6));
         }
 
-        /* Dynamic Program Title Badge (New Custom Component) */
+        /* Dynamic Program Title Badge (Custom Component from approved UX) */
         .header-program-badge {
             background: rgba(59, 130, 246, 0.1);
             border: 1px solid rgba(59, 130, 246, 0.2);
@@ -96,7 +100,7 @@
             font-size: 12px;
             font-weight: bold;
             color: #60a5fa;
-            display: none; /* Inadhibitiwa na Admin */
+            display: none; /* Inadhibitiwa na Admin kwa Firebase */
         }
 
         /* Live Status Badge Components */
@@ -113,7 +117,7 @@
             font-size: 10px;
             font-weight: bold;
             letter-spacing: 1px;
-            display: none; /* Inadhibitiwa na Admin */
+            display: none; /* Inadhibitiwa na Admin kwa Firebase */
             align-items: center;
             gap: 4px;
             box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
@@ -193,7 +197,7 @@
             object-fit: contain;
         }
         
-        /* Watermark Animation */
+        /* Watermark Animation (Keep this premium feature) */
         .channel-bug {
             position: absolute;
             top: 15px;
@@ -260,7 +264,7 @@
             text-shadow: 0 0 12px rgba(59, 130, 246, 0.8), 0 2px 6px rgba(0, 0, 0, 1), 0 4px 12px rgba(0, 0, 0, 1);
         }
 
-        /* Dynamic Custom L-Style Advertisement Box Overlays */
+        /* L-STYLE ADVERTISEMENT BOX OVERLAY */
         .l-ad-box {
             position: absolute;
             bottom: 70px;
@@ -271,7 +275,7 @@
             padding: 15px;
             border-radius: 8px;
             z-index: 999998;
-            display: none; /* Inadhibitiwa na Admin */
+            display: none; /* Inadhibitiwa na Admin kwa Firebase */
             box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
             font-weight: bold;
         }
@@ -419,31 +423,11 @@
             color: #3b82f6;
         }
         
-        /* Admin Security Bar Styling */
+        /* Chat Input Section (Simplified for Public) */
         .chat-input-area-wrapper {
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             background: rgba(0, 0, 0, 0.2);
             padding: 10px;
-        }
-        .admin-toggle-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            padding: 0 4px;
-        }
-        .admin-label {
-            font-size: 10px;
-            font-weight: bold;
-            color: #94a3b8;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-        .admin-switch {
-            cursor: pointer;
-            accent-color: #3b82f6;
         }
         .chat-input-area {
             display: flex;
@@ -561,7 +545,7 @@
             color: #e2e8f0;
         }
 
-        /* Premium Broadcast Dynamic Ticker Component (Niko Hapa) */
+        /* BROADCAST DYNAMIC TICKER COMPONENT (Niko Chini) */
         .dynamic-ticker-container {
             position: fixed;
             bottom: 0;
@@ -572,7 +556,7 @@
             padding: 10px 0;
             overflow: hidden;
             z-index: 9999999;
-            display: none; /* Inadhibitiwa na Admin */
+            display: none; /* Inadhibitiwa na Admin kwa Firebase */
         }
         .ticker-flex-wrapper {
             display: flex;
@@ -670,7 +654,7 @@
                                 <div class="fallback-text-group">
                                     <span class="fallback-title">BAM TECH</span>
                                     <span class="fallback-subtitle">solutions</span>
-                                </div>
+                                }
                                 <span class="fallback-tv">TV</span>
                             </div>
                         </div>
@@ -761,11 +745,6 @@
                 </div>
                 
                 <div class="chat-input-area-wrapper">
-                    <div class="admin-toggle-bar">
-                        <label class="admin-label">
-                            <input type="checkbox" id="admin-mode" class="admin-switch" onchange="verifyAdminSecurity(this)"> 🛠️ Hali ya Admin (Tuma kama Mmiliki)
-                        </label>
-                    </div>
                     <div class="chat-input-area">
                         <input type="text" class="chat-input" placeholder="Andika maoni yako..." id="chat-input">
                         <button class="chat-send" onclick="sendRealMessage()">Tuma</button>
@@ -789,8 +768,36 @@
     <div class="toast" id="toast-notif">Link imekopiwa kwa ajili ya kushare!</div>
 
     <script>
-        // Mfumo utasoma URL ya video na Idadi ya watazamaji kutoka LocalStorage ikiwekwa na admin
-        let STREAM_URL = localStorage.getItem('bam_stream_url') || 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
+        // CORE FIREBASE INFRASTRUCTURE INITIALIZATION TERMINAL
+        // Config Object from Approved Official Firebase Console Output (image_12.png)
+        const firebaseConfig = {
+          apiKey: "AIzaSyAh7LRqKy5RfLUr0tpqA47TV...", // Mkurugenzi Bryan Alex: Futa hii na weka ApiKey kamili uliyoficha kwenye picha!
+          authDomain: "bam-tech-solutions-tv.firebaseapp.com",
+          databaseURL: "https://bam-tech-solutions-tv.firebaseio.com", // This node is critical for real-time synchronization
+          projectId: "bam-tech-solutions-tv",
+          storageBucket: "bam-tech-solutions-tv.appspot.com",
+          messagingSenderId: "1013751123351",
+          appId: "1:1013751123351:web:173b1884f22...", // Mkurugenzi Bryan Alex: Futa hii na weka AppId kamili uliyoficha kwenye picha!
+          measurementId: "G-NKZ07VGJX7"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // [Usimamizi wa Video Player (Tears of Steel, nk...)]
+        // URL itadhibitiwa na Admin kwa Firebase Database node: bam_stream_url
+        let STREAM_URL; 
+        
+        database.ref('bam_stream_url').on('value', (snapshot) => {
+            let forcedUrl = snapshot.val();
+            // Default kama Firebase bado haina data
+            let currentUrl = forcedUrl || 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
+            
+            if(STREAM_URL !== currentUrl) {
+                STREAM_URL = currentUrl;
+                initPlayer(); // Mfumo unarejea kucheza link mpya papo hapo
+            }
+        });
 
         const video = document.getElementById('video');
         const playerWrapper = document.getElementById('player-wrapper');
@@ -804,19 +811,25 @@
             document.getElementById('text-logo').style.display = 'block';
         }
 
+        let hlsInstance;
         function initPlayer() {
+            if(hlsInstance) {
+                hlsInstance.destroy(); // Futa player ya zamani kwanza
+                hlsInstance = null;
+            }
+
             if (Hls.isSupported()) {
-                const hls = new Hls();
-                hls.loadSource(STREAM_URL);
-                hls.attachMedia(video);
+                hlsInstance = new Hls();
+                hlsInstance.loadSource(STREAM_URL);
+                hlsInstance.attachMedia(video);
                 
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
                     video.play().catch(() => {});
-                    setupQualitySelector(hls);
+                    setupQualitySelector(hlsInstance);
                 });
 
-                hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
-                    const activeLevel = hls.levels[data.level];
+                hlsInstance.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
+                    const activeLevel = hlsInstance.levels[data.level];
                     if (activeLevel) {
                         let levelHeight = activeLevel.height;
                         let qualityLabel = levelHeight + "p";
@@ -836,8 +849,7 @@
             }
         }
 
-        initPlayer();
-
+        // setupQualitySelector na vitendo vya player vinaendelea kama ilivyokuwa mwanzo
         function setupQualitySelector(hlsInstance) {
             qualitySelect.innerHTML = '<option value="-1">Auto (Mabadiliko Halisi)</option>';
             hlsInstance.levels.forEach((level, index) => {
@@ -852,9 +864,10 @@
             });
         }
 
-        // REAL-TIME BROADCAST ENGINE INTERACTION (Marekebisho makubwa ya Usimamizi)
-        setInterval(() => {
-            let config = JSON.parse(localStorage.getItem('bam_tv_config'));
+        // [USIMAMIZI WA MIKURURO YA DATA YA KIMITANDAO (REAL-TIME CONFIG SYNC ENGINE)]
+        // Kusikiliza mabadiliko ya config yote kutoka Admin Database node: bam_tv_config
+        database.ref('bam_tv_config').on('value', (snapshot) => {
+            let config = snapshot.val();
             if(config) {
                 // 1. Udhibiti wa Jina la Kipindi upande wa pili
                 let progBadge = document.getElementById('dyn-program-badge');
@@ -864,12 +877,14 @@
                     document.getElementById('dyn-now-playing').innerText = config.title;
                 } else {
                     progBadge.style.display = 'none';
+                    // Rejesha default kama admin amefuta data
+                    document.getElementById('dyn-now-playing').innerText = "International Tech Insights & Digital Performance";
                 }
 
                 // 2. Udhibiti wa neno LIVE au MUBASHARA ya kuchagua
                 let livePill = document.getElementById('dyn-live-pill');
                 if(config.showLive) {
-                    document.getElementById('dyn-live-text').innerText = config.liveText;
+                    document.getElementById('dyn-live-text').innerText = config.liveText || 'LIVE';
                     livePill.style.display = 'flex';
                 } else {
                     livePill.style.display = 'none';
@@ -884,7 +899,7 @@
                     lstyleBox.style.display = 'none';
                 }
 
-                // 4. Udhibiti wa Maandishi ya chini (Ticker) ya kuchagua
+                // 4. Udhibiti wa Maandishi ya chini kabisa (Global Ticker) ya kuchagua
                 let tickerBar = document.getElementById('dyn-ticker-bar');
                 if(config.showTicker && config.ticker && config.ticker.trim() !== "") {
                     document.getElementById('dyn-ticker-text').innerText = config.ticker;
@@ -892,50 +907,64 @@
                 } else {
                     tickerBar.style.display = 'none';
                 }
-
-                // 5. Kuchunguza kama URL ya Video imebadilishwa na Admin
-                let currentSavedUrl = localStorage.getItem('bam_stream_url');
-                if(currentSavedUrl && currentSavedUrl !== STREAM_URL) {
-                    STREAM_URL = currentSavedUrl;
-                    initPlayer();
-                }
             }
-        }, 1000);
+        });
 
-        // Mfumo wa kutuma Chats kwenda kwenye siri ya Admin
-        function broadcastChatToAdmin(user, text, time) {
-            let items = JSON.parse(localStorage.getItem('bam_tv_chats')) || [];
-            items.push({user: user, text: text, time: time});
-            localStorage.setItem('bam_tv_chats', JSON.stringify(items));
-        }
+        // [USIMAMIZI WA MAONI HALISI YA WATAZAMAJI (LIVE CHAT LOG SYNC)]
+        // Kusikiliza data mpya za chat zinazoingia kutoka Admin Database node: bam_tv_chats
+        let loadedChatsCount = 0;
+        database.ref('bam_tv_chats').on('value', (snapshot) => {
+            const chatBox = document.getElementById('chat-box');
+            let chats = snapshot.val();
+            if(chats) {
+                // Futa chats za zamani na pakia mpya ili kuepuka duplication
+                chatBox.innerHTML = '';
+                
+                Object.values(chats).forEach(item => {
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'chat-msg';
+                    
+                    let userTag = "";
+                    let isSystem = item.user === "BAM TECH (Admin)";
+                    let isMhudhuriaji = item.user === "Mhudhuriaji";
+                    
+                    if (isSystem) {
+                        userTag = `<span class="chat-user" style="color: #f59e0b; background: rgba(245,158,11,0.1); padding: 1px 6px; border-radius: 4px;">${item.user}:</span>`;
+                    } else if (isMhudhuriaji) {
+                        userTag = `<span class="chat-user" style="color: #60a5fa;">Mhudhuriaji:</span>`;
+                    } else {
+                        userTag = `<span class="chat-user" style="color: #60a5fa;">Watazamaji:</span>`; // Default kama si admin
+                    }
 
-        // Kusikiliza kama kuna majibu (Replies) kutoka kwa admin
-        setInterval(() => {
-            let adminReply = localStorage.getItem('bam_admin_reply_trigger');
-            if(adminReply) {
-                let data = JSON.parse(adminReply);
-                const chatBox = document.getElementById('chat-box');
-                const msgDiv = document.createElement('div');
-                msgDiv.className = 'chat-msg';
-                msgDiv.innerHTML = `<span class="chat-user" style="color: #f59e0b; background: rgba(245,158,11,0.1); padding: 1px 6px; border-radius: 4px;">BAM TECH (Admin):</span><span class="chat-text">${data.text}</span>`;
-                chatBox.appendChild(msgDiv);
+                    msgDiv.innerHTML = `${userTag}<span class="chat-text">${item.text}</span>
+                                        <button class="chat-reply-trigger" onclick="replyToUser(this)">[Jibu]</button>`;
+                    
+                    chatBox.appendChild(msgDiv);
+                });
+                
+                // Tembeza chat chini kabisa kiotomatiki
                 chatBox.scrollTop = chatBox.scrollHeight;
-                localStorage.removeItem('bam_admin_reply_trigger');
             }
-        }, 1000);
+        });
 
-        function verifyAdminSecurity(checkbox) {
-            if (checkbox.checked) {
-                const accessCode = prompt("Ingiza PIN ya Siri ya Mmiliki (Admin PIN):");
-                if (accessCode === "BAM2026") {
-                    alert("Uthibitisho Umekubaliwa! Karibu Admin Bryan.");
-                } else {
-                    alert("PIN Sio Sahihi! Hauruhusiwi kutumia hali hii.");
-                    checkbox.checked = false;
-                }
+        // Tuma ujumbe wa Mhudhuriaji kwenda Firebase
+        function sendRealMessage() {
+            const input = document.getElementById('chat-input');
+            if(input.value.trim() !== "") {
+                let now = new Date().toLocaleTimeString();
+                let chatObject = {
+                    user: "Mhudhuriaji",
+                    text: input.value,
+                    time: now
+                };
+                
+                // Tuma data kwenda kwenye Database node: bam_tv_chats
+                database.ref('bam_tv_chats').push(chatObject);
+                input.value = "";
             }
         }
 
+        // [Vitendo vinginevyo vya player na UX]
         function togglePlay() {
             if (video.paused) { video.play(); playBtn.innerText = '❚❚ Sitisha'; }
             else { video.pause(); playBtn.innerText = '▶ Cheza'; }
@@ -958,31 +987,6 @@
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
-        function sendRealMessage() {
-            const input = document.getElementById('chat-input');
-            const isAdmin = document.getElementById('admin-mode').checked;
-            
-            if(input.value.trim() !== "") {
-                const chatBox = document.getElementById('chat-box');
-                const msgDiv = document.createElement('div');
-                msgDiv.className = 'chat-msg';
-                
-                let userLabel = isAdmin ? "BAM TECH (Admin)" : "Mhudhuriaji";
-                let userTag = isAdmin ? `<span class="chat-user" style="color: #f59e0b; background: rgba(245,158,11,0.1); padding: 1px 6px; border-radius: 4px;">${userLabel}:</span>` : `<span class="chat-user" style="color: #60a5fa;">Mhudhuriaji:</span>`;
-
-                msgDiv.innerHTML = `${userTag}<span class="chat-text">${input.value}</span>
-                                    <button class="chat-reply-trigger" onclick="replyToUser(this)">[Jibu]</button>`;
-                
-                chatBox.appendChild(msgDiv);
-                chatBox.scrollTop = chatBox.scrollHeight;
-                
-                let now = new Date().toLocaleTimeString();
-                broadcastChatToAdmin(userLabel, input.value, now);
-                
-                input.value = "";
-            }
-        }
-
         function replyToUser(buttonElement) {
             const chatInput = document.getElementById('chat-input');
             const parentMessage = buttonElement.parentElement;
@@ -991,17 +995,19 @@
             chatInput.focus();
         }
 
-        // Mfumo wa Watazamaji (Admin ana uwezo wa kuufuta au kuubadilisha)
+        // Mfumo wa Watazamaji wa Kufikirika (Bado unaweza kudhibitiwa na Admin kwa Firebase Database node: bam_forced_viewers)
         setInterval(() => {
-            let forcedViewers = localStorage.getItem('bam_forced_viewers');
-            const viewersSpan = document.getElementById('viewers');
-            if(forcedViewers) {
-                viewersSpan.innerText = parseInt(forcedViewers).toLocaleString();
-            } else {
-                let currentViewers = parseInt(viewersSpan.innerText.replace(',', ''));
-                let change = Math.floor(Math.random() * 7) - 3; 
-                viewersSpan.innerText = (currentViewers + change).toLocaleString();
-            }
+            database.ref('bam_forced_viewers').on('value', (snapshot) => {
+                let forcedViewers = snapshot.val();
+                const viewersSpan = document.getElementById('viewers');
+                if(forcedViewers) {
+                    viewersSpan.innerText = parseInt(forcedViewers).toLocaleString();
+                } else {
+                    let currentViewers = parseInt(viewersSpan.innerText.replace(',', ''));
+                    let change = Math.floor(Math.random() * 7) - 3; 
+                    viewersSpan.innerText = (currentViewers + change).toLocaleString();
+                }
+            });
         }, 5000);
     </script>
 </body>
