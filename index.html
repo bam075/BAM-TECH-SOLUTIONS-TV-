@@ -49,7 +49,7 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
         
-        /* NEMBO YA KIMATAIFA */
+        /* NEMBO YA NAVBAR */
         .brand {
             display: flex;
             align-items: center;
@@ -182,34 +182,47 @@
             object-fit: contain;
         }
         
-        /* Nembo Ndani ya Player */
+        /* 
+           NEMBO INAYOKUJA NA KUPOTEA (Smart Watermark Animation)
+           Inakaa Sekunde 10 hewani, inapotea kwa Sekunde 5, kisha inarudia milele.
+        */
         .channel-bug {
             position: absolute;
             top: 15px;
             right: 15px;
             z-index: 999999; 
             pointer-events: none;
-            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.9));
+            /* Mzunguko mzima ni sekunde 15 (10s on + 5s off) */
+            animation: toggleLogoVisibility 15s infinite ease-in-out;
         }
+        
+        @keyframes toggleLogoVisibility {
+            0% { opacity: 0; }
+            3% { opacity: 1; }       /* Inafifia kuingia kwa sekunde 0.4 hivi */
+            63% { opacity: 1; }      /* Inabaki wazi kabisa hadi sekunde ya 9.5 */
+            66.66% { opacity: 0; }   /* Inafifia kutoka na kupotea kabisa ifikapo sekunde ya 10 */
+            100% { opacity: 0; }     /* Inabaki imepotea kwa sekunde 5 zilizobaki hadi mzunguko uishe */
+        }
+
         .channel-bug img {
             height: 38px; 
             width: auto;
             display: block;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
         }
         
-        /* Fallback Nembo ya Dharura */
+        /* NEMBO YA DHARURA JUU YA VIDEO (BACKGROUND NYEUSI IMEONDOLEWA KABISA) */
         .logo-text-fallback {
             display: none;
-            background: rgba(15, 23, 42, 0.85);
-            border: 1px solid rgba(59, 130, 246, 0.4);
-            padding: 6px 12px;
-            border-radius: 8px;
-            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            box-shadow: none !important;
         }
         .fallback-container {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 5px;
             line-height: 1;
         }
         .fallback-text-group {
@@ -218,24 +231,27 @@
         }
         .fallback-title {
             text-transform: uppercase;
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 900;
             color: #ffffff;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 1), 0 4px 12px rgba(0, 0, 0, 0.9);
         }
         .fallback-subtitle {
             text-transform: lowercase;
-            font-size: 9px;
-            font-weight: 500;
-            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 600;
+            color: #d1d5db;
             margin-top: 2px;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 1), 0 4px 12px rgba(0, 0, 0, 0.9);
         }
         .fallback-tv {
-            font-size: 32px;
+            font-size: 38px;
             font-weight: 950;
             color: #3b82f6;
             font-style: italic;
             margin-left: 2px;
+            text-shadow: 0 0 12px rgba(59, 130, 246, 0.8), 0 2px 6px rgba(0, 0, 0, 1), 0 4px 12px rgba(0, 0, 0, 1);
         }
 
         /* Overlay Controls */
@@ -381,7 +397,7 @@
             color: #3b82f6;
         }
         
-        /* Admin Control Panel inside Chat Footer */
+        /* Admin Security Bar Styling */
         .chat-input-area-wrapper {
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             background: rgba(0, 0, 0, 0.2);
@@ -401,6 +417,7 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            cursor: pointer;
         }
         .admin-switch {
             cursor: pointer;
@@ -470,7 +487,7 @@
         .row-label { color: #94a3b8; }
         .row-value { font-weight: 600; color: #f1f5f9; }
 
-        /* SEHEMU YA RATIBA - PREMIUM LOOK */
+        /* Ratiba Box */
         .schedule-card {
             background: #0f172a;
             border: 1px solid rgba(255, 255, 255, 0.04);
@@ -575,7 +592,7 @@
                 <div class="player-glow"></div>
                 <div class="player-wrapper" id="player-wrapper">
                     
-                    <!-- Smart Overlay Fallback Node -->
+                    <!-- Mfumo wa nembo unaotumia CSS Animation kufifia na kurudi -->
                     <div class="channel-bug">
                         <img src="172392.png" id="tv-logo" alt="Logo" onerror="handleLogoError()">
                         <div class="logo-text-fallback" id="text-logo">
@@ -589,7 +606,7 @@
                         </div>
                     </div>
                     
-                    <!-- VIDEO MPYA HALISI (TEARS OF STEEL LIVE ACTION) - HAINA KATUNI KABISA -->
+                    <!-- VIDEO HALISI: Tears of Steel Live Action VFX -->
                     <video id="video" autoplay muted playsinline></video>
 
                     <!-- Control Triggers -->
@@ -624,7 +641,6 @@
                     <span class="row-label">Hali ya Matangazo</span>
                     <span class="row-value" style="color: #10b981;">● HEWANI (ONLINE)</span>
                 </div>
-                <!-- TEKNOLOJIA YA SEVA IMEFICHWA HAPA KULINGANA NA PICHA YAKO -->
                 <div class="table-row">
                     <span class="row-label">Aina ya Maudhui</span>
                     <span class="row-value">Burudani & Teknolojia Halisi</span>
@@ -635,11 +651,10 @@
                 </div>
             </div>
 
-            <!-- SEHEMU YA RATIBA - INAHARISIKA KWA URAHISI CHINI KWENYE HTML -->
+            <!-- SEHEMU YA RATIBA -->
             <div class="schedule-card">
                 <div class="schedule-title">📅 RATIBA YA VIPINDI YA LEO</div>
                 <div class="schedule-list">
-                    <!-- ADMIN: Badilisha vipindi vyako hapa chini kwa urahisi -->
                     <div class="schedule-item active">
                         <span class="schedule-time">08:00 AM - LIVE</span>
                         <span class="schedule-name">Tech Insights & Global Innovation Performance</span>
@@ -656,7 +671,6 @@
                         <span class="schedule-time">09:00 PM</span>
                         <span class="schedule-name">Digital Innovations in African Ecosystems</span>
                     </div>
-                    <!-- ADMIN: Mwisho wa vipindi -->
                 </div>
             </div>
 
@@ -670,18 +684,17 @@
                     <span class="chat-pulse"></span>
                 </div>
                 <div class="chat-messages" id="chat-box">
-                    <!-- NENO MFUMO LIMEFUTWA KABISA HAPA -->
                     <div class="chat-msg">
                         <span class="chat-user" style="color: #3b82f6;">BAM TECH TV:</span>
                         <span class="chat-text">Karibu! Andika ujumbe au maoni yako halisi hapa chini yajisome papo hapo.</span>
                     </div>
                 </div>
                 
-                <!-- Chat Input Section with Admin Control Layer -->
+                <!-- Chat Input Section with PIN Guard Integration -->
                 <div class="chat-input-area-wrapper">
                     <div class="admin-toggle-bar">
                         <label class="admin-label">
-                            <input type="checkbox" id="admin-mode" class="admin-switch"> 🛠️ Hali ya Admin (Tuma kama Mmiliki)
+                            <input type="checkbox" id="admin-mode" class="admin-switch" onchange="verifyAdminSecurity(this)"> 🛠️ Hali ya Admin (Tuma kama Mmiliki)
                         </label>
                     </div>
                     <div class="chat-input-area">
@@ -699,7 +712,6 @@
     <div class="toast" id="toast-notif">Link imekopiwa kwa ajili ya kushare!</div>
 
     <script>
-        // VIDEO IMPLEMENTATION: HLS Live-Action (Haina katuni, inatumia roboti na binadamu wa kweli)
         const STREAM_URL = 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
 
         const video = document.getElementById('video');
@@ -714,7 +726,6 @@
             document.getElementById('text-logo').style.display = 'block';
         }
 
-        // Core Player Initialization Pipeline
         if (Hls.isSupported()) {
             const hls = new Hls();
             hls.loadSource(STREAM_URL);
@@ -728,7 +739,17 @@
             hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
                 const activeLevel = hls.levels[data.level];
                 if (activeLevel) {
-                    currentQualityView.innerText = activeLevel.height + "p Ultra HD";
+                    let levelHeight = activeLevel.height;
+                    let qualityLabel = levelHeight + "p";
+                    
+                    if (levelHeight >= 1080) {
+                        qualityLabel += " Ultra Full HD";
+                    } else if (levelHeight >= 720) {
+                        qualityLabel += " HD High Quality";
+                    } else {
+                        qualityLabel += " SD Standard";
+                    }
+                    currentQualityView.innerText = qualityLabel;
                 }
             });
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
@@ -753,6 +774,18 @@
             qualitySelect.addEventListener('change', (e) => {
                 hlsInstance.currentLevel = parseInt(e.target.value); 
             });
+        }
+
+        function verifyAdminSecurity(checkbox) {
+            if (checkbox.checked) {
+                const accessCode = prompt("Ingiza PIN ya Siri ya Mmiliki (Admin PIN):");
+                if (accessCode === "BAM2026") {
+                    alert("Uthibitisho Umekubaliwa! Karibu Admin Bryan.");
+                } else {
+                    alert("PIN Sio Sahihi! Hauruhusiwi kutumia hali hii.");
+                    checkbox.checked = false;
+                }
+            }
         }
 
         function togglePlay() {
@@ -790,7 +823,6 @@
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
-        // Mfumo halisi wa kutuma ujumbe wenye uwezo wa Admin kureply
         function sendRealMessage() {
             const input = document.getElementById('chat-input');
             const isAdmin = document.getElementById('admin-mode').checked;
@@ -802,13 +834,11 @@
                 
                 let userTag = "";
                 if (isAdmin) {
-                    // Muonekano wa jina la Admin ukiamua kujibu
                     userTag = `<span class="chat-user" style="color: #f59e0b; background: rgba(245,158,11,0.1); padding: 1px 6px; border-radius: 4px;">BAM TECH (Admin):</span>`;
                 } else {
                     userTag = `<span class="chat-user" style="color: #60a5fa;">Mhudhuriaji:</span>`;
                 }
 
-                // Kizazi cha ujumbe pamoja na kitufe cha kureply pembeni
                 msgDiv.innerHTML = `${userTag}<span class="chat-text">${input.value}</span>
                                     <button class="chat-reply-trigger" onclick="replyToUser(this)">[Jibu]</button>`;
                 
@@ -818,7 +848,6 @@
             }
         }
 
-        // Kazi ya kubonyeza "Jibu" ili kum-tag mtu aliyetuma ujumbe
         function replyToUser(buttonElement) {
             const chatInput = document.getElementById('chat-input');
             const parentMessage = buttonElement.parentElement;
