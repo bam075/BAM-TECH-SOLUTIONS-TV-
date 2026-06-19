@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAM TECH SOLUTIONS TV | Live Broadcast</title>
+    <title>BAM TECH solutions TV | Live</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         /* Premium Core Styling (International Tech Interface) */
@@ -48,7 +48,7 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
         
-        /* BRAND IDENTITY */
+        /* NEMBO YA NAVBAR */
         .brand {
             display: flex;
             align-items: center;
@@ -87,6 +87,18 @@
             filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.6));
         }
 
+        /* Dynamic Program Title Badge (New Custom Component) */
+        .header-program-badge {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #60a5fa;
+            display: none; /* Inadhibitiwa na Admin */
+        }
+
         /* Live Status Badge Components */
         .live-status-container {
             display: flex;
@@ -101,7 +113,7 @@
             font-size: 10px;
             font-weight: bold;
             letter-spacing: 1px;
-            display: flex;
+            display: none; /* Inadhibitiwa na Admin */
             align-items: center;
             gap: 4px;
             box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
@@ -128,7 +140,7 @@
             100% { opacity: 0.3; }
         }
 
-        /* Hero Description */
+        /* Hero Text */
         .hero {
             text-align: left;
             margin: 15px 0 5px 0;
@@ -146,209 +158,131 @@
             color: #94a3b8;
         }
 
-        /* MASTER BROADCAST CONTEXT (L-STYLE SYSTEM ENGINE) */
-        .broadcast-container {
+        /* Neon Glow Video Frame Canvas */
+        .player-container-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        .player-glow {
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            width: 90%;
+            height: 90%;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            filter: blur(45px);
+            opacity: 0.35;
+            z-index: 1;
+            pointer-events: none;
+            border-radius: 16px;
+        }
+        .player-wrapper {
             position: relative;
             width: 100%;
             aspect-ratio: 16/9;
-            background: #020205;
+            background: #000000;
             border-radius: 16px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9);
-            z-index: 5;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
+            z-index: 2;
         }
-        
-        /* Main Screen Frame containing video and interface overlays */
-        .player-wrapper {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000000;
-            transition: all 0.75s cubic-bezier(0.19, 1, 0.22, 1);
-            z-index: 10;
-        }
-        
-        /* L-STYLE TRIGGERED LAYOUT ACTIVATION */
-        .broadcast-container.l-style-active .player-wrapper {
-            top: 4%;
-            right: 4%;
-            left: 22%;
-            width: 74%;
-            height: 72%;
-            border-radius: 10px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 1px 1px rgba(255,255,255,0.1);
-        }
-
         video {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
-
-        /* L-STYLE ADVERTISEMENTS BRAND PANELS */
-        .l-ad-panel {
-            position: absolute;
-            background: linear-gradient(145deg, #0f172a, #020617);
-            border: 1px solid rgba(59, 130, 246, 0.15);
-            opacity: 0;
-            transform: scale(0.95);
-            transition: all 0.7s cubic-bezier(0.19, 1, 0.22, 1);
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            overflow: hidden;
-        }
-        .broadcast-container.l-style-active .l-ad-panel {
-            opacity: 1;
-            transform: scale(1);
-        }
-        .l-ad-side {
-            top: 4%;
-            left: 4%;
-            width: 15%;
-            height: 72%;
-            border-radius: 10px;
-            padding: 10px;
-            align-items: center;
-            text-align: center;
-            background: linear-gradient(to bottom, #1e3a8a 0%, #0f172a 100%);
-        }
-        .l-ad-bottom {
-            bottom: 4%;
-            left: 4%;
-            width: 92%;
-            height: 16%;
-            border-radius: 10px;
-            padding: 0 20px;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            background: linear-gradient(to right, #0f172a 0%, #1e4ed8 100%);
-        }
-        .l-ad-side-text {
-            font-size: 11px;
-            font-weight: 800;
-            color: #3b82f6;
-            text-transform: uppercase;
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            letter-spacing: 2px;
-            animation: textGlow 2s infinite alternate;
-        }
-        @keyframes textGlow {
-            from { text-shadow: 0 0 5px rgba(59,130,246,0.3); }
-            to { text-shadow: 0 0 15px rgba(59,130,246,0.8); }
-        }
-        .l-ad-bottom-title {
-            font-size: 14px;
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: 0.5px;
-        }
-        .l-ad-bottom-promo {
-            font-size: 11px;
-            background: #f59e0b;
-            color: #000;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        /* CINEMATIC ANIMATED WATERMARK LOGO ENGINE 
-           Inafuata mpangilio wa kimataifa (BAM TECH -> solutions -> TV 3D flip -> Inapotea)
-        */
+        
+        /* Watermark Animation */
         .channel-bug {
             position: absolute;
             top: 15px;
             right: 15px;
-            z-index: 99999; 
+            z-index: 999999; 
             pointer-events: none;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 6px 12px;
-            border-radius: 8px;
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.05);
-            /* Loop nzima ya sekunde 15 (10s Kuonekana kwa Awamu + 5s Kupotea kabisa) */
-            animation: dynamicLogoMasterLoop 15s infinite ease-in-out;
-            perspective: 1000px; 
+            animation: toggleLogoVisibility 15s infinite ease-in-out;
+        }
+        
+        @keyframes toggleLogoVisibility {
+            0% { opacity: 0; }
+            3% { opacity: 1; }       
+            63% { opacity: 1; }      
+            66.66% { opacity: 0; }   
+            100% { opacity: 0; }     
         }
 
-        .motion-brand-group {
+        .channel-bug img {
+            height: 38px; 
+            width: auto;
+            display: block;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
+        }
+        
+        .logo-text-fallback {
+            display: none;
+            background: none !important;
+            border: none !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+        .fallback-container {
             display: flex;
             align-items: center;
             gap: 5px;
             line-height: 1;
         }
-        .motion-text-stack {
+        .fallback-text-group {
             display: flex;
             flex-direction: column;
         }
-        
-        /* Awamu ya 1: BAM TECH Slide-in */
-        .motion-title {
+        .fallback-title {
             text-transform: uppercase;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 900;
             color: #ffffff;
-            letter-spacing: 0.5px;
-            animation: segmentBamTech 15s infinite ease-in-out;
+            letter-spacing: 0.6px;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 1), 0 4px 12px rgba(0, 0, 0, 0.9);
         }
-        /* Awamu ya 2: solutions Slide-down */
-        .motion-subtitle {
+        .fallback-subtitle {
             text-transform: lowercase;
-            font-size: 9.5px;
+            font-size: 10px;
             font-weight: 600;
-            color: #94a3b8;
+            color: #d1d5db;
             margin-top: 2px;
-            animation: segmentSolutions 15s infinite ease-in-out;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 1), 0 4px 12px rgba(0, 0, 0, 0.9);
         }
-        /* Awamu ya 3: TV 3D Flip & Pop Up */
-        .motion-tv {
-            font-size: 34px;
+        .fallback-tv {
+            font-size: 38px;
             font-weight: 950;
             color: #3b82f6;
             font-style: italic;
             margin-left: 2px;
-            text-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
-            transform-style: preserve-3d;
-            animation: segmentTv3D 15s infinite ease-in-out;
+            text-shadow: 0 0 12px rgba(59, 130, 246, 0.8), 0 2px 6px rgba(0, 0, 0, 1), 0 4px 12px rgba(0, 0, 0, 1);
         }
 
-        /* KEYFRAMES ZA MAANDISHI YANAYOINGIA KIVYAKE (15 SECONDS TOTAL LOOP) */
-        @keyframes dynamicLogoMasterLoop {
-            0% { opacity: 0; }
-            2% { opacity: 1; }      /* Nembo kuu inafunguka */
-            85% { opacity: 1; }     /* Inakaa hewani hadi sekunde ya 12.7 */
-            90% { opacity: 0; }     /* Inafifia kabisa ifikapo sekunde ya 13.5 */
-            100% { opacity: 0; }    /* Inabaki imepotea kwa sekunde 1.5 zilizobaki */
-        }
-        @keyframes segmentBamTech {
-            0% { opacity: 0; transform: translateX(-20px); }
-            4% { opacity: 1; transform: translateX(0); } /* BAM TECH inaingia sekunde ya 0.6 */
-            100% { opacity: 1; }
-        }
-        @keyframes segmentSolutions {
-            0% { opacity: 0; transform: translateY(-10px); }
-            4% { opacity: 0; }
-            8% { opacity: 1; transform: translateY(0); } /* solutions inashuka chini sekunde ya 1.2 */
-            100% { opacity: 1; }
-        }
-        @keyframes segmentTv3D {
-            0% { opacity: 0; transform: scale(0) rotateY(180deg); }
-            8% { opacity: 0; transform: scale(0) rotateY(180deg); }
-            14% { opacity: 1; transform: scale(1) rotateY(0deg); } /* TV inazunguka 3D na kukuza sekunde ya 2.1 */
-            100% { opacity: 1; }
+        /* Dynamic Custom L-Style Advertisement Box Overlays */
+        .l-ad-box {
+            position: absolute;
+            bottom: 70px;
+            left: 20px;
+            width: 280px;
+            background: linear-gradient(135deg, #ff9900, #ff6600);
+            color: black;
+            padding: 15px;
+            border-radius: 8px;
+            z-index: 999998;
+            display: none; /* Inadhibitiwa na Admin */
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+            font-weight: bold;
         }
 
         /* Overlay Controls */
         .custom-controls {
             position: absolute;
-            bottom: 0; left: 0; right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 70%, transparent 100%);
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -357,87 +291,71 @@
             opacity: 0;
             transition: opacity 0.4s ease;
         }
-        .player-wrapper:hover .custom-controls { opacity: 1; }
-        .control-group { display: flex; align-items: center; gap: 12px; }
+        .player-wrapper:hover .custom-controls {
+            opacity: 1;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
         .control-btn {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            color: #ffffff; font-size: 12px; font-weight: 600;
-            cursor: pointer; padding: 8px 12px; border-radius: 6px;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .control-btn:hover { background: rgba(255, 255, 255, 0.18); }
-        .share-btn { background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; }
-
-        /* LIVE ROLLING NEWS TICKER (MAANDISHI YA KUPITA CHINI) */
-        .ticker-container {
-            width: 100%;
-            background: #0f172a;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-top: none;
-            border-radius: 0 0 16px 16px;
-            padding: 8px 14px;
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 12px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            gap: 6px;
         }
-        .ticker-label {
-            background: #dc2626;
-            color: white;
-            font-size: 10px;
-            font-weight: 850;
-            padding: 3px 8px;
-            border-radius: 4px;
-            margin-right: 12px;
-            letter-spacing: 0.5px;
-            white-space: nowrap;
-            box-shadow: 0 0 8px rgba(220,38,38,0.3);
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
         }
-        .ticker-window {
-            width: 100%;
-            overflow: hidden;
-            white-space: nowrap;
-        }
-        .ticker-text-movement {
-            display: inline-block;
-            padding-left: 100%;
-            animation: marqueeEffect 22s linear infinite;
-            font-size: 12.5px;
-            color: #cbd5e1;
-            font-weight: 600;
-        }
-        @keyframes marqueeEffect {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-100%, 0, 0); }
+        .share-btn {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: none;
         }
 
-        /* Quality Selector Alignment */
+        /* Resolution Selector Styling */
         .quality-container {
             background: #0f172a;
             border-radius: 12px;
             padding: 12px 16px;
-            margin-top: 15px;
+            margin-top: 12px;
             border: 1px solid rgba(255, 255, 255, 0.04);
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
-        .quality-label { font-size: 11px; color: #94a3b8; font-weight: 600; }
+        .quality-label {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
         .quality-select {
-            background: #1e293b; color: #ffffff;
+            background: #1e293b;
+            color: #ffffff;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 6px 10px; border-radius: 8px;
-            font-size: 12px; outline: none; cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+            font-weight: 600;
         }
 
-        /* Live Chat Panel Component */
+        /* Chat Panel */
         .chat-container {
             background: #0f172a;
             border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 16px;
             height: 100%;
-            min-height: 410px;
+            min-height: 400px;
             max-height: 480px;
             display: flex;
             flex-direction: column;
@@ -447,65 +365,265 @@
             padding: 14px 16px;
             background: rgba(255, 255, 255, 0.01);
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 13px; font-weight: 700;
-            display: flex; align-items: center; justify-content: space-between;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        .chat-pulse { width: 6px; height: 6px; background: #10b981; border-radius: 50%; }
-        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .chat-msg { font-size: 12.5px; line-height: 1.5; position: relative; animation: fadeIn 0.2s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .chat-user { font-weight: 700; color: #60a5fa; margin-right: 6px; }
-        .chat-text { color: #e2e8f0; }
+        .chat-pulse {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .chat-msg {
+            font-size: 12.5px;
+            line-height: 1.5;
+            position: relative;
+            padding-right: 40px;
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(3px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chat-user {
+            font-weight: 700;
+            color: #60a5fa;
+            margin-right: 6px;
+        }
+        .chat-text {
+            color: #e2e8f0;
+        }
         .chat-reply-trigger {
-            position: absolute; right: 0; top: 0;
-            background: none; border: none; color: #64748b;
-            font-size: 10px; cursor: pointer; font-weight: bold;
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: bold;
         }
-        .chat-input-area-wrapper { border-top: 1px solid rgba(255, 255, 255, 0.05); background: rgba(0, 0, 0, 0.15); padding: 12px; }
-        .chat-input-area { display: flex; gap: 8px; }
+        .chat-reply-trigger:hover {
+            color: #3b82f6;
+        }
+        
+        /* Admin Security Bar Styling */
+        .chat-input-area-wrapper {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+        }
+        .admin-toggle-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 0 4px;
+        }
+        .admin-label {
+            font-size: 10px;
+            font-weight: bold;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .admin-switch {
+            cursor: pointer;
+            accent-color: #3b82f6;
+        }
+        .chat-input-area {
+            display: flex;
+            gap: 8px;
+        }
         .chat-input {
-            flex: 1; background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 8px; padding: 8px 12px; color: white; font-size: 12px; outline: none;
+            flex: 1;
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 12px;
+            outline: none;
         }
         .chat-send {
-            background: #2563eb; border: none; color: white;
-            padding: 0 14px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+            background: #2563eb;
+            border: none;
+            color: white;
+            padding: 0 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
         }
 
-        /* Content Information Cards */
-        .card { background: #0f172a; border-radius: 14px; padding: 16px; border: 1px solid rgba(255, 255, 255, 0.04); margin-top: 15px; }
-        .card-title-sub { font-size: 11px; color: #f59e0b; font-weight: bold; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        .card-main-text { font-size: 15px; font-weight: 700; color: #f8fafc; }
-        .info-table { background: #0f172a; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.04); margin-top: 15px; }
-        .table-row { display: flex; justify-content: space-between; padding: 14px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 13px; }
+        /* Details Panels */
+        .card {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            margin-top: 15px;
+        }
+        .card-title-sub {
+            font-size: 11px;
+            color: #f59e0b;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: block;
+        }
+        .card-main-text {
+            font-size: 15px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .info-table {
+            background: #0f172a;
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            margin-top: 15px;
+        }
+        .table-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 14px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 13px;
+        }
         .table-row:last-child { border-bottom: none; }
         .row-label { color: #94a3b8; }
         .row-value { font-weight: 600; color: #f1f5f9; }
 
-        /* Dynamic Real-Time Scheduling UI */
-        .schedule-card { background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 14px; padding: 16px; margin-top: 15px; }
-        .schedule-title { font-size: 12px; color: #3b82f6; font-weight: bold; text-transform: uppercase; margin-bottom: 12px; }
-        .schedule-list { display: flex; flex-direction: column; gap: 10px; }
+        /* Ratiba Box */
+        .schedule-card {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 16px;
+            margin-top: 15px;
+        }
+        .schedule-title {
+            font-size: 12px;
+            color: #3b82f6;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .schedule-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
         .schedule-item {
-            display: flex; align-items: center; padding: 10px 14px;
-            background: rgba(255,255,255,0.01); border-radius: 8px;
-            border-left: 3px solid #334155; transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            border-left: 3px solid #1e4ed8;
         }
-        .schedule-item.live-active-show {
+        .schedule-item.active {
             border-left-color: #10b981;
-            background: rgba(16, 185, 129, 0.06);
+            background: rgba(16, 185, 129, 0.05);
         }
-        .schedule-time { font-size: 11px; font-weight: 700; color: #64748b; width: 130px; flex-shrink: 0; }
-        .schedule-item.live-active-show .schedule-time { color: #10b981; }
-        .schedule-name { font-size: 12.5px; font-weight: 600; color: #cbd5e1; }
-        .schedule-item.live-active-show .schedule-name { color: #ffffff; }
+        .schedule-time {
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            width: 90px;
+            flex-shrink: 0;
+        }
+        .schedule-item.active .schedule-time {
+            color: #10b981;
+        }
+        .schedule-name {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
 
-        /* Toast notifications */
+        /* Premium Broadcast Dynamic Ticker Component (Niko Hapa) */
+        .dynamic-ticker-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: #0f172a;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 10px 0;
+            overflow: hidden;
+            z-index: 9999999;
+            display: none; /* Inadhibitiwa na Admin */
+        }
+        .ticker-flex-wrapper {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .ticker-badge-prefix {
+            background: #2563eb;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 10px;
+            text-transform: uppercase;
+            border-radius: 4px;
+            margin-left: 15px;
+            z-index: 10;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.5);
+        }
+        .ticker-scroll-frame {
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+            padding-left: 20px;
+        }
+        .ticker-moving-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: tickerMarquee 25s linear infinite;
+            font-size: 13px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+        @keyframes tickerMarquee {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
         .toast {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
-            background: #10b981; color: white; padding: 12px 24px; border-radius: 8px;
-            font-size: 13px; font-weight: 600; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
-            z-index: 10000000; transition: transform 0.3s ease;
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            z-index: 10000000;
+            transition: transform 0.3s ease;
         }
         .toast.show { transform: translateX(-50%) translateY(0); }
     </style>
@@ -523,9 +641,12 @@
                     </div>
                     <span class="brand-tv">TV</span>
                 </div>
+                
+                <div class="header-program-badge" id="dyn-program-badge">Kipindi: ...</div>
+
                 <div class="live-status-container">
                     <div class="viewer-count">👁 <span id="viewers">1,740</span> Watazamaji</div>
-                    <div class="live-pill"><span class="live-dot"></span>LIVE</div>
+                    <div class="live-pill" id="dyn-live-pill"><span class="live-dot"></span><span id="dyn-live-text">LIVE</span></div>
                 </div>
             </header>
         </div>
@@ -533,32 +654,31 @@
         <div class="hero-wide">
             <div class="hero">
                 <h1>BAM TECH SOLUTIONS TV</h1>
-                <p>Chaneli yako ya kidijitali ya ubunifu, habari za kiteknolojia na burudani kutoka Tanzania.</p>
+                <p>Chaneli ya Kimataifa ya Ubunifu, Sayansi na Habari za Kidijitali kutoka Tanzania.</p>
             </div>
         </div>
 
         <div class="main-content">
-            
-            <div class="broadcast-container" id="broadcast-frame">
-                
-                <div class="l-ad-panel l-ad-side">
-                    <span class="l-ad-side-text">BAM TECH SOLUTIONS</span>
-                </div>
-                <div class="l-ad-panel l-ad-bottom">
-                    <span class="l-ad-bottom-title">🚀 Tunatengeneza Mifumo, Tovuti na Programu za Simu kwa Viwango vya Juu!</span>
-                    <span class="l-ad-bottom-promo">Piga: BAM TECH</span>
-                </div>
-
-                <div class="player-wrapper">
+            <div class="player-container-wrapper">
+                <div class="player-glow"></div>
+                <div class="player-wrapper" id="player-wrapper">
                     
                     <div class="channel-bug">
-                        <div class="motion-brand-group">
-                            <div class="motion-text-stack">
-                                <span class="motion-title">BAM TECH</span>
-                                <span class="motion-subtitle">solutions</span>
+                        <img src="172392.png" id="tv-logo" alt="Logo" onerror="handleLogoError()">
+                        <div class="logo-text-fallback" id="text-logo">
+                            <div class="fallback-container">
+                                <div class="fallback-text-group">
+                                    <span class="fallback-title">BAM TECH</span>
+                                    <span class="fallback-subtitle">solutions</span>
+                                </div>
+                                <span class="fallback-tv">TV</span>
                             </div>
-                            <span class="motion-tv">TV</span>
                         </div>
+                    </div>
+                    
+                    <div class="l-ad-box" id="dyn-lstyle-box">
+                        <h4 style="margin-bottom:5px; text-transform: uppercase; font-size:12px; color:#000;">Tangazo Maalum</h4>
+                        <p id="dyn-lstyle-text" style="font-size:13px;"></p>
                     </div>
                     
                     <video id="video" autoplay muted playsinline></video>
@@ -573,16 +693,6 @@
                             <button class="control-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
                         </div>
                     </div>
-
-                </div>
-            </div>
-
-            <div class="ticker-container">
-                <span class="ticker-label">BREAKING NEWS</span>
-                <div class="ticker-window">
-                    <div class="ticker-text-movement" id="ticker-rolling-content">
-                        🔥 Karibu BAM TECH SOLUTIONS TV — Chaneli inayoongoza kwa Ubunifu na Teknolojia ya Kisasa nchini Tanzania... 📊 Tufuate kwa mafunzo ya Cybersecurity, Coding, na maendeleo ya mifumo ya Kimataifa... Mfumo wetu wa Live Stream unatumia itifaki ya hali ya juu ya HLS Pro Engine!
-                    </div>
                 </div>
             </div>
 
@@ -595,7 +705,7 @@
 
             <div class="card">
                 <span class="card-title-sub">▶ INACHEZWA SASA HIVI</span>
-                <div class="card-main-text" id="current-show-title-display">Inapakia kipindi...</div>
+                <div class="card-main-text" id="dyn-now-playing">International Tech Insights & Digital Performance</div>
             </div>
 
             <div class="info-table">
@@ -604,37 +714,33 @@
                     <span class="row-value" style="color: #10b981;">● HEWANI (ONLINE)</span>
                 </div>
                 <div class="table-row">
-                    <span class="row-label">Teknolojia ya Seva</span>
-                    <span class="row-value">HLS IPTV M3U8 Engine</span>
+                    <span class="row-label">Aina ya Maudhui</span>
+                    <span class="row-value">Burudani & Teknolojia Halisi</span>
                 </div>
                 <div class="table-row">
                     <span class="row-label">Ubora wa Picha</span>
-                    <span class="row-value" id="current-quality-view">Inatafuta...</span>
+                    <span class="row-value" id="current-quality-view">Inapakia...</span>
                 </div>
             </div>
 
             <div class="schedule-card">
-                <div class="schedule-title">📅 RATIBA YA VIPINDI (SINKRONIZATION HALISI)</div>
+                <div class="schedule-title">📅 RATIBA YA VIPINDI YA LEO</div>
                 <div class="schedule-list">
-                    <div class="schedule-item" id="show-slot-1">
-                        <span class="schedule-time" id="label-slot-1">04:00 AM - 08:00 AM</span>
-                        <span class="schedule-name">Habari za Kidijitali na Uchambuzi wa Teknolojia</span>
+                    <div class="schedule-item active">
+                        <span class="schedule-time">08:00 AM - LIVE</span>
+                        <span class="schedule-name">Tech Insights & Global Innovation Performance</span>
                     </div>
-                    <div class="schedule-item" id="show-slot-2">
-                        <span class="schedule-time" id="label-slot-2">08:00 AM - 02:00 PM</span>
-                        <span class="schedule-name">Tech Trends, Global Innovation & Performance Insights</span>
+                    <div class="schedule-item">
+                        <span class="schedule-time">02:00 PM</span>
+                        <span class="schedule-name">Cybersecurity Foundations & Mobile Coding Linux</span>
                     </div>
-                    <div class="schedule-item" id="show-slot-3">
-                        <span class="schedule-time" id="label-slot-3">02:00 PM - 06:30 PM</span>
-                        <span class="schedule-name">Cybersecurity Foundations & Mobile Coding Development</span>
+                    <div class="schedule-item">
+                        <span class="schedule-time">06:30 PM</span>
+                        <span class="schedule-name">BAM Tech Solutions Corporate Showcase</span>
                     </div>
-                    <div class="schedule-item" id="show-slot-4">
-                        <span class="schedule-time" id="label-slot-4">06:30 PM - 09:00 PM</span>
-                        <span class="schedule-name">BAM Tech Solutions Corporate Showcase & Projects</span>
-                    </div>
-                    <div class="schedule-item" id="show-slot-5">
-                        <span class="schedule-time" id="label-slot-5">09:00 PM - 04:00 AM</span>
-                        <span class="schedule-name">Digital Innovations in African Ecosystems & Burudani</span>
+                    <div class="schedule-item">
+                        <span class="schedule-time">09:00 PM</span>
+                        <span class="schedule-name">Digital Innovations in African Ecosystems</span>
                     </div>
                 </div>
             </div>
@@ -649,67 +755,93 @@
                 </div>
                 <div class="chat-messages" id="chat-box">
                     <div class="chat-msg">
-                        <span class="chat-user" style="color: #10b981;">Mfumo:</span>
-                        <span class="chat-text">Karibu kwenye jopo la maoni ya watazamaji! Andika ujumbe wako ujisome moja kwa moja.</span>
+                        <span class="chat-user" style="color: #3b82f6;">BAM TECH TV:</span>
+                        <span class="chat-text">Karibu! Andika ujumbe au maoni yako halisi hapa chini yajisome papo hapo.</span>
                     </div>
                 </div>
                 
                 <div class="chat-input-area-wrapper">
+                    <div class="admin-toggle-bar">
+                        <label class="admin-label">
+                            <input type="checkbox" id="admin-mode" class="admin-switch" onchange="verifyAdminSecurity(this)"> 🛠️ Hali ya Admin (Tuma kama Mmiliki)
+                        </label>
+                    </div>
                     <div class="chat-input-area">
-                        <input type="text" class="chat-input" placeholder="Andika maoni yako halisi..." id="chat-input">
-                        <button class="chat-send" onclick="sendViewerMessage()">Tuma</button>
+                        <input type="text" class="chat-input" placeholder="Andika maoni yako..." id="chat-input">
+                        <button class="chat-send" onclick="sendRealMessage()">Tuma</button>
                     </div>
                 </div>
+
             </div>
         </div>
 
     </div>
 
+    <div class="dynamic-ticker-container" id="dyn-ticker-bar">
+        <div class="ticker-flex-wrapper">
+            <div class="ticker-badge-prefix">BAM TECH INFO</div>
+            <div class="ticker-scroll-frame">
+                <div class="ticker-moving-text" id="dyn-ticker-text"></div>
+            </div>
+        </div>
+    </div>
+
     <div class="toast" id="toast-notif">Link imekopiwa kwa ajili ya kushare!</div>
 
     <script>
-        const STREAM_URL = 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
+        // Mfumo utasoma URL ya video na Idadi ya watazamaji kutoka LocalStorage ikiwekwa na admin
+        let STREAM_URL = localStorage.getItem('bam_stream_url') || 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
 
         const video = document.getElementById('video');
-        const broadcastFrame = document.getElementById('broadcast-frame');
+        const playerWrapper = document.getElementById('player-wrapper');
         const playBtn = document.getElementById('play-btn');
         const muteBtn = document.getElementById('mute-btn');
         const qualitySelect = document.getElementById('quality-select');
         const currentQualityView = document.getElementById('current-quality-view');
-        const currentShowDisplay = document.getElementById('current-show-title-display');
 
-        // Mfumo wa Core HLS Stream Processing Engine
-        if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(STREAM_URL);
-            hls.attachMedia(video);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                video.play().catch(() => {});
-                setupQualitySelector(hls);
-            });
-
-            hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
-                const activeLevel = hls.levels[data.level];
-                if (activeLevel) {
-                    let qualityLabel = activeLevel.height + "p";
-                    if (activeLevel.height >= 720) qualityLabel += " Ultra HD";
-                    else qualityLabel += " SD Standard";
-                    currentQualityView.innerText = qualityLabel;
-                }
-            });
-        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = STREAM_URL;
-            video.addEventListener('loadedmetadata', function() {
-                video.play().catch(() => {});
-            });
-            qualitySelect.innerHTML = '<option>Auto (Apple Device Native)</option>';
-            currentQualityView.innerText = "Kiotomatiki (Native)";
+        function handleLogoError() {
+            document.getElementById('tv-logo').style.display = 'none';
+            document.getElementById('text-logo').style.display = 'block';
         }
+
+        function initPlayer() {
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(STREAM_URL);
+                hls.attachMedia(video);
+                
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play().catch(() => {});
+                    setupQualitySelector(hls);
+                });
+
+                hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
+                    const activeLevel = hls.levels[data.level];
+                    if (activeLevel) {
+                        let levelHeight = activeLevel.height;
+                        let qualityLabel = levelHeight + "p";
+                        if (levelHeight >= 1080) qualityLabel += " Ultra Full HD";
+                        else if (levelHeight >= 720) qualityLabel += " HD High Quality";
+                        else qualityLabel += " SD Standard";
+                        currentQualityView.innerText = qualityLabel;
+                    }
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = STREAM_URL;
+                video.addEventListener('loadedmetadata', function() {
+                    video.play().catch(() => {});
+                });
+                qualitySelect.innerHTML = '<option>Auto (iOS Engine)</option>';
+                currentQualityView.innerText = "Kiotomatiki (Apple)";
+            }
+        }
+
+        initPlayer();
 
         function setupQualitySelector(hlsInstance) {
             qualitySelect.innerHTML = '<option value="-1">Auto (Mabadiliko Halisi)</option>';
             hlsInstance.levels.forEach((level, index) => {
-                const name = level.height ? level.height + "p" : "Resolution " + (index + 1);
+                const name = level.height ? level.height + "p" : "Ubora " + (index + 1);
                 const option = document.createElement('option');
                 option.value = index;
                 option.innerText = name;
@@ -720,19 +852,105 @@
             });
         }
 
-        // Jopo la udhibiti wa msingi wa Video Player
+        // REAL-TIME BROADCAST ENGINE INTERACTION (Marekebisho makubwa ya Usimamizi)
+        setInterval(() => {
+            let config = JSON.parse(localStorage.getItem('bam_tv_config'));
+            if(config) {
+                // 1. Udhibiti wa Jina la Kipindi upande wa pili
+                let progBadge = document.getElementById('dyn-program-badge');
+                if(config.title && config.title.trim() !== "") {
+                    progBadge.innerText = config.title;
+                    progBadge.style.display = 'block';
+                    document.getElementById('dyn-now-playing').innerText = config.title;
+                } else {
+                    progBadge.style.display = 'none';
+                }
+
+                // 2. Udhibiti wa neno LIVE au MUBASHARA ya kuchagua
+                let livePill = document.getElementById('dyn-live-pill');
+                if(config.showLive) {
+                    document.getElementById('dyn-live-text').innerText = config.liveText;
+                    livePill.style.display = 'flex';
+                } else {
+                    livePill.style.display = 'none';
+                }
+
+                // 3. Udhibiti wa L-Style kwa Amri ya Admin pekee
+                let lstyleBox = document.getElementById('dyn-lstyle-box');
+                if(config.showLStyle && config.adText && config.adText.trim() !== "") {
+                    document.getElementById('dyn-lstyle-text').innerText = config.adText;
+                    lstyleBox.style.display = 'block';
+                } else {
+                    lstyleBox.style.display = 'none';
+                }
+
+                // 4. Udhibiti wa Maandishi ya chini (Ticker) ya kuchagua
+                let tickerBar = document.getElementById('dyn-ticker-bar');
+                if(config.showTicker && config.ticker && config.ticker.trim() !== "") {
+                    document.getElementById('dyn-ticker-text').innerText = config.ticker;
+                    tickerBar.style.display = 'block';
+                } else {
+                    tickerBar.style.display = 'none';
+                }
+
+                // 5. Kuchunguza kama URL ya Video imebadilishwa na Admin
+                let currentSavedUrl = localStorage.getItem('bam_stream_url');
+                if(currentSavedUrl && currentSavedUrl !== STREAM_URL) {
+                    STREAM_URL = currentSavedUrl;
+                    initPlayer();
+                }
+            }
+        }, 1000);
+
+        // Mfumo wa kutuma Chats kwenda kwenye siri ya Admin
+        function broadcastChatToAdmin(user, text, time) {
+            let items = JSON.parse(localStorage.getItem('bam_tv_chats')) || [];
+            items.push({user: user, text: text, time: time});
+            localStorage.setItem('bam_tv_chats', JSON.stringify(items));
+        }
+
+        // Kusikiliza kama kuna majibu (Replies) kutoka kwa admin
+        setInterval(() => {
+            let adminReply = localStorage.getItem('bam_admin_reply_trigger');
+            if(adminReply) {
+                let data = JSON.parse(adminReply);
+                const chatBox = document.getElementById('chat-box');
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'chat-msg';
+                msgDiv.innerHTML = `<span class="chat-user" style="color: #f59e0b; background: rgba(245,158,11,0.1); padding: 1px 6px; border-radius: 4px;">BAM TECH (Admin):</span><span class="chat-text">${data.text}</span>`;
+                chatBox.appendChild(msgDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+                localStorage.removeItem('bam_admin_reply_trigger');
+            }
+        }, 1000);
+
+        function verifyAdminSecurity(checkbox) {
+            if (checkbox.checked) {
+                const accessCode = prompt("Ingiza PIN ya Siri ya Mmiliki (Admin PIN):");
+                if (accessCode === "BAM2026") {
+                    alert("Uthibitisho Umekubaliwa! Karibu Admin Bryan.");
+                } else {
+                    alert("PIN Sio Sahihi! Hauruhusiwi kutumia hali hii.");
+                    checkbox.checked = false;
+                }
+            }
+        }
+
         function togglePlay() {
             if (video.paused) { video.play(); playBtn.innerText = '❚❚ Sitisha'; }
             else { video.pause(); playBtn.innerText = '▶ Cheza'; }
         }
+
         function toggleMute() {
             if (video.muted) { video.muted = false; muteBtn.innerText = '🔊 Zima Sauti'; }
             else { video.muted = true; muteBtn.innerText = '🔇 Washa Sauti'; }
         }
+
         function toggleFullscreen() {
-            if (!document.fullscreenElement) broadcastFrame.requestFullscreen().catch(() => {});
-            else document.exitFullscreen();
+            if (!document.fullscreenElement) { playerWrapper.requestFullscreen().catch(() => {}); }
+            else { document.exitFullscreen(); }
         }
+
         function shareWebsite() {
             navigator.clipboard.writeText(window.location.href);
             const toast = document.getElementById('toast-notif');
@@ -740,82 +958,51 @@
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
-        // TUMA MAONDI YA WATAZAMAJI WA KAWAIDA (Papo kwa Papo)
-        function sendViewerMessage() {
+        function sendRealMessage() {
             const input = document.getElementById('chat-input');
+            const isAdmin = document.getElementById('admin-mode').checked;
+            
             if(input.value.trim() !== "") {
                 const chatBox = document.getElementById('chat-box');
                 const msgDiv = document.createElement('div');
                 msgDiv.className = 'chat-msg';
-                msgDiv.innerHTML = `<span class="chat-user" style="color: #60a5fa;">Mhudhuriaji:</span><span class="chat-text">${input.value}</span>`;
+                
+                let userLabel = isAdmin ? "BAM TECH (Admin)" : "Mhudhuriaji";
+                let userTag = isAdmin ? `<span class="chat-user" style="color: #f59e0b; background: rgba(245,158,11,0.1); padding: 1px 6px; border-radius: 4px;">${userLabel}:</span>` : `<span class="chat-user" style="color: #60a5fa;">Mhudhuriaji:</span>`;
+
+                msgDiv.innerHTML = `${userTag}<span class="chat-text">${input.value}</span>
+                                    <button class="chat-reply-trigger" onclick="replyToUser(this)">[Jibu]</button>`;
+                
                 chatBox.appendChild(msgDiv);
                 chatBox.scrollTop = chatBox.scrollHeight;
+                
+                let now = new Date().toLocaleTimeString();
+                broadcastChatToAdmin(userLabel, input.value, now);
+                
                 input.value = "";
             }
         }
 
-        // MFUMO WA KIOTOMATIKI WA SAA NA RATIBA HALISI (REAL-TIME TRACKING)
-        function updateLiveScheduleEngine() {
-            const now = new Date();
-            const currentHour = now.getHours();
-            
-            // Ondoa alama zote za awali kwanza
-            document.querySelectorAll('.schedule-item').forEach(el => el.classList.remove('live-active-show'));
-
-            let runningShowName = "";
-
-            if (currentHour >= 4 && currentHour < 8) {
-                document.getElementById('show-slot-1').classList.add('live-active-show');
-                runningShowName = "Habari za Kidijitali na Uchambuzi wa Teknolojia";
-                document.getElementById('label-slot-1').innerHTML = "04:00 AM - ● LIVE SASA";
-            } else if (currentHour >= 8 && currentHour < 14) {
-                document.getElementById('show-slot-2').classList.add('live-active-show');
-                runningShowName = "Tech Trends, Global Innovation & Performance Insights";
-                document.getElementById('label-slot-2').innerHTML = "08:00 AM - ● LIVE SASA";
-            } else if (currentHour >= 14 && currentHour < 18) { // Hii inajumuisha hadi 18:30 takriban
-                document.getElementById('show-slot-3').classList.add('live-active-show');
-                runningShowName = "Cybersecurity Foundations & Mobile Coding Development";
-                document.getElementById('label-slot-3').innerHTML = "02:00 PM - ● LIVE SASA";
-            } else if (currentHour >= 18 && currentHour < 21) {
-                document.getElementById('show-slot-4').classList.add('live-active-show');
-                runningShowName = "BAM Tech Solutions Corporate Showcase & Projects";
-                document.getElementById('label-slot-4').innerHTML = "06:30 PM - ● LIVE SASA";
-            } else {
-                document.getElementById('show-slot-5').classList.add('live-active-show');
-                runningShowName = "Digital Innovations in African Ecosystems & Burudani";
-                document.getElementById('label-slot-5').innerHTML = "09:00 PM - ● LIVE SASA";
-            }
-
-            currentShowDisplay.innerText = runningShowName;
+        function replyToUser(buttonElement) {
+            const chatInput = document.getElementById('chat-input');
+            const parentMessage = buttonElement.parentElement;
+            const username = parentMessage.querySelector('.chat-user').innerText.replace(':', '');
+            chatInput.value = `@${username} `;
+            chatInput.focus();
         }
 
-        // MFUMO WA KIOTOMATIKI WA MATANGAZO YA L-STYLE
-        // Kila baada ya sekunde 60 (Dakika 1), Screen itajikunja na kuonyesha tangazo kwa sekunde 20
+        // Mfumo wa Watazamaji (Admin ana uwezo wa kuufuta au kuubadilisha)
         setInterval(() => {
-            // Anza Tangazo la L-Style kwa kuweka class husika
-            broadcastFrame.classList.add('l-style-active');
-            
-            // Baada ya sekunde 20, ondoa tangazo, rudisha video full screen
-            setTimeout(() => {
-                broadcastFrame.classList.remove('l-style-active');
-            }, 20000); // 20000ms = Sekunde 20
-
-        }, 70000); // Mzunguko unatokea kila baada ya sekunde 70
-
-        // Piga mifumo ya saa punde tu ukurasa unapoisha kupakia
-        window.onload = function() {
-            updateLiveScheduleEngine();
-            // Huhakiki ratiba kila baada ya dakika 5 iwapo saa imebadilika
-            setInterval(updateLiveScheduleEngine, 300000); 
-        };
-
-        // Kisimulizi cha Watazamaji kutoa uhalisia wa takwimu
-        setInterval(() => {
+            let forcedViewers = localStorage.getItem('bam_forced_viewers');
             const viewersSpan = document.getElementById('viewers');
-            let currentViewers = parseInt(viewersSpan.innerText.replace(',', ''));
-            let change = Math.floor(Math.random() * 9) - 4; 
-            viewersSpan.innerText = (currentViewers + change).toLocaleString();
-        }, 4000);
+            if(forcedViewers) {
+                viewersSpan.innerText = parseInt(forcedViewers).toLocaleString();
+            } else {
+                let currentViewers = parseInt(viewersSpan.innerText.replace(',', ''));
+                let change = Math.floor(Math.random() * 7) - 3; 
+                viewersSpan.innerText = (currentViewers + change).toLocaleString();
+            }
+        }, 5000);
     </script>
 </body>
-</html>
+    </html>
