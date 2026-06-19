@@ -3,115 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAM TECH - Control Room</title>
+    <title>BAM TECH - Control Dashboard</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #eef2f3; padding: 20px; }
-        .container { background: white; padding: 25px; border-radius: 10px; max-width: 500px; margin: 0 auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #0056b3; }
-        .control-group { margin-bottom: 20px; background: #f9f9f9; padding: 15px; border-radius: 8px; border-left: 5px solid #0056b3; }
-        input[type="text"], input[type="password"] { width: 100%; padding: 12px; margin-top: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; }
-        button { background: #0056b3; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 5px; margin-top: 10px; font-weight: bold; width: 100%; }
-        button:hover { background: #004494; }
-        .btn-danger { background: #dc3545; margin-top: 5px;}
-        .btn-danger:hover { background: #c82333; }
-        .btn-success { background: #28a745; margin-top: 5px;}
-        .btn-success:hover { background: #218838; }
-        .flex-btns { display: flex; gap: 10px; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; margin: 0; padding: 20px; color: #333; }
+        .wrapper { max-width: 550px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h2 { text-align: center; color: #0033aa; margin-bottom: 25px; font-size: 22px; border-bottom: 2px solid #f0f4f8; padding-bottom: 10px; }
+        .section-box { background: #f9fbfd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e1e8ed; }
+        label { font-weight: 600; font-size: 14px; color: #555; display: block; margin-bottom: 8px; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
+        button { background: #0056b3; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+        button:hover { background: #0033aa; }
+        .btn-flex { display: flex; gap: 10px; margin-top: 5px; }
+        .btn-on { background: #28a745; }
+        .btn-on:hover { background: #218838; }
+        .btn-off { background: #dc3545; }
+        .btn-off:hover { background: #c82333; }
+        .status-msg { text-align: center; color: green; font-weight: bold; margin-top: 5px; display: none; font-size: 13px; }
     </style>
 </head>
 <body>
 
-    <!-- Eneo la Kuingia (Login) -->
-    <div class="container" id="login-section">
-        <h2>🔒 INGIA CONTROL ROOM</h2>
-        <p style="text-align:center; color:#555;">Weka PIN ya Admin ya BAM TECH.</p>
-        <input type="password" id="pinInput" placeholder="Ingiza PIN yako (mfano: 1234)">
-        <button onclick="login()">INGIA NDANI</button>
+    <!-- LOGIN AREA -->
+    <div class="wrapper" id="lock-screen">
+        <h2>🔒 BAM TECH CONTROL ROOM</h2>
+        <label>Ingiza PIN ya Usimamizi:</label>
+        <input type="password" id="adminPin" placeholder="Weka PIN hapa...">
+        <button onclick="checkAccess()">INGIA DASHBODI</button>
     </div>
 
-    <!-- Dashbodi ya Admin (Imejificha mpaka PIN iwe sahihi) -->
-    <div class="container" id="admin-section" style="display:none;">
-        <h2>🎛️ DASHBODI YA BAM TECH</h2>
+    <!-- MAIN DASHBOARD -->
+    <div class="wrapper" id="dash-screen" style="display: none;">
+        <h2>🎛️ BAM TECH MAIN DASHBOARD</h2>
         
-        <div class="control-group">
-            <label><b>1. Jina la Kipindi Kinachoendelea:</b></label>
-            <input type="text" id="input-title" placeholder="Mfano: Tech Updates na Bryan">
-            <button onclick="updateConfig()">Badilisha Jina</button>
+        <!-- 1. Program Title -->
+        <div class="section-box">
+            <label>Jina la Kipindi (Upande wa Kulia):</label>
+            <input type="text" id="progTitle" placeholder="Mfano: Tech Talk na Bryan">
+            <button onclick="saveData()">Sasisha Jina</button>
         </div>
 
-        <div class="control-group">
-            <label><b>2. Maandishi Yanayopita (Ticker):</b></label>
-            <input type="text" id="input-ticker" placeholder="Andika taarifa zinazopita chini...">
-            <button onclick="updateConfig()">Sasisha Ticker</button>
+        <!-- 2. Ticker text -->
+        <div class="section-box">
+            <label>Maandishi ya Chini (Ticker):</label>
+            <input type="text" id="tickerText" placeholder="Andika habari inayopita chini...">
+            <button onclick="saveData()">Sasisha Ticker</button>
         </div>
 
-        <div class="control-group">
-            <label><b>3. Tangazo la L-Style:</b></label>
-            <div class="flex-btns">
-                <button class="btn-success" onclick="toggleLStyle(true)">Washa Tangazo</button>
-                <button class="btn-danger" onclick="toggleLStyle(false)">Zima Tangazo</button>
+        <!-- 3. L-Style Advertisement -->
+        <div class="section-box">
+            <label>Tangazo la L-Style:</label>
+            <input type="text" id="adContent" placeholder="Andika maelezo ya tangazo la L-Style...">
+            <div class="btn-flex">
+                <button class="btn-on" onclick="controlLStyle(true)">Washa Tangazo</button>
+                <button class="btn-off" onclick="controlLStyle(false)">Zima Tangazo</button>
             </div>
         </div>
 
-        <div class="control-group">
-            <label><b>4. Alama ya Matangazo Mubashara:</b></label>
-            <div class="flex-btns">
-                <button class="btn-success" onclick="toggleLive(true, 'LIVE')">Weka: LIVE</button>
-                <button class="btn-success" onclick="toggleLive(true, 'MUBASHARA')">Weka: MUBASHARA</button>
+        <!-- 4. Live / Mubashara Badge -->
+        <div class="section-box">
+            <label>Alama ya Live / Mubashara:</label>
+            <div class="btn-flex">
+                <button class="btn-on" onclick="controlLive(true, 'LIVE')">Weka LIVE</button>
+                <button class="btn-on" onclick="controlLive(true, 'MUBASHARA')">Weka MUBASHARA</button>
             </div>
-            <button class="btn-danger" onclick="toggleLive(false, '')">Zima Alama Yote</button>
+            <button class="btn-off" onclick="controlLive(false, '')">Ondoa Alama Yote</button>
         </div>
+        
+        <div class="status-msg" id="alertMsg">Mabadiliko yamefanyika kwa mafanikio! ✓</div>
     </div>
 
     <script>
-        // Taarifa za msingi endapo mfumo ndio unafunguliwa mara ya kwanza
-        let currentConfig = JSON.parse(localStorage.getItem('bam_tv_config')) || {
-            ticker: "Karibu BAM TECH SOLUTIONS...",
-            title: "Kipindi: BAM TECH LIVE",
+        // Taarifa za mwanzo kabisa kuzuia makosa ya mfumo
+        let config = JSON.parse(localStorage.getItem('bam_tv_config')) || {
+            ticker: "Karibu kwenye mfumo wa majaribio wa BAM TECH SOLUTIONS TV...",
+            title: "",
             showLStyle: false,
+            adText: "",
             showLive: false,
             liveText: "LIVE"
         };
 
-        function login() {
-            let pin = document.getElementById('pinInput').value;
-            // PIN yako ni 1234. Unaweza kuibadilisha hapa chini.
-            if(pin === "1234") { 
-                document.getElementById('login-section').style.display = 'none';
-                document.getElementById('admin-section').style.display = 'block';
+        function checkAccess() {
+            let pin = document.getElementById('adminPin').value;
+            if(pin === "1234") { // Hii ndio PIN yako ya kuingilia
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('dash-screen').style.display = 'block';
                 
-                // Weka taarifa zilizopo kwenye fomu
-                document.getElementById('input-ticker').value = currentConfig.ticker;
-                document.getElementById('input-title').value = currentConfig.title;
+                // Jaza data zilizopo kwenye fomu
+                document.getElementById('progTitle').value = config.title;
+                document.getElementById('tickerText').value = config.ticker;
+                document.getElementById('adContent').value = config.adText;
             } else {
-                alert("❌ PIN sio sahihi! Jaribu tena.");
+                alert("❌ PIN uliyoweka sio sahihi!");
             }
         }
 
-        function updateConfig() {
-            currentConfig.ticker = document.getElementById('input-ticker').value;
-            currentConfig.title = document.getElementById('input-title').value;
-            saveConfig();
+        function saveData() {
+            config.title = document.getElementById('progTitle').value;
+            config.ticker = document.getElementById('tickerText').value;
+            config.adText = document.getElementById('adContent').value;
+            pushToStorage();
         }
 
-        function toggleLStyle(status) {
-            currentConfig.showLStyle = status;
-            saveConfig();
+        function controlLStyle(status) {
+            config.showLStyle = status;
+            config.adText = document.getElementById('adContent').value;
+            pushToStorage();
         }
 
-        function toggleLive(status, text) {
-            currentConfig.showLive = status;
-            currentConfig.liveText = text;
-            saveConfig();
+        function controlLive(status, text) {
+            config.showLive = status;
+            config.liveText = text;
+            pushToStorage();
         }
 
-        function saveConfig() {
-            localStorage.setItem('bam_tv_config', JSON.stringify(currentConfig));
-            // Mfumo unatoa ujumbe mfupi kila unapofanya mabadiliko
-            let btn = document.activeElement;
-            let originalText = btn.innerText;
-            btn.innerText = "Tayari ✓";
-            setTimeout(() => { btn.innerText = originalText; }, 1000);
+        function pushToStorage() {
+            localStorage.setItem('bam_tv_config', JSON.stringify(config));
+            let msg = document.getElementById('alertMsg');
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 2000);
         }
     </script>
 </body>
