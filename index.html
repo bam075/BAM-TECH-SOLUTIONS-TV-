@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BAM TECH SOLUTIONS TV</title>
+    <!-- Maktaba ya HLS.js kuchezesha mifumo ya IPTV (.m3u8) -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         /* Msingi wa Muonekano wa Kichawi (Premium Dark Theme) */
@@ -126,7 +127,6 @@
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             margin-bottom: 10px;
         }
-        /* Hii inahakikisha hata ikijaa skrini nzima vitu vinabaki salama */
         .player-wrapper:fullscreen {
             width: 100vw;
             height: 100vh;
@@ -149,7 +149,7 @@
             filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
         }
         .channel-bug img {
-            height: 35px; /* Unaweza kuongeza au kupunguza saizi hapa */
+            height: 38px; /* Saizi nzuri ya nembo yako */
             width: auto;
             display: block;
         }
@@ -187,7 +187,7 @@
             gap: 4px;
         }
 
-        /* Sehemu ya Kuchagua Ubora wa IPTV (HLS Quality Selector) */
+        /* Sehemu ya Kuchagua Ubora wa Video */
         .quality-container {
             background: #0d1324;
             border-radius: 10px;
@@ -343,6 +343,7 @@
 
     <div class="container">
         
+        <!-- Header Navbar -->
         <header>
             <div class="brand">
                 <div class="logo-badge">BT</div>
@@ -356,18 +357,23 @@
             </div>
         </header>
 
+        <!-- Utambulisho wa Juu -->
         <div class="hero">
             <h1>BAM TECH SOLUTIONS TV</h1>
             <p>Chaneli yako ya teknolojia, habari za kidijitali na burudani — Innovating Tanzania Digitally</p>
         </div>
 
+        <!-- Fremu ya Kicheza Video Maalum -->
         <div class="player-wrapper" id="player-wrapper">
+            <!-- HAPA NDIO SEHEMU ILIPO LOGO YAKO MPYA ULIYO-UPLOAD -->
             <div class="channel-bug">
-                <img src="172392.png" alt="BAM TECH TV">
+                <img src="File_00000000ab0471f4b8826dc4531855ca.png" alt="BAM TECH TV">
             </div>
             
+            <!-- Video Tag -->
             <video id="video" autoplay muted playsinline onclick="togglePlay()"></video>
 
+            <!-- Custom Controls za Ndani ya Skrini -->
             <div class="custom-controls" id="custom-controls">
                 <button class="control-btn" id="play-btn" onclick="togglePlay()">❚❚ Sitisha</button>
                 <button class="control-btn" id="mute-btn" onclick="toggleMute()">🔇 Washa Sauti</button>
@@ -375,6 +381,7 @@
             </div>
         </div>
 
+        <!-- Sanduku la Kuchagua Ubora wa Video -->
         <div class="quality-container">
             <span class="quality-label">⚙️ CHAGUA UBORA (RESOLUTION):</span>
             <select class="quality-select" id="quality-select">
@@ -382,6 +389,7 @@
             </select>
         </div>
 
+        <!-- Inacheza Sasa Card -->
         <div class="card">
             <div class="card-icon">📺</div>
             <div class="card-details">
@@ -391,6 +399,7 @@
             </div>
         </div>
 
+        <!-- Sehemu ya Ratiba -->
         <div class="ratiba-box">
             <div class="ratiba-header" onclick="toggleRatiba()">
                 <span>Ratiba ya Vipindi</span>
@@ -404,6 +413,7 @@
             </div>
         </div>
 
+        <!-- Taarifa za Chaneli Section -->
         <div class="section-title">📊 TAARIFA ZA CHANELI</div>
         <div class="info-table">
             <div class="table-row">
@@ -424,9 +434,10 @@
 
     <script>
         // =================================================================
-        // Weka Link yako ya IPTV (.m3u8) hapa chini kati ya alama hizi ''
+        // Hapa kuna Video nzuri sana ya majaribio ya Teknolojia/VFX (HD 1080p Mux Stream)
+        // Ukipata link yako ya IPTV (.m3u8) ya baadae, utaifuta hii na kuweka yako hapa.
         // =================================================================
-        const STREAM_URL = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'; 
+        const STREAM_URL = 'https://dash.akamaized.net/akamai/test/isoffmpeg/CLIPS/TearsOfSteel/tears_of_steel_1080p.m3u8'; 
         // =================================================================
 
         const video = document.getElementById('video');
@@ -436,7 +447,7 @@
         const qualitySelect = document.getElementById('quality-select');
         const currentQualityView = document.getElementById('current-quality-view');
 
-        // Mfumo wa HLS na usomaji wa Quality zote zilizopo kwenye Link
+        // Mfumo wa HLS
         if (Hls.isSupported()) {
             const hls = new Hls();
             hls.loadSource(STREAM_URL);
@@ -447,7 +458,6 @@
                 setupQualitySelector(hls);
             });
 
-            // Inasoma ubora gani unaocheza kwa sasa kulingana na kasi ya internet ya mtu
             hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
                 const activeLevel = hls.levels[data.level];
                 if (activeLevel) {
@@ -455,7 +465,6 @@
                 }
             });
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            // Maalum kwa ajili ya Safari ya iPhone/iPad ambayo ina mifumo yake ya ndani
             video.src = STREAM_URL;
             video.addEventListener('loadedmetadata', function() {
                 video.play().catch(() => {});
@@ -464,10 +473,8 @@
             currentQualityView.innerText = "Kiotomatiki (iOS)";
         }
 
-        // Kujaza machaguo ya chini na juu ya video kwenye Dropdown kiotomatiki
         function setupQualitySelector(hlsInstance) {
             qualitySelect.innerHTML = '<option value="-1">Auto (Inajirekebisha yenyewe)</option>';
-            
             hlsInstance.levels.forEach((level, index) => {
                 const name = level.height ? level.height + "p" : "Ubora " + (index + 1);
                 const option = document.createElement('option');
@@ -476,14 +483,11 @@
                 qualitySelect.appendChild(option);
             });
 
-            // Mtumiaji akibadilisha yeye mwenyewe ubora
             qualitySelect.addEventListener('change', (e) => {
-                const selectedLevel = parseInt(e.target.value);
-                hlsInstance.currentLevel = selectedLevel; 
+                hlsInstance.currentLevel = parseInt(e.target.value); 
             });
         }
 
-        // Mifumo ya Vidhibiti (Custom Audio/Video Actions)
         function togglePlay() {
             if (video.paused) {
                 video.play();
@@ -504,25 +508,22 @@
             }
         }
 
-        // MKAKATI WA KUZUIA NEMBO ISIPOTEE KWENYE ROTATION:
-        // Tunalazimisha "fremu nzima" (Player Wrapper) iingie Fullscreen badala ya video yenyewe pekee yake.
         function toggleFullscreen() {
             if (!document.fullscreenElement && !document.webkitFullscreenElement) {
                 if (playerWrapper.requestFullscreen) {
                     playerWrapper.requestFullscreen();
                 } else if (playerWrapper.webkitRequestFullscreen) { 
-                    playerWrapper.webkitRequestFullscreen(); // iOS Support
+                    playerWrapper.webkitRequestFullscreen();
                 }
             } else {
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
                 } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen(); // iOS Support
+                    document.webkitExitFullscreen();
                 }
             }
         }
 
-        // Kuficha bar ya chini ya controls baada ya sekunde 3 mtumiaji asipogusa screen
         let controlsTimeout;
         playerWrapper.addEventListener('click', () => {
             const controls = document.getElementById('custom-controls');
@@ -533,7 +534,6 @@
             }, 3000);
         });
 
-        // Kufungua na kufunga kadi ya Ratiba (Accordion)
         function toggleRatiba() {
             const content = document.getElementById('ratiba-content');
             const icon = document.getElementById('arr-icon');
