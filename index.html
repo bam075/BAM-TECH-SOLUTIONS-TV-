@@ -3,141 +3,211 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAM TECH SOLUTIONS TV - Live</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <title>Paneli ya Mkurugenzi - BAM TECH TV</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
     <style>
-        body { margin: 0; padding: 0; background-color: #0d1117; color: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding-bottom: 60px; }
-        .top-navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: #161b22; border-bottom: 1px solid #30363d; }
-        .logo-area { font-weight: bold; font-size: 20px; color: #ffffff; }
-        .logo-area span { color: #58a6ff; }
-        .viewers-badge { background-color: #21262d; border: 1px solid #30363d; padding: 5px 12px; border-radius: 20px; font-size: 12px; color: #8b949e; display: flex; align-items: center; gap: 5px; }
-        .main-title-container { padding: 20px; text-align: left; max-width: 850px; margin: 0 auto; }
-        .main-title { font-size: 24px; color: #ffffff; margin: 0 0 8px 0; font-weight: 800; }
-        .main-subtitle { font-size: 13px; color: #8b949e; margin: 0; }
-        .player-wrapper { max-width: 850px; margin: 10px auto; background-color: #000000; border-radius: 12px; overflow: hidden; border: 1px solid #30363d; box-shadow: 0 8px 24px rgba(0,0,0,0.5); position: relative; }
-        video { width: 100%; aspect-ratio: 16/9; display: block; }
-        .info-card { max-width: 850px; margin: 15px auto; background-color: #161b22; border-radius: 8px; border: 1px solid #30363d; padding: 15px; box-sizing: border-box; }
-        .section-label { font-size: 11px; font-weight: bold; color: #58a6ff; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
-        .current-show-title { font-size: 16px; color: #ffffff; font-weight: bold; margin-bottom: 15px; }
-        .status-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .status-table td { padding: 8px 0; border-bottom: 1px solid #21262d; }
-        .status-table td:last-child { text-align: right; font-weight: bold; color: #ffffff; }
-        .status-table tr:last-child td { border: none; }
-        .online-dot { inline-size: 8px; block-size: 8px; background-color: #39d353; border-radius: 50%; display: inline-block; }
-        /* Ticker Bar */
-        .ticker-bar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #002366; border-top: 1px solid #1f6feb; height: 40px; display: flex; align-items: center; overflow: hidden; z-index: 999; }
-        .ticker-text { display: inline-block; white-space: nowrap; padding-left: 100%; animation: run-ticker 30s linear infinite; font-weight: bold; font-size: 14px; color: #ffffff; }
-        @keyframes run-ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #020617; color: #f8fafc; padding: 15px; margin: 0; }
+        .panel-container { max-width: 700px; margin: 20px auto; background: #0f172a; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); box-sizing: border-box; }
+        h1, h2 { text-align: center; }
+        h1 { font-size: 20px; margin-bottom: 25px; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 900; }
+        h2 { font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px; color: #94a3b8; text-align: left; margin-top: 0; text-transform: uppercase; }
+        .section-card { border-left: 4px solid #2563eb; padding: 15px; margin-bottom: 20px; background: rgba(255,255,255,0.02); border-radius: 0 12px 12px 0; border-top: 1px solid rgba(255,255,255,0.02); border-right: 1px solid rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .form-group { margin-bottom: 14px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+        select, input { width: 100%; padding: 10px; background: #1e293b; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: white; box-sizing: border-box; font-size: 13px; outline: none; }
+        select:focus, input:focus { border-color: #3b82f6; }
+        button { width: 100%; padding: 14px; background: #2563eb; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 14px; margin-top: 15px; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
+        button:hover { background: #1d4ed8; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
+        .status-msg { text-align: center; font-weight: bold; margin-top: 15px; font-size: 13px; }
     </style>
 </head>
 <body>
 
-<div class="top-navbar">
-    <div class="logo-area">BAM TECH <span>TV</span></div>
-    <div class="viewers-badge">👁️ <span id="live-viewers">1,740</span> Watazamaji</div>
+<div class="panel-container">
+    <h1>PANELI YA KISASA YA MKURUGENZI:<br>BAM TECH TV</h1>
+
+    <div class="section-card">
+        <h2>📺 1. Udhibiti wa Video (Live Stream / MP4 Clip)</h2>
+        <div class="form-group">
+            <label>LINK YA UTANGAZAJI (STREAM AU MP4 URL):</label>
+            <input type="text" id="video-url" placeholder="Paste link ya .m3u8 au faili la video la .mp4 hapa...">
+        </div>
+        <div class="form-group">
+            <label>KIPINDI KINACHOCHEZWA SASA:</label>
+            <input type="text" id="current-show" placeholder="Mfano: Tech Insights & Global Innovation">
+        </div>
+        <div class="form-group">
+            <label>AINA YA MAUDHUI (CONTENT TYPE):</label>
+            <input type="text" id="content-type" placeholder="Mfano: Burudani & Teknolojia Halisi">
+        </div>
+        <div class="form-group">
+            <label>UBORA WA PICHA (RESOLUTION OVERRIDE - OPTIONAL):</label>
+            <input type="text" id="quality" placeholder="Mfano: 1080p Ultra HD (Acha wazi kuruhusu Auto)">
+        </div>
+    </div>
+
+    <div class="section-card" style="border-left-color: #10b981;">
+        <h2>📊 2. Live Badge & Watazamaji Fake/Real</h2>
+        <div class="form-group">
+            <label>HALI YA LIIVE PILL (BADGE):</label>
+            <select id="show-live">
+                <option value="true">Washa / Onyesha Kitufe cha LIVE</option>
+                <option value="false">Zima / Ficha Kitufe cha LIVE</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>MAANDISHI YA LIVE BADGE:</label>
+            <input type="text" id="live-text" value="LIVE">
+        </div>
+        <div class="form-group">
+            <label>IDADI YA WATAZAMAJI HALISI (FORCE VIEWERS):</label>
+            <input type="number" id="viewers-count" placeholder="Mfano: 3420">
+        </div>
+    </div>
+
+    <div class="section-card" style="border-left-color: #a855f7;">
+        <h2>🚀 3. Udhibiti wa Matangazo ya L-Style (Maandishi, Picha, Video)</h2>
+        <div class="form-group">
+            <label>HALI YA TANGAZO LA L-STYLE:</label>
+            <select id="show-lstyle" onchange="toggleAdFields()">
+                <option value="false">Zima / Ficha Tangazo</option>
+                <option value="true">Washa / Onyesha Tangazo</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>AINA YA TANGAZO (AD TYPE):</label>
+            <select id="ad-type" onchange="toggleAdFields()">
+                <option value="text">Tangazo la Maandishi tu (Text)</option>
+                <option value="image">Tangazo la Picha (Image URL)</option>
+                <option value="video">Tangazo la Video Fupi (Video URL .mp4)</option>
+            </select>
+        </div>
+        <div class="form-group id-ad-field" id="field-ad-text">
+            <label>MAANDISHI YA TANGAZO (TEXT):</label>
+            <input type="text" id="ad-text" placeholder="Andika ujumbe wa tangazo hapa...">
+        </div>
+        <div class="form-group id-ad-field" id="field-ad-image" style="display:none;">
+            <label>LINK YA PICHA YA TANGAZO (IMAGE URL):</label>
+            <input type="text" id="ad-image-url" placeholder="Paste direct link ya picha ya tangazo (.jpg/.png)...">
+        </div>
+        <div class="form-group id-ad-field" id="field-ad-video" style="display:none;">
+            <label>LINK YA VIDEO FUPI YA TANGAZO (VIDEO URL):</label>
+            <input type="text" id="ad-video-url" placeholder="Paste direct link ya video fupi (.mp4)...">
+        </div>
+    </div>
+
+    <div class="section-card" style="border-left-color: #f59e0b;">
+        <h2>📅 4. Ticker Inayotembea Chini</h2>
+        <div class="form-group">
+            <label>HALI YA TICKER BAR:</label>
+            <select id="show-ticker">
+                <option value="false">Ficha Ticker</option>
+                <option value="true">Onyesha Ticker</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>MANENO YANAYOTEMBEA:</label>
+            <input type="text" id="ticker-text-content" placeholder="Andika taarifa zitakazotembea chini kabisa kwenye TV...">
+        </div>
+    </div>
+
+    <div class="section-card" style="border-left-color: #64748b;">
+        <h2>📝 5. Ratiba ya Vipindi (Leo)</h2>
+        <div class="form-group">
+            <label>KIPINDI CHA 1 (MUDA & MAELEZO):</label>
+            <input type="text" id="sch-t1" placeholder="Muda wke (Mfano: 08:00 AM - LIVE)" style="margin-bottom:5px;">
+            <input type="text" id="sch-d1" placeholder="Jina au maelezo ya kipindi cha kwanza...">
+        </div>
+        <div class="form-group">
+            <label>KIPINDI CHA 2 (MUDA & MAELEZO):</label>
+            <input type="text" id="sch-t2" placeholder="Muda (Mfano: 02:00 PM)" style="margin-bottom:5px;">
+            <input type="text" id="sch-d2" placeholder="Maelezo ya kipindi...">
+        </div>
+        <div class="form-group">
+            <label>KIPINDI CHA 3 (MUDA & MAELEZO):</label>
+            <input type="text" id="sch-t3" placeholder="Muda (Mfano: 06:30 PM)" style="margin-bottom:5px;">
+            <input type="text" id="sch-d3" placeholder="Maelezo ya kipindi...">
+        </div>
+        <div class="form-group">
+            <label>KIPINDI CHA 4 (MUDA & MAELEZO):</label>
+            <input type="text" id="sch-t4" placeholder="Muda (Mfano: 09:00 PM)" style="margin-bottom:5px;">
+            <input type="text" id="sch-d4" placeholder="Maelezo ya kipindi...">
+        </div>
+    </div>
+
+    <button id="btn-save">Hifadhi & Kusambaza Mabadiliko Halisi</button>
+    <p id="status-msg" class="status-msg"></p>
 </div>
 
-<div class="main-title-container">
-    <h1 class="main-title">BAM TECH SOLUTIONS TV</h1>
-    <p class="main-subtitle">Chaneli ya Kimataifa ya Ubunifu, Sayansi na Habari za Kidijitali kutoka Tanzania.</p>
-</div>
-
-<div class="player-wrapper">
-    <video id="main-tv-player" controls autoplay muted playsinline></video>
-</div>
-
-<div class="info-card">
-    <div class="section-label">▶ INACHEZWA SASA HIVI</div>
-    <div class="current-show-title" id="live-show-name">Inapakia mfumo...</div>
-    
-    <table class="status-table">
-        <tr>
-            <td style="color: #8b949e;">Hali ya Matangazo</td>
-            <td style="color: #39d353;"><span class="online-dot"></span> HEWANI (ONLINE)</td>
-        </tr>
-        <tr>
-            <td style="color: #8b949e;">Aina ya Maudhui</td>
-            <td id="live-content-type">Burudani & Teknolojia Halisi</td>
-        </tr>
-        <tr>
-            <td style="color: #8b949e;">Ubora wa Picha</td>
-            <td id="live-quality" style="color: #58a6ff;">750p High Quality</td>
-        </tr>
-    </table>
-</div>
-
-<div class="ticker-bar" id="ticker-container" style="display: none;">
-    <div class="ticker-text" id="ticker-text-content">Karibu BAM TECH SOLUTIONS TV...</div>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-
+<script>
+    // CONFIGURATION YA FIREBASE (Imeunganishwa moja kwa moja na index)
     const firebaseConfig = {
-        apiKey: "AIzaSyAh7LRqKy5RfLUr0tpqA47TV7v221699bb5c8d2",
-        authDomain: "bam-tech-solutions-tv.firebaseapp.com",
-        databaseURL: "https://bam-tech-solutions-tv-default-rtdb.firebaseio.com",
-        projectId: "bam-tech-solutions-tv",
-        storageBucket: "bam-tech-solutions-tv.appspot.com",
-        messagingSenderId: "101371123351",
-        appId: "1:101371123351:web:173b1884f221699bb5c8d2",
-        measurementId: "G-NKZ07VGJX7"
+      apiKey: "AIzaSyAh7LRqKy5RfLUr0tpqA47TV7v221699bb5c8d2", 
+      authDomain: "bam-tech-solutions-tv.firebaseapp.com",
+      databaseURL: "https://bam-tech-solutions-tv-default-rtdb.firebaseio.com/",
+      projectId: "bam-tech-solutions-tv",
+      storageBucket: "bam-tech-solutions-tv.appspot.com",
+      messagingSenderId: "101371123351",
+      appId: "1:101371123351:web:173b1884f221699bb5c8d2"
     };
+    
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
 
-    const app = initializeApp(firebaseConfig);
-    const database = getDatabase(app);
-    const videoPlayer = document.getElementById('main-tv-player');
-    let currentVideoUrl = "";
-    let hlsInstance = null;
+    function toggleAdFields() {
+        const type = document.getElementById('ad-type').value;
+        document.getElementById('field-ad-text').style.display = (type === 'text') ? 'block' : 'none';
+        document.getElementById('field-ad-image').style.display = (type === 'image') ? 'block' : 'none';
+        document.getElementById('field-ad-video').style.display = (type === 'video') ? 'block' : 'none';
+    }
 
-    onValue(ref(database, 'tv_settings/'), (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            // Sasisha Maandishi ya Mfumo
-            document.getElementById('live-show-name').innerText = data.currentShow || "Majaribio ya Mfumo";
-            document.getElementById('live-content-type').innerText = data.contentType || "Burudani & Teknolojia";
-            document.getElementById('live-quality').innerText = data.quality || "Auto HD";
-            document.getElementById('live-viewers').innerText = data.viewers || "1,420";
+    document.getElementById('btn-save').addEventListener('click', () => {
+        const msg = document.getElementById('status-msg');
+        const streamUrl = document.getElementById('video-url').value;
+        const viewers = document.getElementById('viewers-count').value;
 
-            // Ticker ya Chini
-            const tickerBox = document.getElementById('ticker-container');
-            if (data.tickerStatus === "onyesha" && data.tickerText) {
-                tickerBox.style.display = "flex";
-                document.getElementById('ticker-text-content').innerText = data.tickerText;
-            } else {
-                tickerBox.style.display = "none";
-            }
-
-            // Uchezaji wa Video (MP4 / M3U8 Stream)
-            if (data.videoUrl && data.videoUrl !== currentVideoUrl) {
-                currentVideoUrl = data.videoUrl;
-                
-                // Kusafisha HLS ya zamani kama ipo
-                if (hlsInstance) {
-                    hlsInstance.destroy();
-                    hlsInstance = null;
-                }
-
-                if (data.playbackMode === "hls" || currentVideoUrl.includes('.m3u8')) {
-                    if (Hls.isSupported()) {
-                        hlsInstance = new Hls();
-                        hlsInstance.loadSource(currentVideoUrl);
-                        hlsInstance.attachMedia(videoPlayer);
-                        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-                            videoPlayer.play().catch(e => console.log("Autoplay context handled"));
-                        });
-                    } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-                        videoPlayer.src = currentVideoUrl;
-                        videoPlayer.play().catch(e => console.log("Autoplay handled"));
-                    }
-                } else {
-                    videoPlayer.src = currentVideoUrl;
-                    videoPlayer.load();
-                    videoPlayer.play().catch(e => console.log("Autoplay handled"));
-                }
-            }
+        // 1. Kusave Video Stream Url
+        if(streamUrl.trim() !== "") {
+            database.ref('bam_stream_url').set(streamUrl);
         }
+
+        // 2. Kusave Viewers Counter (Ukiweka itafreeze hapo hapo uliyotaka)
+        if(viewers.trim() !== "") {
+            database.ref('bam_forced_viewers').set(parseInt(viewers));
+        }
+
+        // 3. Kusave Config Zote Maalum kwenye Node Moja
+        database.ref('bam_tv_config').set({
+            title: document.getElementById('current-show').value,
+            contentType: document.getElementById('content-type').value,
+            resolution_text: document.getElementById('quality').value,
+            showLive: document.getElementById('show-live').value === "true",
+            liveText: document.getElementById('live-text').value,
+            showLStyle: document.getElementById('show-lstyle').value === "true",
+            adType: document.getElementById('ad-type').value,
+            adText: document.getElementById('ad-text').value,
+            adImageUrl: document.getElementById('ad-image-url').value,
+            adVideoUrl: document.getElementById('ad-video-url').value,
+            showTicker: document.getElementById('show-ticker').value === "true",
+            ticker: document.getElementById('ticker-text-content').value,
+            sch_t1: document.getElementById('sch-t1').value,
+            sch_d1: document.getElementById('sch-d1').value,
+            sch_t2: document.getElementById('sch-t2').value,
+            sch_d2: document.getElementById('sch-d2').value,
+            sch_t3: document.getElementById('sch-t3').value,
+            sch_d3: document.getElementById('sch-d3').value,
+            sch_t4: document.getElementById('sch-t4').value,
+            sch_d4: document.getElementById('sch-d4').value
+        }).then(() => {
+            msg.style.color = "#10b981";
+            msg.innerText = "✅ Kazi Safi! Mabadiliko yote yamerushwa kwenye TV sasa hivi!";
+        }).catch((err) => {
+            msg.style.color = "#dc2626";
+            msg.innerText = "❌ Hitilafu Imetokea: " + err.message;
+        });
     });
 </script>
 
