@@ -49,7 +49,7 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
         
-        /* NEMBO MPYA YA KIMATAIFA (Kama Ulivyoelekeza) */
+        /* NEMBO YA KIMATAIFA */
         .brand {
             display: flex;
             align-items: center;
@@ -66,18 +66,18 @@
             font-weight: 900;
             color: #ffffff;
             letter-spacing: 0.8px;
-            text-transform: uppercase; /* HERUFI KUBWA */
+            text-transform: uppercase;
         }
         .brand-subtitle {
             font-size: 11px;
             font-weight: 500;
             color: #64748b;
-            text-transform: lowercase; /* herufi ndogo chini */
+            text-transform: lowercase;
             letter-spacing: 1px;
             margin-top: 3px;
         }
         .brand-tv {
-            font-size: 44px; /* KUBWA ZAIDI YOTE */
+            font-size: 44px;
             font-weight: 950;
             font-style: italic;
             background: linear-gradient(135deg, #3b82f6, #1d4ed8);
@@ -129,7 +129,7 @@
             100% { opacity: 0.3; }
         }
 
-        /* Hero Text (Inang'aa Vizuri, Haififii) */
+        /* Hero Text */
         .hero {
             text-align: left;
             margin: 15px 0 5px 0;
@@ -137,7 +137,7 @@
         .hero h1 {
             font-size: 26px;
             font-weight: 850;
-            color: #ffffff; /* Nyeupe safi */
+            color: #ffffff;
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
             margin-bottom: 6px;
             letter-spacing: 0.5px;
@@ -182,7 +182,7 @@
             object-fit: contain;
         }
         
-        /* Nembo Ndani ya Player Video Juu Kulia */
+        /* Nembo Ndani ya Player */
         .channel-bug {
             position: absolute;
             top: 15px;
@@ -197,7 +197,7 @@
             display: block;
         }
         
-        /* Fallback Nembo ya Dharura - Inafuata Agizo Lako Kikamilifu */
+        /* Fallback Nembo ya Dharura */
         .logo-text-fallback {
             display: none;
             background: rgba(15, 23, 42, 0.85);
@@ -217,28 +217,28 @@
             flex-direction: column;
         }
         .fallback-title {
-            text-transform: uppercase; /* HERUFI KUBWA */
+            text-transform: uppercase;
             font-size: 13px;
             font-weight: 900;
             color: #ffffff;
             letter-spacing: 0.5px;
         }
         .fallback-subtitle {
-            text-transform: lowercase; /* herufi ndogo chini */
+            text-transform: lowercase;
             font-size: 9px;
             font-weight: 500;
             color: #94a3b8;
             margin-top: 2px;
         }
         .fallback-tv {
-            font-size: 32px; /* KUBWA ZAIDI YOTE */
+            font-size: 32px;
             font-weight: 950;
             color: #3b82f6;
             font-style: italic;
             margin-left: 2px;
         }
 
-        /* Overlay Control Customization */
+        /* Overlay Controls */
         .custom-controls {
             position: absolute;
             bottom: 0;
@@ -311,14 +311,14 @@
             font-weight: 600;
         }
 
-        /* Safe & Real Interactive Chat Panel */
+        /* Chat Panel */
         .chat-container {
             background: #0f172a;
             border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: 16px;
             height: 100%;
-            min-height: 350px;
-            max-height: 440px;
+            min-height: 400px;
+            max-height: 480px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
@@ -346,11 +346,12 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            height: 320px;
         }
         .chat-msg {
             font-size: 12.5px;
             line-height: 1.5;
+            position: relative;
+            padding-right: 40px;
             animation: fadeIn 0.2s ease;
         }
         @keyframes fadeIn {
@@ -365,9 +366,47 @@
         .chat-text {
             color: #e2e8f0;
         }
-        .chat-input-area {
-            padding: 12px;
+        .chat-reply-trigger {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .chat-reply-trigger:hover {
+            color: #3b82f6;
+        }
+        
+        /* Admin Control Panel inside Chat Footer */
+        .chat-input-area-wrapper {
             border-top: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+        }
+        .admin-toggle-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 0 4px;
+        }
+        .admin-label {
+            font-size: 10px;
+            font-weight: bold;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .admin-switch {
+            cursor: pointer;
+            accent-color: #3b82f6;
+        }
+        .chat-input-area {
             display: flex;
             gap: 8px;
         }
@@ -392,7 +431,7 @@
             cursor: pointer;
         }
 
-        /* Structural Details Panels */
+        /* Details Panels */
         .card {
             background: #0f172a;
             border-radius: 14px;
@@ -431,6 +470,58 @@
         .row-label { color: #94a3b8; }
         .row-value { font-weight: 600; color: #f1f5f9; }
 
+        /* SEHEMU YA RATIBA - PREMIUM LOOK */
+        .schedule-card {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            padding: 16px;
+            margin-top: 15px;
+        }
+        .schedule-title {
+            font-size: 12px;
+            color: #3b82f6;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .schedule-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .schedule-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 8px;
+            border-left: 3px solid #1e4ed8;
+        }
+        .schedule-item.active {
+            border-left-color: #10b981;
+            background: rgba(16, 185, 129, 0.05);
+        }
+        .schedule-time {
+            font-size: 11px;
+            font-weight: 700;
+            color: #94a3b8;
+            width: 90px;
+            flex-shrink: 0;
+        }
+        .schedule-item.active .schedule-time {
+            color: #10b981;
+        }
+        .schedule-name {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
         .toast {
             position: fixed;
             bottom: 20px;
@@ -456,7 +547,6 @@
         <!-- Header Row -->
         <div class="header-wide">
             <header>
-                <!-- HAPA NDIO NEMBO YAKO KUU KWENYE NAVBAR ILIVYOTENGENEZWA UPYA -->
                 <div class="brand">
                     <div class="brand-text-group">
                         <span class="brand-title">BAM TECH</span>
@@ -488,7 +578,6 @@
                     <!-- Smart Overlay Fallback Node -->
                     <div class="channel-bug">
                         <img src="172392.png" id="tv-logo" alt="Logo" onerror="handleLogoError()">
-                        <!-- Hapa ni nembo ya dharura kama picha isipopatikana kwenye seva -->
                         <div class="logo-text-fallback" id="text-logo">
                             <div class="fallback-container">
                                 <div class="fallback-text-group">
@@ -500,7 +589,7 @@
                         </div>
                     </div>
                     
-                    <!-- Mux Global Video Test Stream (Inafanya kazi saa 24, picha safi sana isiyo katuni) -->
+                    <!-- VIDEO MPYA HALISI (TEARS OF STEEL LIVE ACTION) - HAINA KATUNI KABISA -->
                     <video id="video" autoplay muted playsinline></video>
 
                     <!-- Control Triggers -->
@@ -526,7 +615,7 @@
             </div>
 
             <div class="card">
-                <span class="card-title-sub">▶ INACHEZWA SASA hivi</span>
+                <span class="card-title-sub">▶ INACHEZWA SASA HIVI</span>
                 <div class="card-main-text">International Tech Insights & Digital Performance</div>
             </div>
 
@@ -535,15 +624,42 @@
                     <span class="row-label">Hali ya Matangazo</span>
                     <span class="row-value" style="color: #10b981;">● HEWANI (ONLINE)</span>
                 </div>
+                <!-- TEKNOLOJIA YA SEVA IMEFICHWA HAPA KULINGANA NA PICHA YAKO -->
                 <div class="table-row">
-                    <span class="row-label">Teknoloji ya Seva</span>
-                    <span class="row-value">HLS Pro IPTV M3U8 Engine</span>
+                    <span class="row-label">Aina ya Maudhui</span>
+                    <span class="row-value">Burudani & Teknolojia Halisi</span>
                 </div>
                 <div class="table-row">
                     <span class="row-label">Ubora wa Picha</span>
                     <span class="row-value" id="current-quality-view">Inapakia...</span>
                 </div>
             </div>
+
+            <!-- SEHEMU YA RATIBA - INAHARISIKA KWA URAHISI CHINI KWENYE HTML -->
+            <div class="schedule-card">
+                <div class="schedule-title">📅 RATIBA YA VIPINDI YA LEO</div>
+                <div class="schedule-list">
+                    <!-- ADMIN: Badilisha vipindi vyako hapa chini kwa urahisi -->
+                    <div class="schedule-item active">
+                        <span class="schedule-time">08:00 AM - LIVE</span>
+                        <span class="schedule-name">Tech Insights & Global Innovation Performance</span>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">02:00 PM</span>
+                        <span class="schedule-name">Cybersecurity Foundations & Mobile Coding Linux</span>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">06:30 PM</span>
+                        <span class="schedule-name">BAM Tech Solutions Corporate Showcase</span>
+                    </div>
+                    <div class="schedule-item">
+                        <span class="schedule-time">09:00 PM</span>
+                        <span class="schedule-name">Digital Innovations in African Ecosystems</span>
+                    </div>
+                    <!-- ADMIN: Mwisho wa vipindi -->
+                </div>
+            </div>
+
         </div>
 
         <!-- Right Column Live Comment Box Container -->
@@ -554,15 +670,26 @@
                     <span class="chat-pulse"></span>
                 </div>
                 <div class="chat-messages" id="chat-box">
+                    <!-- NENO MFUMO LIMEFUTWA KABISA HAPA -->
                     <div class="chat-msg">
-                        <span class="chat-user" style="color: #10b981;">Mfumo:</span>
+                        <span class="chat-user" style="color: #3b82f6;">BAM TECH TV:</span>
                         <span class="chat-text">Karibu! Andika ujumbe au maoni yako halisi hapa chini yajisome papo hapo.</span>
                     </div>
                 </div>
-                <div class="chat-input-area">
-                    <input type="text" class="chat-input" placeholder="Andika maoni yako halisi..." id="chat-input">
-                    <button class="chat-send" onclick="sendRealMessage()">Tuma</button>
+                
+                <!-- Chat Input Section with Admin Control Layer -->
+                <div class="chat-input-area-wrapper">
+                    <div class="admin-toggle-bar">
+                        <label class="admin-label">
+                            <input type="checkbox" id="admin-mode" class="admin-switch"> 🛠️ Hali ya Admin (Tuma kama Mmiliki)
+                        </label>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" class="chat-input" placeholder="Andika maoni yako..." id="chat-input">
+                        <button class="chat-send" onclick="sendRealMessage()">Tuma</button>
+                    </div>
                 </div>
+
             </div>
         </div>
 
@@ -572,8 +699,8 @@
     <div class="toast" id="toast-notif">Link imekopiwa kwa ajili ya kushare!</div>
 
     <script>
-        // Mux Stream ya majaribio ya dharura ambayo inakubalika na seva zote ulimwenguni (CORS friendly)
-        const STREAM_URL = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8';
+        // VIDEO IMPLEMENTATION: HLS Live-Action (Haina katuni, inatumia roboti na binadamu wa kweli)
+        const STREAM_URL = 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
 
         const video = document.getElementById('video');
         const playerWrapper = document.getElementById('player-wrapper');
@@ -663,17 +790,42 @@
             setTimeout(() => { toast.classList.remove('show'); }, 3000);
         }
 
+        // Mfumo halisi wa kutuma ujumbe wenye uwezo wa Admin kureply
         function sendRealMessage() {
             const input = document.getElementById('chat-input');
+            const isAdmin = document.getElementById('admin-mode').checked;
+            
             if(input.value.trim() !== "") {
                 const chatBox = document.getElementById('chat-box');
                 const msgDiv = document.createElement('div');
                 msgDiv.className = 'chat-msg';
-                msgDiv.innerHTML = `<span class="chat-user" style="color: #f59e0b;">Mtumiaji:</span><span class="chat-text">${input.value}</span>`;
+                
+                let userTag = "";
+                if (isAdmin) {
+                    // Muonekano wa jina la Admin ukiamua kujibu
+                    userTag = `<span class="chat-user" style="color: #f59e0b; background: rgba(245,158,11,0.1); padding: 1px 6px; border-radius: 4px;">BAM TECH (Admin):</span>`;
+                } else {
+                    userTag = `<span class="chat-user" style="color: #60a5fa;">Mhudhuriaji:</span>`;
+                }
+
+                // Kizazi cha ujumbe pamoja na kitufe cha kureply pembeni
+                msgDiv.innerHTML = `${userTag}<span class="chat-text">${input.value}</span>
+                                    <button class="chat-reply-trigger" onclick="replyToUser(this)">[Jibu]</button>`;
+                
                 chatBox.appendChild(msgDiv);
                 chatBox.scrollTop = chatBox.scrollHeight;
                 input.value = "";
             }
+        }
+
+        // Kazi ya kubonyeza "Jibu" ili kum-tag mtu aliyetuma ujumbe
+        function replyToUser(buttonElement) {
+            const chatInput = document.getElementById('chat-input');
+            const parentMessage = buttonElement.parentElement;
+            const username = parentMessage.querySelector('.chat-user').innerText.replace(':', '');
+            
+            chatInput.value = `@${username} `;
+            chatInput.focus();
         }
 
         setInterval(() => {
