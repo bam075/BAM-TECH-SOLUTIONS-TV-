@@ -3,213 +3,370 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paneli ya Mkurugenzi - BAM TECH TV</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+    <title>BAM TECH TV - Jopo Kuu la Mmiliki</title>
+
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
     <style>
-        body { font-family: 'Segoe UI', Roboto, sans-serif; background-color: #020617; color: #f8fafc; padding: 15px; margin: 0; }
-        .panel-container { max-width: 700px; margin: 20px auto; background: #0f172a; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.05); box-sizing: border-box; }
-        h1, h2 { text-align: center; }
-        h1 { font-size: 20px; margin-bottom: 25px; color: #3b82f6; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 900; }
-        h2 { font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 6px; color: #94a3b8; text-align: left; margin-top: 0; text-transform: uppercase; }
-        .section-card { border-left: 4px solid #2563eb; padding: 15px; margin-bottom: 20px; background: rgba(255,255,255,0.02); border-radius: 0 12px 12px 0; border-top: 1px solid rgba(255,255,255,0.02); border-right: 1px solid rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.02); }
-        .form-group { margin-bottom: 14px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-        select, input { width: 100%; padding: 10px; background: #1e293b; border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: white; box-sizing: border-box; font-size: 13px; outline: none; }
-        select:focus, input:focus { border-color: #3b82f6; }
-        button { width: 100%; padding: 14px; background: #2563eb; border: none; color: white; font-weight: bold; border-radius: 8px; cursor: pointer; font-size: 14px; margin-top: 15px; transition: 0.2s; text-transform: uppercase; letter-spacing: 0.5px; }
-        button:hover { background: #1d4ed8; box-shadow: 0 0 15px rgba(37, 99, 235, 0.4); }
-        .status-msg { text-align: center; font-weight: bold; margin-top: 15px; font-size: 13px; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #020617; color: #f8fafc; margin: 0; padding: 20px; }
+        .lock-container { max-width: 400px; margin: 100px auto; background: #0f172a; padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); text-align: center; }
+        .lock-error { color: #f87171; font-size: 12px; margin-top: 10px; display: none; }
+        .lock-timer { color: #94a3b8; font-size: 12px; margin-top: 10px; display: none; }
+        .dashboard { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media(min-width: 768px) { .dashboard { grid-template-columns: 1fr 350px; } }
+        .card { background: #0f172a; border-radius: 14px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        h2, h3 { color: #3b82f6; margin-top: 0; margin-bottom: 15px; text-transform: uppercase; font-size: 16px; letter-spacing: 0.5px; }
+        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; font-weight: 600; }
+        input[type="text"], input[type="password"], select {
+            width: 100%; background: #1e293b; border: 1px solid rgba(255,255,255,0.1);
+            padding: 10px 12px; border-radius: 8px; color: white; outline: none;
+            margin-bottom: 15px; font-size: 13px;
+        }
+        button { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
+        button:hover { background: #1d4ed8; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-danger { background: #dc2626; } .btn-danger:hover { background: #b91c1c; }
+        .flex-btns { display: flex; gap: 10px; }
+        .live-viewer-badge {
+            display: inline-flex; align-items: center; gap: 6px; background: rgba(16,185,129,0.1);
+            border: 1px solid rgba(16,185,129,0.3); color: #10b981; font-size: 12px; font-weight: 700;
+            padding: 6px 12px; border-radius: 8px; margin-bottom: 15px;
+        }
+        .pulse-dot { width: 6px; height: 6px; background: #10b981; border-radius: 50%; animation: pulse 1.2s infinite; }
+        @keyframes pulse { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+        .chat-box-admin { height: 320px; overflow-y: auto; background: #020617; border-radius: 8px; padding: 10px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 10px; }
+        .chat-row { font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 8px; }
+        .chat-row strong { color: #60a5fa; }
+        .chat-row strong.is-admin { color: #f59e0b; }
+        .reply-link { color: #f59e0b; font-weight: bold; cursor: pointer; float: right; font-size: 11px; }
+        .reply-thread-admin {
+            margin-top: 6px; margin-left: 12px; padding-left: 10px;
+            border-left: 2px solid rgba(245,158,11,0.4); display: flex; flex-direction: column; gap: 4px;
+        }
+        .reply-thread-admin .reply-row { font-size: 11px; color: #fbbf24; }
+        .toast { position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 10px 20px; border-radius: 6px; font-size: 12px; font-weight: bold; display: none; z-index: 999; }
+        .empty-state { color: #64748b; font-size: 12px; text-align: center; padding: 20px 0; }
     </style>
 </head>
 <body>
 
-<div class="panel-container">
-    <h1>PANELI YA KISASA YA MKURUGENZI:<br>BAM TECH TV</h1>
-
-    <div class="section-card">
-        <h2>📺 1. Udhibiti wa Video (Live Stream / MP4 Clip)</h2>
-        <div class="form-group">
-            <label>LINK YA UTANGAZAJI (STREAM AU MP4 URL):</label>
-            <input type="text" id="video-url" placeholder="Paste link ya .m3u8 au faili la video la .mp4 hapa...">
-        </div>
-        <div class="form-group">
-            <label>KIPINDI KINACHOCHEZWA SASA:</label>
-            <input type="text" id="current-show" placeholder="Mfano: Tech Insights & Global Innovation">
-        </div>
-        <div class="form-group">
-            <label>AINA YA MAUDHUI (CONTENT TYPE):</label>
-            <input type="text" id="content-type" placeholder="Mfano: Burudani & Teknolojia Halisi">
-        </div>
-        <div class="form-group">
-            <label>UBORA WA PICHA (RESOLUTION OVERRIDE - OPTIONAL):</label>
-            <input type="text" id="quality" placeholder="Mfano: 1080p Ultra HD (Acha wazi kuruhusu Auto)">
-        </div>
+    <div class="lock-container" id="gatekeeper">
+        <h2 style="font-size:18px; margin-bottom:5px;">🎛️ BAM TECH TV PANEL</h2>
+        <p style="font-size:12px; color:#64748b; margin-bottom:20px;">Ukurasa huu ni salama na wa siri wa Mmiliki pekee.</p>
+        <label>Ingiza PIN Kuu ya Usimamizi:</label>
+        <input type="password" id="master-pin" placeholder="••••••">
+        <button onclick="unlockDashboard()" style="width:100%;" id="unlock-btn">INGIA DASHBODI</button>
+        <p class="lock-error" id="lock-error">❌ PIN sio sahihi! Jaribu tena.</p>
+        <p class="lock-timer" id="lock-timer"></p>
     </div>
 
-    <div class="section-card" style="border-left-color: #10b981;">
-        <h2>📊 2. Live Badge & Watazamaji Fake/Real</h2>
-        <div class="form-group">
-            <label>HALI YA LIIVE PILL (BADGE):</label>
-            <select id="show-live">
-                <option value="true">Washa / Onyesha Kitufe cha LIVE</option>
-                <option value="false">Zima / Ficha Kitufe cha LIVE</option>
+    <div class="dashboard" id="main-panel" style="display: none;">
+
+        <div class="card" style="grid-column: 1;">
+            <h2>📺 USIMAMIZI WA MATANGAZO YA TELEVISHENI</h2>
+            <div class="live-viewer-badge">
+                <span class="pulse-dot"></span>
+                <span id="admin-viewer-count">0</span> Watazamaji Halisi Sasa Hivi
+            </div>
+            <hr style="border: 1px solid rgba(255,255,255,0.04); margin-bottom:15px;">
+
+            <label>1. Link Kuu ya Mkururo wa Video (.m3u8 au IPTV Stream URL):</label>
+            <input type="text" id="stream-url-field" placeholder="https://domain.com/live/stream.m3u8">
+
+            <label>2. Jina la Kipindi (Litaonekana Upande wa Kulia wa Navbar - kwa vipindi visivyo na logo):</label>
+            <input type="text" id="program-title-field" placeholder="Mfano: Tech Insights na Bryan Alex">
+
+            <label>3. Alama Maalum ya Live / Mubashara (Wewe pekee unaidhibiti, haiendi automatic):</label>
+            <select id="live-badge-selector">
+                <option value="OFF">Zima Alama Zote (Hali ya Kawaida)</option>
+                <option value="LIVE">Washa na Uandike "LIVE"</option>
+                <option value="MUBASHARA">Washa na Uandike "MUBASHARA"</option>
             </select>
-        </div>
-        <div class="form-group">
-            <label>MAANDISHI YA LIVE BADGE:</label>
-            <input type="text" id="live-text" value="LIVE">
-        </div>
-        <div class="form-group">
-            <label>IDADI YA WATAZAMAJI HALISI (FORCE VIEWERS):</label>
-            <input type="number" id="viewers-count" placeholder="Mfano: 3420">
-        </div>
-    </div>
 
-    <div class="section-card" style="border-left-color: #a855f7;">
-        <h2>🚀 3. Udhibiti wa Matangazo ya L-Style (Maandishi, Picha, Video)</h2>
-        <div class="form-group">
-            <label>HALI YA TANGAZO LA L-STYLE:</label>
-            <select id="show-lstyle" onchange="toggleAdFields()">
-                <option value="false">Zima / Ficha Tangazo</option>
-                <option value="true">Washa / Onyesha Tangazo</option>
+            <label>4. Tangazo la Kushoto la L-Style (Litaonekana TU ukichagua "Washa" hapa chini):</label>
+            <input type="text" id="lstyle-text-field" placeholder="Andika maelezo ya tangazo hapa...">
+            <select id="lstyle-status-selector" style="margin-top:-5px;">
+                <option value="OFF">Ficha Tangazo la L-Style</option>
+                <option value="ON">Washa Tangazo Lionekane Sasa Hivi</option>
             </select>
-        </div>
-        <div class="form-group">
-            <label>AINA YA TANGAZO (AD TYPE):</label>
-            <select id="ad-type" onchange="toggleAdFields()">
-                <option value="text">Tangazo la Maandishi tu (Text)</option>
-                <option value="image">Tangazo la Picha (Image URL)</option>
-                <option value="video">Tangazo la Video Fupi (Video URL .mp4)</option>
+
+            <label>5. Maandishi ya chini kabisa yanayopita (Ticker Info Text):</label>
+            <input type="text" id="ticker-text-field" placeholder="Andika habari au ujumbe unaotaka upite chini kabisa ya TV...">
+            <select id="ticker-status-selector" style="margin-top:-5px;">
+                <option value="OFF">Ficha Ticker Bar Yote</option>
+                <option value="ON">Washa Ticker Bar Sasa Hivi</option>
             </select>
+
+            <button onclick="publishLiveChanges()" style="width: 100%; padding:14px; font-size:14px;">🚀 RUSHA MABADILIKO HEWANI SASA HIVI</button>
         </div>
-        <div class="form-group id-ad-field" id="field-ad-text">
-            <label>MAANDISHI YA TANGAZO (TEXT):</label>
-            <input type="text" id="ad-text" placeholder="Andika ujumbe wa tangazo hapa...">
+
+        <div class="card" style="grid-column: span 1;">
+            <h2>💬 LIVE CHAT REPLIES INTERACTIVE</h2>
+            <p style="font-size:11px; color:#94a3b8; margin-bottom:10px;">Maoni yote ya watazamaji kutoka index.html yanaonekana hapa moja kwa moja, halisi.</p>
+
+            <div class="chat-box-admin" id="admin-chat-viewer">
+                <div class="empty-state">Bado hakuna maoni...</div>
+            </div>
+
+            <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
+                <label id="reply-target-label">Jibu Maoni kama Mmiliki (BAM TECH Admin):</label>
+                <input type="text" id="admin-reply-input" placeholder="Chagua [JIBU] kwenye ujumbe kwanza...">
+                <div class="flex-btns">
+                    <button onclick="sendAdminReplyDirect()" style="flex:1;">Tuma Jibu</button>
+                    <button class="btn-danger" onclick="clearChatLog()">Futa Kumbukumbu</button>
+                </div>
+            </div>
         </div>
-        <div class="form-group id-ad-field" id="field-ad-image" style="display:none;">
-            <label>LINK YA PICHA YA TANGAZO (IMAGE URL):</label>
-            <input type="text" id="ad-image-url" placeholder="Paste direct link ya picha ya tangazo (.jpg/.png)...">
-        </div>
-        <div class="form-group id-ad-field" id="field-ad-video" style="display:none;">
-            <label>LINK YA VIDEO FUPI YA TANGAZO (VIDEO URL):</label>
-            <input type="text" id="ad-video-url" placeholder="Paste direct link ya video fupi (.mp4)...">
-        </div>
+
     </div>
 
-    <div class="section-card" style="border-left-color: #f59e0b;">
-        <h2>📅 4. Ticker Inayotembea Chini</h2>
-        <div class="form-group">
-            <label>HALI YA TICKER BAR:</label>
-            <select id="show-ticker">
-                <option value="false">Ficha Ticker</option>
-                <option value="true">Onyesha Ticker</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>MANENO YANAYOTEMBEA:</label>
-            <input type="text" id="ticker-text-content" placeholder="Andika taarifa zitakazotembea chini kabisa kwenye TV...">
-        </div>
-    </div>
+    <div class="toast" id="save-toast">Mabadiliko Yamerushwa Kwenye TV kwa Mafanikio! ✓</div>
 
-    <div class="section-card" style="border-left-color: #64748b;">
-        <h2>📝 5. Ratiba ya Vipindi (Leo)</h2>
-        <div class="form-group">
-            <label>KIPINDI CHA 1 (MUDA & MAELEZO):</label>
-            <input type="text" id="sch-t1" placeholder="Muda wke (Mfano: 08:00 AM - LIVE)" style="margin-bottom:5px;">
-            <input type="text" id="sch-d1" placeholder="Jina au maelezo ya kipindi cha kwanza...">
-        </div>
-        <div class="form-group">
-            <label>KIPINDI CHA 2 (MUDA & MAELEZO):</label>
-            <input type="text" id="sch-t2" placeholder="Muda (Mfano: 02:00 PM)" style="margin-bottom:5px;">
-            <input type="text" id="sch-d2" placeholder="Maelezo ya kipindi...">
-        </div>
-        <div class="form-group">
-            <label>KIPINDI CHA 3 (MUDA & MAELEZO):</label>
-            <input type="text" id="sch-t3" placeholder="Muda (Mfano: 06:30 PM)" style="margin-bottom:5px;">
-            <input type="text" id="sch-d3" placeholder="Maelezo ya kipindi...">
-        </div>
-        <div class="form-group">
-            <label>KIPINDI CHA 4 (MUDA & MAELEZO):</label>
-            <input type="text" id="sch-t4" placeholder="Muda (Mfano: 09:00 PM)" style="margin-bottom:5px;">
-            <input type="text" id="sch-d4" placeholder="Maelezo ya kipindi...">
-        </div>
-    </div>
+    <script>
+        /* ============== FIREBASE INIT ============== */
+        const firebaseConfig = {
+            apiKey: "AIzaSyAh7LRqKy5RfLUr0tpqA47TV7YnBvuB5F8",
+            authDomain: "bam-tech-solutions-tv.firebaseapp.com",
+            databaseURL: "https://bam-tech-solutions-tv-default-rtdb.firebaseio.com",
+            projectId: "bam-tech-solutions-tv",
+            storageBucket: "bam-tech-solutions-tv.firebasestorage.app",
+            messagingSenderId: "1013751123351",
+            appId: "1:1013751123351:web:173b1884f221699bb5c8d2"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-    <button id="btn-save">Hifadhi & Kusambaza Mabadiliko Halisi</button>
-    <p id="status-msg" class="status-msg"></p>
-</div>
-
-<script>
-    // CONFIGURATION YA FIREBASE (Imeunganishwa moja kwa moja na index)
-    const firebaseConfig = {
-      apiKey: "AIzaSyAh7LRqKy5RfLUr0tpqA47TV7v221699bb5c8d2", 
-      authDomain: "bam-tech-solutions-tv.firebaseapp.com",
-      databaseURL: "https://bam-tech-solutions-tv-default-rtdb.firebaseio.com/",
-      projectId: "bam-tech-solutions-tv",
-      storageBucket: "bam-tech-solutions-tv.appspot.com",
-      messagingSenderId: "101371123351",
-      appId: "1:101371123351:web:173b1884f221699bb5c8d2"
-    };
-    
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    function toggleAdFields() {
-        const type = document.getElementById('ad-type').value;
-        document.getElementById('field-ad-text').style.display = (type === 'text') ? 'block' : 'none';
-        document.getElementById('field-ad-image').style.display = (type === 'image') ? 'block' : 'none';
-        document.getElementById('field-ad-video').style.display = (type === 'video') ? 'block' : 'none';
-    }
-
-    document.getElementById('btn-save').addEventListener('click', () => {
-        const msg = document.getElementById('status-msg');
-        const streamUrl = document.getElementById('video-url').value;
-        const viewers = document.getElementById('viewers-count').value;
-
-        // 1. Kusave Video Stream Url
-        if(streamUrl.trim() !== "") {
-            database.ref('bam_stream_url').set(streamUrl);
+        function escapeHTML(str) {
+            const div = document.createElement('div');
+            div.innerText = str;
+            return div.innerHTML;
         }
 
-        // 2. Kusave Viewers Counter (Ukiweka itafreeze hapo hapo uliyotaka)
-        if(viewers.trim() !== "") {
-            database.ref('bam_forced_viewers').set(parseInt(viewers));
+        /* ============== PIN KALI - SECURITY LOCK ============== */
+        // BADILISHA HII PIN kuwa namba/maandishi yako binafsi yenye urefu zaidi (mfano: tarehe+neno)
+        const MASTER_PIN = "BamTech#2026Admin!";
+
+        const MAX_ATTEMPTS = 5;
+        const LOCKOUT_MINUTES = 10;
+
+        function getLockState() {
+            return JSON.parse(localStorage.getItem('bam_admin_lock') || '{"attempts":0,"lockedUntil":0}');
+        }
+        function setLockState(state) {
+            localStorage.setItem('bam_admin_lock', JSON.stringify(state));
         }
 
-        // 3. Kusave Config Zote Maalum kwenye Node Moja
-        database.ref('bam_tv_config').set({
-            title: document.getElementById('current-show').value,
-            contentType: document.getElementById('content-type').value,
-            resolution_text: document.getElementById('quality').value,
-            showLive: document.getElementById('show-live').value === "true",
-            liveText: document.getElementById('live-text').value,
-            showLStyle: document.getElementById('show-lstyle').value === "true",
-            adType: document.getElementById('ad-type').value,
-            adText: document.getElementById('ad-text').value,
-            adImageUrl: document.getElementById('ad-image-url').value,
-            adVideoUrl: document.getElementById('ad-video-url').value,
-            showTicker: document.getElementById('show-ticker').value === "true",
-            ticker: document.getElementById('ticker-text-content').value,
-            sch_t1: document.getElementById('sch-t1').value,
-            sch_d1: document.getElementById('sch-d1').value,
-            sch_t2: document.getElementById('sch-t2').value,
-            sch_d2: document.getElementById('sch-d2').value,
-            sch_t3: document.getElementById('sch-t3').value,
-            sch_d3: document.getElementById('sch-d3').value,
-            sch_t4: document.getElementById('sch-t4').value,
-            sch_d4: document.getElementById('sch-d4').value
-        }).then(() => {
-            msg.style.color = "#10b981";
-            msg.innerText = "✅ Kazi Safi! Mabadiliko yote yamerushwa kwenye TV sasa hivi!";
-        }).catch((err) => {
-            msg.style.color = "#dc2626";
-            msg.innerText = "❌ Hitilafu Imetokea: " + err.message;
+        function checkLockoutOnLoad() {
+            const state = getLockState();
+            if (state.lockedUntil && Date.now() < state.lockedUntil) {
+                disableLoginTemporarily(state.lockedUntil);
+            }
+        }
+
+        function disableLoginTemporarily(until) {
+            const unlockBtn = document.getElementById('unlock-btn');
+            const timerEl = document.getElementById('lock-timer');
+            unlockBtn.disabled = true;
+            timerEl.style.display = 'block';
+
+            const interval = setInterval(() => {
+                const remaining = until - Date.now();
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    unlockBtn.disabled = false;
+                    timerEl.style.display = 'none';
+                    setLockState({ attempts: 0, lockedUntil: 0 });
+                } else {
+                    const mins = Math.floor(remaining / 60000);
+                    const secs = Math.floor((remaining % 60000) / 1000);
+                    timerEl.innerText = `🔒 Umezuiwa. Subiri ${mins}m ${secs}s kabla ya kujaribu tena.`;
+                }
+            }, 1000);
+        }
+
+        function unlockDashboard() {
+            const state = getLockState();
+            if (state.lockedUntil && Date.now() < state.lockedUntil) {
+                disableLoginTemporarily(state.lockedUntil);
+                return;
+            }
+
+            const pin = document.getElementById('master-pin').value;
+            if (pin === MASTER_PIN) {
+                setLockState({ attempts: 0, lockedUntil: 0 });
+                document.getElementById('gatekeeper').style.display = 'none';
+                document.getElementById('main-panel').style.display = 'grid';
+                loadCurrentConfigValues();
+                startAdminChatListener();
+                startViewerCountListener();
+            } else {
+                const attempts = (state.attempts || 0) + 1;
+                document.getElementById('lock-error').style.display = 'block';
+                document.getElementById('master-pin').value = '';
+
+                if (attempts >= MAX_ATTEMPTS) {
+                    const lockedUntil = Date.now() + LOCKOUT_MINUTES * 60 * 1000;
+                    setLockState({ attempts: 0, lockedUntil });
+                    disableLoginTemporarily(lockedUntil);
+                } else {
+                    setLockState({ attempts, lockedUntil: 0 });
+                }
+            }
+        }
+
+        document.getElementById('master-pin').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') unlockDashboard();
         });
-    });
-</script>
 
+        checkLockoutOnLoad();
+
+        /* ============== KUSOMA / KUANDIKA MIPANGILIO ============== */
+        function loadCurrentConfigValues() {
+            db.ref('tv_config').once('value').then((snap) => {
+                const config = snap.val() || {};
+                document.getElementById('stream-url-field').value = config.streamUrl || '';
+                document.getElementById('program-title-field').value = config.programTitle || '';
+                document.getElementById('lstyle-text-field').value = config.adText || '';
+                document.getElementById('ticker-text-field').value = config.ticker || '';
+                document.getElementById('live-badge-selector').value = config.showLive ? (config.liveText || 'LIVE') : 'OFF';
+                document.getElementById('lstyle-status-selector').value = config.showLStyle ? 'ON' : 'OFF';
+                document.getElementById('ticker-status-selector').value = config.showTicker ? 'ON' : 'OFF';
+            });
+        }
+
+        function publishLiveChanges() {
+            const liveSelector = document.getElementById('live-badge-selector').value;
+            const lstyleSelector = document.getElementById('lstyle-status-selector').value;
+            const tickerSelector = document.getElementById('ticker-status-selector').value;
+
+            const config = {
+                streamUrl: document.getElementById('stream-url-field').value.trim(),
+                programTitle: document.getElementById('program-title-field').value.trim(),
+                adText: document.getElementById('lstyle-text-field').value.trim(),
+                ticker: document.getElementById('ticker-text-field').value.trim(),
+                showLive: liveSelector !== 'OFF',
+                liveText: liveSelector !== 'OFF' ? liveSelector : 'LIVE',
+                showLStyle: lstyleSelector === 'ON',
+                showTicker: tickerSelector === 'ON'
+            };
+
+            db.ref('tv_config').set(config).then(() => {
+                const toast = document.getElementById('save-toast');
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            }).catch((err) => {
+                alert('Hitilafu: ' + err.message);
+            });
+        }
+
+        /* ============== IDADI HALISI YA WATAZAMAJI ============== */
+        function startViewerCountListener() {
+            db.ref('presence/viewers').on('value', (snapshot) => {
+                document.getElementById('admin-viewer-count').innerText = snapshot.numChildren().toLocaleString();
+            });
+        }
+
+        /* ============== LIVE CHAT - ADMIN VIEW + THREADED REPLIES ============== */
+        let selectedReplyMsgId = null;
+        const renderedAdminMessages = {};
+
+        function startAdminChatListener() {
+            const viewer = document.getElementById('admin-chat-viewer');
+
+            db.ref('chat_messages').limitToLast(100).on('child_added', (snapshot) => {
+                renderAdminMessage(snapshot.key, snapshot.val(), viewer);
+            });
+
+            db.ref('chat_messages').on('child_changed', (snapshot) => {
+                renderAdminReplies(snapshot.key, snapshot.val());
+            });
+        }
+
+        function renderAdminMessage(msgId, data, viewer) {
+            if (renderedAdminMessages[msgId]) return;
+            renderedAdminMessages[msgId] = true;
+
+            const emptyState = viewer.querySelector('.empty-state');
+            if (emptyState) emptyState.remove();
+
+            const div = document.createElement('div');
+            div.className = 'chat-row';
+            div.id = 'admin-row-' + msgId;
+
+            const isAdmin = data.isAdmin === true;
+            const userLabel = isAdmin ? 'BAM TECH (Admin)' : (data.user || 'Mhudhuriaji');
+            const time = data.time ? new Date(data.time).toLocaleTimeString() : '';
+
+            div.innerHTML = `<span style="color:#64748b; font-size:10px;">[${time}]</span>
+                              <strong class="${isAdmin ? 'is-admin' : ''}">${escapeHTML(userLabel)}:</strong>
+                              <span>${escapeHTML(data.text)}</span>
+                              <span class="reply-link" data-msgid="${msgId}" data-userlabel="${escapeHTML(userLabel)}">[JIBU]</span>
+                              <div class="reply-thread-admin" id="admin-thread-${msgId}"></div>`;
+
+            div.querySelector('.reply-link').addEventListener('click', function() {
+                setupReplyTag(this.getAttribute('data-msgid'), this.getAttribute('data-userlabel'));
+            });
+
+            viewer.appendChild(div);
+            viewer.scrollTop = viewer.scrollHeight;
+
+            if (data.replies) renderAdminReplies(msgId, data);
+        }
+
+        function renderAdminReplies(msgId, data) {
+            const threadDiv = document.getElementById('admin-thread-' + msgId);
+            if (!threadDiv || !data.replies) return;
+            threadDiv.innerHTML = '';
+            Object.values(data.replies).forEach((reply) => {
+                const r = document.createElement('div');
+                r.className = 'reply-row';
+                r.innerText = '↳ Wewe: ' + reply.text;
+                threadDiv.appendChild(r);
+            });
+        }
+
+        function setupReplyTag(msgId, userLabel) {
+            selectedReplyMsgId = msgId;
+            document.getElementById('reply-target-label').innerText = `Unajibu @${userLabel}:`;
+            document.getElementById('admin-reply-input').placeholder = `Jibu kwa ${userLabel}...`;
+            document.getElementById('admin-reply-input').focus();
+        }
+
+        function sendAdminReplyDirect() {
+            const text = document.getElementById('admin-reply-input').value.trim();
+            if (text === "") return;
+
+            if (!selectedReplyMsgId) {
+                alert('Chagua [JIBU] kwenye ujumbe husika kwanza, kabla ya kutuma jibu.');
+                return;
+            }
+
+            const newReplyKey = db.ref().push().key;
+            db.ref('chat_messages/' + selectedReplyMsgId + '/replies/' + newReplyKey).set({
+                text: text,
+                time: Date.now(),
+                fromAdmin: true
+            }).then(() => {
+                document.getElementById('admin-reply-input').value = '';
+            }).catch((err) => {
+                alert('Hitilafu: ' + err.message);
+            });
+        }
+
+        document.getElementById('admin-reply-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') sendAdminReplyDirect();
+        });
+
+        function clearChatLog() {
+            if (confirm("Je, una uhakika unataka kufuta maoni yote kwenye orodha? Hatua hii haiwezi kurudishwa.")) {
+                db.ref('chat_messages').remove().then(() => {
+                    document.getElementById('admin-chat-viewer').innerHTML = '<div class="empty-state">Bado hakuna maoni...</div>';
+                    Object.keys(renderedAdminMessages).forEach(k => delete renderedAdminMessages[k]);
+                });
+            }
+        }
+    </script>
 </body>
 </html>
