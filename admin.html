@@ -3,258 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAM TECH TV - Jopo la Siri la Mmiliki</title>
-    
+    <title>BAM TECH TV - Jopo Kuu la Usimamizi wa Kimataifa</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #020617; color: #f8fafc; margin: 0; padding: 20px; }
-        .lock-container { max-width: 400px; margin: 100px auto; background: #0f172a; padding: 30px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); text-align: center; }
-        .dashboard { max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media(min-width: 768px) { .dashboard { grid-template-columns: 1fr 350px; } }
-        .card { background: #0f172a; border-radius: 14px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.05); }
-        h2, h3 { color: #3b82f6; margin-top: 0; margin-bottom: 15px; text-transform: uppercase; font-size: 16px; letter-spacing: 0.5px; }
-        label { display: block; font-size: 12px; color: #94a3b8; margin-bottom: 6px; font-weight: 600; }
-        input[type="text"], input[type="password"], select { width: 100%; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); padding: 10px 12px; border-radius: 8px; color: white; outline: none; margin-bottom: 15px; font-size: 13px; }
-        button { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
-        button:hover { background: #1d4ed8; }
-        .btn-danger { background: #dc2626; } .btn-danger:hover { background: #b91c1c; }
-        .flex-btns { display: flex; gap: 10px; }
-        .chat-box-admin { height: 300px; overflow-y: auto; background: #020617; border-radius: 8px; padding: 10px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 8px; }
-        .chat-row { font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 6px; position: relative; }
-        .chat-row strong { color: #60a5fa; }
-        .reply-link { color: #f59e0b; font-weight: bold; cursor: pointer; float: right; }
-        .toast { position: fixed; top: 20px; right: 20px; background: #10b981; color: white; padding: 10px 20px; border-radius: 6px; font-size: 12px; font-weight: bold; display: none; z-index: 10000; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #020617; color: #f8fafc; margin: 0; padding: 15px; }
+        .lock-container { max-width: 420px; margin: 80px auto; background: #0f172a; padding: 35px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        
+        .dashboard { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media(min-width: 850px) { .dashboard { grid-template-columns: 1fr 380px; } }
+        
+        .card { background: #0f172a; border-radius: 14px; padding: 22px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        h1 { font-size: 20px; color: #ffffff; text-align: center; margin-bottom: 25px; letter-spacing: 1px; }
+        h2 { color: #3b82f6; margin-top: 0; margin-bottom: 18px; text-transform: uppercase; font-size: 13px; border-left: 3px solid #3b82f6; padding-left: 8px; letter-spacing: 0.5px; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
+        @media(min-width: 600px) { .form-grid { grid-template-columns: 1fr 1fr; } .span-2 { grid-column: span 2; } }
+
+        label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 5px; font-weight: 600; text-transform: uppercase; }
+        input[type="text"], input[type="password"], select { width: 100%; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); padding: 10px 12px; border-radius: 8px; color: white; outline: none; font-size: 12px; box-sizing: border-box; transition: border 0.3s; }
+        input:focus, select:focus { border-color: #3b82f6; }
+        
+        .btn-panel { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        button { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 12px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; text-transform: uppercase; transition: opacity 0.2s; }
+        button:hover { opacity: 0.9; }
+        .btn-danger { background: #dc2626; } 
+        
+        .chat-box-admin { height: 420px; overflow-y: auto; background: #020617; border-radius: 8px; padding: 12px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 10px; }
+        .chat-row { font-size: 12px; border-bottom: 1px solid rgba(255,255,255,0.03); padding-bottom: 6px; }
+        .reply-link { color: #f59e0b; font-weight: bold; cursor: pointer; float: right; background: rgba(245,158,11,0.1); padding: 2px 6px; border-radius: 4px; }
+        .schedule-divider { background: rgba(255,255,255,0.03); padding: 8px; border-radius: 6px; margin-top: 5px; }
     </style>
 </head>
 <body>
 
     <div class="lock-container" id="gatekeeper">
-        <h2 style="font-size:18px; margin-bottom:5px;">🎛️ BAM TECH TV PANEL</h2>
-        <p style="font-size:12px; color:#64748b; margin-bottom:20px;">Ukurasa huu ni salama na wa siri wa Mmiliki pekee.</p>
-        <label>Ingiza PIN Kuu ya Usimamizi:</label>
-        <input type="password" id="master-pin" placeholder="••••">
-        <button onclick="unlockDashboard()" style="width:100%;">INGIA DASHBODI</button>
+        <h2 style="border:none; text-align:center; font-size:16px;">🎛️ BAM TECH MEDIA CONTROL PANEL</h2>
+        <p style="font-size:12px; color:#94a3b8; margin-bottom:20px;">Jopo la Siri la Kusimamia Stesheni ya Kimataifa</p>
+        <input type="password" id="master-pin" placeholder="Ingiza PIN ya Siri ya Mmiliki (Admin PIN)">
+        <button onclick="unlockDashboard()" style="width:100%; margin-top:10px;">Thibitisha Kuingia</button>
     </div>
 
     <div class="dashboard" id="main-panel" style="display: none;">
-        
-        <div class="card" style="grid-column: 1;">
-            <h2>📺 USIMAMIZI WA MATANGAZO YA TELEVISHENI</h2>
-            <hr style="border: 1px solid rgba(255,255,255,0.04); margin-bottom:15px;">
-            
-            <label>1. Link Kuu ya Video (.m3u8 au IPTV Stream URL):</label>
-            <input type="text" id="stream-url-field" placeholder="https://domain.com/live/stream.m3u8">
-            
-            <label>2. Jina la Kipindi (Litaonekana Upande wa Kulia wa Navbar):</label>
-            <input type="text" id="program-title-field" placeholder="Mfano: Tech Insights na Bryan Alex">
-            
-            <label>3. Alama Maalum ya Live / Mubashara:</label>
-            <select id="live-badge-selector">
-                <option value="OFF">Zima Alama Zote (Hali ya Kawaida)</option>
-                <option value="LIVE">Washa na Uandike "LIVE"</option>
-                <option value="MUBASHARA">Washa na Uandike "MUBASHARA"</option>
-            </select>
-
-            <label>4. Tangazo la Kushoto la L-Style (Litalazimishwa kuonekana ukijaza hapa):</label>
-            <input type="text" id="lstyle-text-field" placeholder="Andika maelezo ya tangazo hapa...">
-            <select id="lstyle-status-selector" style="margin-top:-5px;">
-                <option value="OFF">Ficha Tangazo la L-Style</option>
-                <option value="ON">Washa Tangazo Lionekane Sasa Hivi</option>
-            </select>
-
-            <label>5. Maandishi ya chini kabisa yanayopita (Global Ticker Text):</label>
-            <input type="text" id="ticker-text-field" placeholder="Andika habari au ujumbe unaotaka upite chini kabisa ya TV...">
-            <select id="ticker-status-selector" style="margin-top:-5px;">
-                <option value="OFF">Ficha Ticker Bar Yote</option>
-                <option value="ON">Washa Ticker Bar Sasa Hivi</option>
-            </select>
-
-            <label>6. Badilisha Idadi ya Watazamaji (Hardcode Viewers Count Control):</label>
-            <input type="text" id="viewer-count-field" placeholder="Mfano: 2500 (Acha wazi kurejea mfumo wa watazamaji wa kufikirika)">
-
-            <button onclick="publishLiveChanges()" style="width: 100%; padding:14px; font-size:14px;">🚀 RUSHA MABADILIKO HEWANI SASA HIVI</button>
+        <div class="span-2" style="grid-column: 1 / -1;">
+            <h1>PANELI KUU YA UTANGAZAJI: BAM TECH TV SOLUTIONS</h1>
         </div>
 
-        <div class="card" style="grid-column: span 1;">
-            <h2>💬 LIVE CHAT REPLIES INTERACTIVE</h2>
-            <p style="font-size:11px; color:#94a3b8; margin-bottom:10px;">Maoni yote ya watazamaji yanajazwa hapa chini moja kwa moja.</p>
-            
-            <div class="chat-box-admin" id="admin-chat-viewer">
+        <div class="card">
+            <h2>📺 1. MIKURURO & MAELEZO YA SASA</h2>
+            <div class="form-grid">
+                <div class="span-2">
+                    <label>Mkururo wa Video Link (.m3u8 IPTV URL):</label>
+                    <input type="text" id="stream-url-field">
                 </div>
-            
-            <div style="margin-top:15px; border-top:1px solid rgba(255,255,255,0.05); padding-top:15px;">
-                <label id="reply-target-label">Jibu Maoni kama Mmiliki (BAM TECH TV):</label>
-                <input type="text" id="admin-reply-input" placeholder="Andika jibu lako la haraka...">
-                <div class="flex-btns">
-                    <button onclick="sendAdminReply()" style="flex:1;">Tuma Jibu Kwenda Kwenye TV</button>
-                    <button class="btn-danger" onclick="clearFirebaseChatLog()">Futa Chats Zote</button>
+                <div>
+                    <label>Kipindi Kinachochezwa Sasa:</label>
+                    <input type="text" id="program-title-field">
+                </div>
+                <div>
+                    <label>Aina ya Maudhui (Table):</label>
+                    <input type="text" id="content-type-field">
+                </div>
+                <div>
+                    <label>Idadi ya Watazamaji (Hardcode Metric):</label>
+                    <input type="text" id="viewer-count-field" placeholder="Acha wazi kwa Auto-Simulation">
+                </div>
+                <div>
+                    <label>Maandishi Maalum ya Ubora (Maelezo ya Picha):</label>
+                    <input type="text" id="resolution-field" placeholder="Mfano: 750p HD High Quality">
+                </div>
+            </div>
+
+            <h2>📅 2. USIMAMIZI WA RATIBA YA VIPINDI (KILA KONA)</h2>
+            <div class="form-grid">
+                <div class="schedule-divider span-2">
+                    <label>Kipindi cha 1 (Muda & Maelezo):</label>
+                    <input type="text" id="sch-t1" placeholder="Muda: Mfano, 08:00 AM - LIVE" style="margin-bottom:5px;">
+                    <input type="text" id="sch-d1" placeholder="Jina la Kipindi">
+                </div>
+                <div class="schedule-divider span-2">
+                    <label>Kipindi cha 2 (Muda & Maelezo):</label>
+                    <input type="text" id="sch-t2" style="margin-bottom:5px;">
+                    <input type="text" id="sch-d2">
+                </div>
+                <div class="schedule-divider span-2">
+                    <label>Kipindi cha 3 (Muda & Maelezo):</label>
+                    <input type="text" id="sch-t3" style="margin-bottom:5px;">
+                    <input type="text" id="sch-d3">
+                </div>
+                <div class="schedule-divider span-2">
+                    <label>Kipindi cha 4 (Muda & Maelezo):</label>
+                    <input type="text" id="sch-t4" style="margin-bottom:5px;">
+                    <input type="text" id="sch-d4">
+                </div>
+            </div>
+
+            <h2>🚨 3. OVERLAYS, ALERTS & BADGES</h2>
+            <div class="form-grid">
+                <div>
+                    <label>Alama ya Live Status:</label>
+                    <select id="live-badge-selector">
+                        <option value="OFF">Zima kabisa</option>
+                        <option value="LIVE">LIVE</option>
+                        <option value="MUBASHARA">MUBASHARA</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Tangazo la Kushoto (L-Style Box):</label>
+                    <select id="lstyle-status-selector">
+                        <option value="OFF">Ficha Box</option>
+                        <option value="ON">Onyesha Box</option>
+                    </select>
+                </div>
+                <div class="span-2">
+                    <label>Maandishi ya Tangazo la L-Style:</label>
+                    <input type="text" id="lstyle-text-field">
+                </div>
+                <div>
+                    <label>Maandishi ya Chini (Ticker Bar):</label>
+                    <select id="ticker-status-selector">
+                        <option value="OFF">Zima Ticker</option>
+                        <option value="ON">Onyesha Ticker</option>
+                    </select>
+                </div>
+                <div class="span-2">
+                    <label>Maandishi yanayopita chini kwenye Ticker:</label>
+                    <input type="text" id="ticker-text-field">
+                </div>
+            </div>
+
+            <button onclick="publishLiveChanges()" style="width: 100%; padding:14px; margin-top:15px; font-size:13px;">🚀 Tuma Mabadiliko Kwenda Kwenye TV</button>
+        </div>
+
+        <div class="card">
+            <h2>💬 CONTROL CHA LIVE MAONI & MAJIBU</h2>
+            <div class="chat-box-admin" id="admin-chat-viewer"></div>
+            <div style="margin-top:15px;">
+                <label>Jibu kama BAM TECH SOLUTIONS (Admin):</label>
+                <input type="text" id="admin-reply-input" placeholder="Andika maoni au jibu hapa...">
+                <div class="btn-panel">
+                    <button onclick="sendAdminReply()">Tuma Jibu la Admin</button>
+                    <button class="btn-danger" onclick="clearChats()">Safisha/Futa Maoni Yote</button>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <div class="toast" id="save-toast">Mabadiliko Yamerushwa Kwenye TV kwa Mafanikio! ✓</div>
-
     <script>
-        // CONFIG FIREBASE KWA ADMIN (Ileile uliyotuma kwenye picha)
+        // FIREBASE CONFIG MATCHING YOUR MAIN INDEX PAGE
         const firebaseConfig = {
-          apiKey: "AIzaSyAh7LRqKy5RfLUr0tpqA47TV...", // Mkurugenzi Bryan Alex: Futa hii na weka ApiKey kamili uliyoficha kwenye picha!
+          apiKey: "AIzaSyAh7LRqKy5RfLUr0tpqA47TV...", 
           authDomain: "bam-tech-solutions-tv.firebaseapp.com",
-          databaseURL: "https://bam-tech-solutions-tv.firebaseio.com",
+          databaseURL: "https://bam-tech-solutions-tv-default-rtdb.firebaseio.com/",
           projectId: "bam-tech-solutions-tv",
           storageBucket: "bam-tech-solutions-tv.appspot.com",
           messagingSenderId: "1013751123351",
-          appId: "1:1013751123351:web:173b1884f22...", // Mkurugenzi Bryan Alex: Futa hii na weka AppId kamili uliyoficha kwenye picha!
-          measurementId: "G-NKZ07VGJX7"
+          appId: "1:1013751123351:web:173b1884f22..."
         };
         
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         function unlockDashboard() {
-            const pin = document.getElementById('master-pin').value;
-            if(pin === "BAM2026") { // PIN salama uliyochagua mwenyewe
+            // Master security pin requested
+            if(document.getElementById('master-pin').value === "BAM2026") {
                 document.getElementById('gatekeeper').style.display = 'none';
                 document.getElementById('main-panel').style.display = 'grid';
-                
-                // Pakia data zilizopo sasa hivi kutoka Firebase Database nodes
-                loadCurrentFirebaseData();
-                startAdminChatSync();
-            } else {
-                alert("❌ PIN uliyoweka sio sahihi! Hakuna idhini.");
-            }
+                loadCurrentData();
+            } else { alert("PIN Sio Sahihi! Jaribu Tena."); }
         }
 
-        // Pakia data zilizopo sasa kwenye form ili mmiliki asianze upya
-        function loadCurrentFirebaseData() {
-            // 1. Link ya Video
-            database.ref('bam_stream_url').once('value').then((snapshot) => {
-                let url = snapshot.val();
-                if(url) document.getElementById('stream-url-field').value = url;
-            });
+        function loadCurrentData() {
+            database.ref('bam_stream_url').once('value').then(s => { if(s.val()) document.getElementById('stream-url-field').value = s.val(); });
+            database.ref('bam_forced_viewers').once('value').then(s => { if(s.val()) document.getElementById('viewer-count-field').value = s.val(); });
             
-            // 2. Config nzima
-            database.ref('bam_tv_config').once('value').then((snapshot) => {
-                let config = snapshot.val();
-                if(config) {
-                    document.getElementById('program-title-field').value = config.title || '';
-                    document.getElementById('lstyle-text-field').value = config.adText || '';
-                    document.getElementById('ticker-text-field').value = config.ticker || '';
+            database.ref('bam_tv_config').once('value').then(s => {
+                let c = s.val();
+                if(c) {
+                    document.getElementById('program-title-field').value = c.title || '';
+                    document.getElementById('content-type-field').value = c.contentType || 'Burudani & Teknolojia Halisi';
+                    document.getElementById('resolution-field').value = c.resolution_text || '';
+                    document.getElementById('lstyle-text-field').value = c.adText || '';
+                    document.getElementById('ticker-text-field').value = c.ticker || '';
+                    document.getElementById('live-badge-selector').value = c.showLive ? c.liveText : 'OFF';
+                    document.getElementById('lstyle-status-selector').value = c.showLStyle ? 'ON' : 'OFF';
+                    document.getElementById('ticker-status-selector').value = c.showTicker ? 'ON' : 'OFF';
                     
-                    document.getElementById('live-badge-selector').value = config.showLive ? config.liveText : 'OFF';
-                    document.getElementById('lstyle-status-selector').value = config.showLStyle ? 'ON' : 'OFF';
-                    document.getElementById('ticker-status-selector').value = config.showTicker ? 'ON' : 'OFF';
+                    // Ratiba fields load
+                    document.getElementById('sch-t1').value = c.sch_t1 || '08:00 AM - LIVE';
+                    document.getElementById('sch-d1').value = c.sch_d1 || 'Tech Insights & Global Innovation Performance';
+                    document.getElementById('sch-t2').value = c.sch_t2 || '02:00 PM';
+                    document.getElementById('sch-d2').value = c.sch_d2 || 'Cybersecurity Foundations & Mobile Coding Linux';
+                    document.getElementById('sch-t3').value = c.sch_t3 || '06:30 PM';
+                    document.getElementById('sch-d3').value = c.sch_d3 || 'BAM Tech Solutions Corporate Showcase';
+                    document.getElementById('sch-t4').value = c.sch_t4 || '09:00 PM';
+                    document.getElementById('sch-d4').value = c.sch_d4 || 'Digital Innovations in African Ecosystems';
                 }
             });
-            
-            // 3. Watazamaji
-            database.ref('bam_forced_viewers').once('value').then((snapshot) => {
-                let count = snapshot.val();
-                if(count) document.getElementById('viewer-count-field').value = count;
-            });
-        }
 
-        // RUSHA MABADILIKO YOTE HEWANI (Weka data kwenye Database nodes)
-        function publishLiveChanges() {
-            // A. Link ya Video
-            let urlField = document.getElementById('stream-url-field').value;
-            if(urlField.trim() !== "") {
-                database.ref('bam_stream_url').set(urlField);
-            }
-
-            // B. Idadi ya Watazamaji (Ikiwa imejazwa)
-            let viewersField = document.getElementById('viewer-count-field').value;
-            if(viewersField.trim() !== "") {
-                database.ref('bam_forced_viewers').set(viewersField);
-            } else {
-                // Futa kama admin amefuta data ili urudie simulation
-                database.ref('bam_forced_viewers').remove();
-            }
-
-            // C. Unda config kamili ya vitu vya muonekano
-            let liveSelector = document.getElementById('live-badge-selector').value;
-            let lstyleSelector = document.getElementById('lstyle-status-selector').value;
-            let tickerSelector = document.getElementById('ticker-status-selector').value;
-
-            let configObject = {
-                title: document.getElementById('program-title-field').value,
-                adText: document.getElementById('lstyle-text-field').value,
-                ticker: document.getElementById('ticker-text-field').value,
-                showLive: liveSelector !== 'OFF',
-                liveText: liveSelector !== 'OFF' ? liveSelector : 'LIVE',
-                showLStyle: lstyleSelector === 'ON',
-                showTicker: tickerSelector === 'ON'
-            };
-
-            // Tuma config kwenda Database node: bam_tv_config
-            database.ref('bam_tv_config').set(configObject);
-
-            // Onyesha arifa ya mafanikio kwa Admin
-            showSaveToast();
-        }
-
-        // [USIMAMIZI WA CHATS KWA MMILIKI (CHAT RESPONSE SYNC ENGINE)]
-        // Kusikiliza na kusawazisha chats za watazamaji hapa kwenye admin panel
-        function startAdminChatSync() {
-            database.ref('bam_tv_chats').on('value', (snapshot) => {
+            // Sink live incoming viewer chats
+            database.ref('bam_tv_chats').on('value', s => {
                 const viewer = document.getElementById('admin-chat-viewer');
-                let chats = snapshot.val();
-                if(chats) {
-                    viewer.innerHTML = ''; // Futa chats za zamani na pakia mpya
-                    
-                    Object.values(chats).forEach(item => {
+                viewer.innerHTML = '';
+                if(s.val()) {
+                    Object.entries(s.val()).forEach(([key, item]) => {
                         let div = document.createElement('div');
                         div.className = 'chat-row';
-                        div.innerHTML = `<span style="color:#64748b; font-size:10px;">[${item.time}]</span> <strong>${item.user}:</strong> <span>${item.text}</span>
-                                         <span class="reply-link" onclick="setupReplyTag('${item.user}')">[JIBU]</span>`;
+                        div.innerHTML = `<strong>${item.user}:</strong> <span>${item.text}</span> <span class="reply-link" onclick="tagUser('${item.user}')">Jibu</span>`;
                         viewer.appendChild(div);
                     });
-                    // Tembeza box chini kabisa
                     viewer.scrollTop = viewer.scrollHeight;
                 }
             });
         }
 
-        // Weka jina la mtazamaji anayejibiwa kwenye input
-        function setupReplyTag(user) {
+        function publishLiveChanges() {
+            let url = document.getElementById('stream-url-field').value;
+            if(url.trim() !== "") database.ref('bam_stream_url').set(url);
+
+            let viewers = document.getElementById('viewer-count-field').value;
+            if(viewers.trim() !== "") { database.ref('bam_forced_viewers').set(viewers); } else { database.ref('bam_forced_viewers').remove(); }
+
+            let liveSel = document.getElementById('live-badge-selector').value;
+            
+            // Comprehensive update of all index page configurations
+            database.ref('bam_tv_config').set({
+                title: document.getElementById('program-title-field').value,
+                contentType: document.getElementById('content-type-field').value,
+                resolution_text: document.getElementById('resolution-field').value,
+                adText: document.getElementById('lstyle-text-field').value,
+                ticker: document.getElementById('ticker-text-field').value,
+                showLive: liveSel !== 'OFF',
+                liveText: liveSel !== 'OFF' ? liveSel : 'LIVE',
+                showLStyle: document.getElementById('lstyle-status-selector').value === 'ON',
+                showTicker: document.getElementById('ticker-status-selector').value === 'ON',
+                
+                // Ratiba records
+                sch_t1: document.getElementById('sch-t1').value,
+                sch_d1: document.getElementById('sch-d1').value,
+                sch_t2: document.getElementById('sch-t2').value,
+                sch_d2: document.getElementById('sch-d2').value,
+                sch_t3: document.getElementById('sch-t3').value,
+                sch_d3: document.getElementById('sch-d3').value,
+                sch_t4: document.getElementById('sch-t4').value,
+                sch_d4: document.getElementById('sch-d4').value
+            });
+            alert("Kila kona ya TV imebadilika kikamilifu! ✓");
+        }
+
+        function tagUser(user) {
             document.getElementById('admin-reply-input').value = `@${user} `;
             document.getElementById('admin-reply-input').focus();
         }
 
-        // TUMA JIBU LA MMILIKI (Tuma data kama "Admin" kwenda Firebase Database node: bam_tv_chats)
         function sendAdminReply() {
-            let textInput = document.getElementById('admin-reply-input');
-            let text = textInput.value;
-            if(text.trim() !== "") {
-                let now = new Date().toLocaleTimeString();
-                let chatObject = {
-                    user: "BAM TECH (Admin)",
-                    text: text,
-                    time: now
-                };
-                
-                // Sukuma data kwenda kwenye Database node: bam_tv_chats ili watazamaji waione
-                database.ref('bam_tv_chats').push(chatObject);
-                textInput.value = ''; // Futa input
+            let input = document.getElementById('admin-reply-input');
+            if(input.value.trim() !== "") {
+                database.ref('bam_tv_chats').push({
+                    user: "BAM TECH TV (Admin)",
+                    text: input.value,
+                    time: new Date().toLocaleTimeString()
+                });
+                input.value = '';
             }
         }
 
-        // Futa kumbukumbu nzima ya chats kwenye Firebase
-        function clearFirebaseChatLog() {
-            if(confirm("Je, una uhakika unataka kufuta kabisa maoni yote kwenye orodha ya Chats? Hatua hii haina kurudi nyuma.")) {
-                database.ref('bam_tv_chats').remove();
-                document.getElementById('admin-chat-viewer').innerHTML = ''; // Futa pia upande wa admin
-            }
-        }
-
-        // Onyesha Toast
-        function showSaveToast() {
-            const toast = document.getElementById('save-toast');
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        function clearChats() {
+            if(confirm("Je, una uhakika unataka kusafisha maoni yote yaliyopo kwenye stesheni?")) { database.ref('bam_tv_chats').remove(); }
         }
     </script>
 </body>
