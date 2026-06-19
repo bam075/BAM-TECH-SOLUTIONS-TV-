@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BAM TECH solutions TV | Live</title>
     
-    <!-- FIREBASE COMPAT CORE -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    
-    <!-- IPTV Streaming Decoder -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     
     <style>
@@ -24,7 +21,7 @@
             .header-wide, .hero-wide { grid-column: 1 / span 2; }
         }
 
-        /* NAVBAR LOGO FIX (Kama ilivyo kwenye faili 1781889822526.jpeg) */
+        /* NAVBAR LOGO AS SHOWN IN 1781889822526.jpeg */
         header { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
         .brand { display: flex; align-items: center; gap: 6px; }
         .brand-text-group { display: flex; flex-direction: column; justify-content: center; line-height: 1.1; }
@@ -42,18 +39,17 @@
         .hero h1 { font-size: 24px; font-weight: 850; color: #ffffff; margin-bottom: 4px; }
         .hero p { font-size: 13px; color: #94a3b8; }
 
-        /* VIDEO PLAYER & UPGRADED WATERMARK */
+        /* VIDEO PLAYER & WATERMARK */
         .player-container-wrapper { position: relative; width: 100%; }
         .player-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; background: #000000; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7); z-index: 2; }
-        video { width: 100%; height: 100%; object-fit: contain; }
+        video { width: 100%; height: 100%; object-fit: contain; background: #000; }
         
-        /* PREMIUM WATERMARK (BAM TECH + solutions chini + TV kubwa pembeni) */
         .channel-bug-premium { position: absolute; top: 15px; right: 20px; z-index: 999; pointer-events: none; display: flex; align-items: center; gap: 5px; background: rgba(0, 0, 0, 0.3); padding: 5px 10px; border-radius: 6px; backdrop-filter: blur(4px); }
         .bug-title { font-size: 14px; font-weight: 900; color: #ffffff; text-transform: uppercase; line-height: 1.1; }
         .bug-subtitle { font-size: 9px; color: #94a3b8; text-transform: lowercase; line-height: 1.1; margin-top: 1px; }
         .bug-tv { font-size: 32px; font-weight: 950; font-style: italic; background: linear-gradient(135deg, #3b82f6, #1d4ed8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 0.8; margin-left: 1px; }
 
-        /* KISASA L-STYLE MULTI-AD BOX (Maandishi, Picha, Video) */
+        /* L-STYLE AD BOX */
         .l-ad-box { position: absolute; bottom: 55px; left: 20px; width: 230px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 8px; z-index: 998; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.6); overflow: hidden; }
         .l-ad-box img, .l-ad-box video { width: 100%; height: auto; display: block; border-radius: 4px; margin-top: 4px; }
         
@@ -77,16 +73,7 @@
         .row-label { color: #94a3b8; }
         .row-value { font-weight: 600; }
 
-        /* SCHEDULES & CHAT */
-        .schedule-box { background: #0f172a; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); padding: 16px; margin-top: 15px; }
-        .schedule-title { font-size: 12px; font-weight: 800; color: #60a5fa; margin-bottom: 12px; text-transform: uppercase; }
-        .schedule-list { display: flex; flex-direction: column; gap: 10px; }
-        .schedule-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px; background: rgba(255,255,255,0.01); border-left: 3px solid #1e293b; border-radius: 0 8px 8px 0; }
-        .schedule-item.active { border-left-color: #10b981; background: rgba(16, 185, 129, 0.03); }
-        .sch-time { font-size: 11px; font-weight: 700; color: #10b981; white-space: nowrap; }
-        .schedule-item:not(.active) .sch-time { color: #64748b; }
-        .sch-desc { font-size: 12px; font-weight: 600; color: #e2e8f0; }
-
+        /* CHAT & TICKER */
         .chat-container { background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 16px; height: 480px; display: flex; flex-direction: column; overflow: hidden; }
         .chat-header { padding: 14px 16px; background: rgba(255, 255, 255, 0.01); border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
         .chat-pulse { width: 6px; height: 6px; background: #10b981; border-radius: 50%; }
@@ -110,7 +97,6 @@
     <div class="container">
         <div class="header-wide">
             <header>
-                <!-- CORRECTED LOGO ACCORDING TO 1781889822526.jpeg -->
                 <div class="brand">
                     <div class="brand-text-group">
                         <span class="brand-title">BAM TECH</span>
@@ -135,7 +121,6 @@
         <div class="main-content">
             <div class="player-container-wrapper">
                 <div class="player-wrapper">
-                    <!-- CORRECTED INSIDE WATERMARK LOGO -->
                     <div class="channel-bug-premium">
                         <div class="brand-text-group">
                             <span class="bug-title">BAM TECH</span>
@@ -144,10 +129,10 @@
                         <span class="bug-tv">TV</span>
                     </div>
                     
-                    <!-- ADVANCED AD BOX (DYN CONTENT) -->
                     <div class="l-ad-box" id="dyn-lstyle-box"></div>
                     
-                    <video id="video" autoplay muted playsinline></video>
+                    <!-- Kurekebisha Autoplay Policy -->
+                    <video id="video" autoplay muted playsinline crossorigin="anonymous"></video>
 
                     <div class="custom-controls">
                         <div class="control-group">
@@ -187,29 +172,6 @@
                     <span class="row-value" id="current-quality-view">Inapakia...</span>
                 </div>
             </div>
-
-            <!-- EXCLUSIVE RATIBA SYSTEM -->
-            <div class="schedule-box">
-                <div class="schedule-title">📅 Ratiba ya Vipindi ya Leo</div>
-                <div class="schedule-list">
-                    <div class="schedule-item active" id="sch-item-1">
-                        <div class="sch-time" id="sch-t1">08:00 AM</div>
-                        <div class="sch-desc" id="sch-d1">Loading...</div>
-                    </div>
-                    <div class="schedule-item" id="sch-item-2">
-                        <div class="sch-time" id="sch-t2">12:00 PM</div>
-                        <div class="sch-desc" id="sch-d2">Loading...</div>
-                    </div>
-                    <div class="schedule-item" id="sch-item-3">
-                        <div class="sch-time" id="sch-t3">04:00 PM</div>
-                        <div class="sch-desc" id="sch-d3">Loading...</div>
-                    </div>
-                    <div class="schedule-item" id="sch-item-4">
-                        <div class="sch-time" id="sch-t4">08:00 PM</div>
-                        <div class="sch-desc" id="sch-d4">Loading...</div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <div class="sidebar-content">
@@ -244,7 +206,7 @@
         const database = firebase.database();
 
         let currentStreamUrl = "";
-        let currentPlaybackMode = "hls"; // 'hls' au 'mp4'
+        let currentPlaybackMode = "hls";
         let hlsInstance = null;
 
         const video = document.getElementById('video');
@@ -253,7 +215,6 @@
         const qualitySelect = document.getElementById('quality-select');
         const currentQualityView = document.getElementById('current-quality-view');
 
-        // SINK KILA KITU KUHUSU VIDEO PLAYBACK KUTOKA ADMIN
         database.ref('bam_stream_management').on('value', (snapshot) => {
             let data = snapshot.val();
             if(data) {
@@ -270,19 +231,26 @@
 
         function runStationPlayer() {
             if(hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
-            video.removeAttribute('src');
+            video.pause();
+            video.src = "";
             video.load();
 
-            if(!currentStreamUrl) return;
+            if(!currentStreamUrl || currentStreamUrl.trim() === "") {
+                currentQualityView.innerText = "Kituo Hakina Maudhui...";
+                return;
+            }
+
+            video.muted = true; // Hulinda usalama wa kivinjari kuzuia autoplay
 
             if (currentPlaybackMode === "mp4") {
-                // NJIA YA CLIP/DIRECT VIDEO FILE
                 video.src = currentStreamUrl;
-                video.play().catch(()=>{});
+                video.load();
+                video.play().then(() => {
+                    playBtn.innerText = '❚❚ Sitisha';
+                }).catch((e)=>{ console.log("Play failed: ", e); });
                 qualitySelect.innerHTML = '<option value="-1">Video File (No Adaptive Stream)</option>';
-                currentQualityView.innerText = "Direct MP4 File / Clip";
+                currentQualityView.innerText = "Direct MP4 File";
             } else {
-                // NJIA YA ADAPTIVE HLS STREAM (.m3u8)
                 if (Hls.isSupported()) {
                     hlsInstance = new Hls();
                     hlsInstance.loadSource(currentStreamUrl);
@@ -297,7 +265,8 @@
                     });
                 } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                     video.src = currentStreamUrl;
-                    currentQualityView.innerText = "Native HLS Playback";
+                    video.play().catch(()=>{});
+                    currentQualityView.innerText = "Native HLS";
                 }
             }
         }
@@ -313,21 +282,18 @@
             qualitySelect.addEventListener('change', (e) => { hls.currentLevel = parseInt(e.target.value); });
         }
 
-        // ADVANCED MULTI-FORMAT L-STYLE AD CODES
         database.ref('bam_tv_config').on('value', (snapshot) => {
             let config = snapshot.val();
             if(config) {
                 if(config.title) document.getElementById('dyn-now-playing').innerText = config.title;
                 if(config.contentType) document.getElementById('dyn-content-type').innerText = config.contentType;
                 
-                // Live Badge
                 let livePill = document.getElementById('dyn-live-pill');
                 if(config.showLive) {
                     document.getElementById('dyn-live-text').innerText = config.liveText || 'LIVE';
                     livePill.style.display = 'flex';
                 } else { livePill.style.display = 'none'; }
 
-                // Advanced L-Style Rendering
                 let adBox = document.getElementById('dyn-lstyle-box');
                 if(config.showLStyle && config.adType) {
                     adBox.style.display = 'block';
@@ -342,22 +308,14 @@
                     }
                 } else { adBox.style.display = 'none'; }
 
-                // Ticker
                 let tickerBar = document.getElementById('dyn-ticker-bar');
                 if(config.showTicker && config.ticker) {
                     document.getElementById('dyn-ticker-text').innerText = config.ticker;
                     tickerBar.style.display = 'block';
                 } else { tickerBar.style.display = 'none'; }
-
-                // Schedules
-                for(let i=1; i<=4; i++) {
-                    if(config['sch_t'+i]) document.getElementById('sch-t'+i).innerText = config['sch_t'+i];
-                    if(config['sch_d'+i]) document.getElementById('sch-d'+i).innerText = config['sch_d'+i];
-                }
             }
         });
 
-        // CHAT MANAGEMENT
         database.ref('bam_tv_chats').on('value', (s) => {
             const chatBox = document.getElementById('chat-box');
             chatBox.innerHTML = '';
