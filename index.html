@@ -3,339 +3,435 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAM TECH SOLUTIONS TV</title>
-    <!-- Maktaba ya HLS.js kuchezesha mifumo ya IPTV (.m3u8) -->
+    <title>BAM TECH SOLUTIONS TV | Live Stream</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        /* Msingi wa Muonekano wa Kichawi (Premium Dark Theme) */
+        /* Premium Core Styling (Global Look) */
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         }
         body {
-            background: linear-gradient(180deg, #070b19 0%, #02040a 100%);
-            color: #ffffff;
+            background: #030712;
+            color: #f9fafb;
             min-height: 100vh;
-            padding-bottom: 40px;
+            padding-bottom: 60px;
+            overflow-x: hidden;
         }
         .container {
             width: 100%;
-            max-width: 600px;
+            max-width: 950px;
             margin: 0 auto;
-            padding: 15px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        @media (min-width: 850px) {
+            .container {
+                grid-template-columns: 1fr 320px;
+            }
+            .main-content { grid-column: 1; }
+            .sidebar-content { grid-column: 2; }
+            .header-wide { grid-column: 1 / span 2; }
+            .hero-wide { grid-column: 1 / span 2; }
         }
 
-        /* Sehemu ya Juu (Header Navbar) */
+        /* Top Header Navbar */
         header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 15px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
         }
         .brand {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
         .logo-badge {
-            background: #101726;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
             color: #ffffff;
-            font-weight: bold;
-            padding: 8px 12px;
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-size: 14px;
+            font-weight: 900;
+            padding: 10px 14px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+            font-size: 15px;
+            letter-spacing: 0.5px;
         }
         .brand-text {
             display: flex;
             flex-direction: column;
         }
         .brand-title {
-            font-size: 13px;
+            font-size: 15px;
             font-weight: 800;
             letter-spacing: 0.5px;
             color: #ffffff;
         }
         .brand-subtitle {
             font-size: 9px;
-            color: #64748b;
+            color: #94a3b8;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             margin-top: 2px;
         }
-        
-        /* Bango la LIVE SASA */
+        .live-status-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
         .live-pill {
-            background: rgba(220, 38, 38, 0.2);
-            color: #ef4444;
-            border: 1px solid rgba(220, 38, 38, 0.4);
+            background: #dc2626;
+            color: #ffffff;
             padding: 6px 14px;
-            border-radius: 20px;
+            border-radius: 6px;
             font-size: 11px;
             font-weight: bold;
             letter-spacing: 1px;
             display: flex;
             align-items: center;
             gap: 6px;
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
         }
         .live-dot {
             width: 8px;
             height: 8px;
-            background: #ef4444;
+            background: #ffffff;
             border-radius: 50%;
-            display: inline-block;
-            animation: blink 1.5s infinite;
+            animation: blink 1.2s infinite;
+        }
+        .viewer-count {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 600;
         }
         @keyframes blink {
-            0% { opacity: 0.4; }
+            0% { opacity: 0.3; }
             50% { opacity: 1; }
-            100% { opacity: 0.4; }
+            100% { opacity: 0.3; }
         }
 
-        /* Maandishi ya Utambulisho */
+        /* Hero Header text */
         .hero {
-            text-align: center;
-            margin: 30px 0 20px 0;
+            text-align: left;
+            margin: 15px 0 5px 0;
         }
         .hero h1 {
-            font-size: 22px;
-            font-weight: 900;
-            background: linear-gradient(90deg, #f59e0b, #3b82f6);
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #ffffff, #94a3b8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
-            letter-spacing: 0.5px;
+            margin-bottom: 6px;
         }
         .hero p {
             font-size: 13px;
             color: #94a3b8;
-            line-height: 1.6;
         }
 
-        /* Fremu ya Kicheza Video (Inayolinda Nembo Isipotee) */
+        /* Ambient Premium Glow Video Frame */
+        .player-container-wrapper {
+            position: relative;
+            width: 100%;
+        }
+        /* Kikuzaji mwanga wa Neon nyuma ya Video */
+        .player-glow {
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            width: 90%;
+            height: 90%;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            filter: blur(40px);
+            opacity: 0.25;
+            z-index: 1;
+            pointer-events: none;
+            border-radius: 16px;
+        }
         .player-wrapper {
             position: relative;
             width: 100%;
             aspect-ratio: 16/9;
-            background: #000;
+            background: #000000;
             border-radius: 16px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+            z-index: 2;
         }
         .player-wrapper:fullscreen {
             width: 100vw;
             height: 100vh;
             border-radius: 0;
+            border: none;
         }
         video {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            cursor: pointer;
         }
         
-        /* Nembo ya TV (Ipo Juu Kulia ya Video Daima) */
+        /* LOGO MANAGEMENT (Smart Positioning & Fallback) */
         .channel-bug {
             position: absolute;
-            top: 12px;
-            right: 12px;
+            top: 15px;
+            right: 15px;
             z-index: 999999; 
             pointer-events: none;
-            filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.9));
+            transition: all 0.3s ease;
         }
         .channel-bug img {
-            height: 38px; /* Saizi nzuri ya nembo yako */
+            height: 40px; 
             width: auto;
             display: block;
         }
+        /* Nembo ya Maandishi ya dharura kama picha ikifeli kusoma */
+        .logo-text-fallback {
+            display: none;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1.5px solid #3b82f6;
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 11px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+        }
 
-        /* Vidhibiti Maalum (Custom Controls) */
+        /* Modern Custom Controls Overlay */
         .custom-controls {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 12px 15px;
+            padding: 15px 20px;
             z-index: 999999;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.4s ease;
         }
         .player-wrapper:hover .custom-controls,
         .player-wrapper:active .custom-controls {
             opacity: 1;
         }
-        .control-btn {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
+        .control-group {
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 5px 8px;
-            gap: 4px;
+            gap: 15px;
+        }
+        .control-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 8px 14px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .share-btn {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: none;
+        }
+        .share-btn:hover {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
         }
 
-        /* Sehemu ya Kuchagua Ubora wa Video */
+        /* Quality Dropdown Mux */
         .quality-container {
-            background: #0d1324;
-            border-radius: 10px;
-            padding: 10px 15px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 12px 18px;
+            margin-top: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
             display: flex;
             align-items: center;
             justify-content: space-between;
         }
         .quality-label {
-            font-size: 11px;
+            font-size: 12px;
             color: #94a3b8;
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
         }
         .quality-select {
-            background: #101726;
+            background: #1e293b;
             color: #ffffff;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 5px 10px;
-            border-radius: 6px;
+            padding: 6px 12px;
+            border-radius: 8px;
             font-size: 12px;
             outline: none;
             cursor: pointer;
+            font-weight: 600;
         }
 
-        /* Kadi ya Kipindi */
-        .card {
-            background: #0d1324;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        .card-icon {
-            font-size: 24px;
-            background: rgba(59, 130, 246, 0.1);
-            padding: 10px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .card-details {
+        /* International Rolling Live Chat Box */
+        .chat-container {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            height: 100%;
+            min-height: 350px;
+            max-height: 440px;
             display: flex;
             flex-direction: column;
-            gap: 4px;
+            overflow: hidden;
         }
-        .card-tag {
-            font-size: 10px;
+        .chat-header {
+            padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 13px;
+            font-weight: 700;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .chat-pulse {
+            width: 6px;
+            height: 6px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .chat-messages {
+            flex-1: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 320px;
+        }
+        .chat-msg {
+            font-size: 12.5px;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .chat-user {
+            font-weight: 700;
+            color: #60a5fa;
+            margin-right: 5px;
+        }
+        .chat-text {
+            color: #e2e8f0;
+        }
+        .chat-input-area {
+            padding: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 8px;
+        }
+        .chat-input {
+            flex: 1;
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 12px;
+            outline: none;
+        }
+        .chat-send {
+            background: #2563eb;
+            border: none;
+            color: white;
+            padding: 0 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* Info Cards */
+        .card {
+            background: #0f172a;
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            margin-top: 15px;
+        }
+        .card-title-sub {
+            font-size: 11px;
             color: #f59e0b;
             font-weight: bold;
             letter-spacing: 1px;
             text-transform: uppercase;
+            margin-bottom: 4px;
+            display: block;
         }
-        .card-title {
-            font-size: 16px;
+        .card-main-text {
+            font-size: 15px;
             font-weight: 700;
             color: #f8fafc;
         }
-        .card-sub {
-            font-size: 12px;
-            color: #64748b;
-        }
-
-        /* Sehemu ya Ratiba (Accordion) */
-        .ratiba-box {
-            background: #0d1324;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            margin-bottom: 25px;
-            overflow: hidden;
-        }
-        .ratiba-header {
-            padding: 14px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-            font-size: 14px;
-            color: #94a3b8;
-            font-weight: 600;
-        }
-        .ratiba-content {
-            padding: 0 16px 16px 16px;
-            font-size: 13px;
-            color: #64748b;
-            display: none;
-            border-top: 1px solid rgba(255, 255, 255, 0.02);
-        }
-        .ratiba-content.open {
-            display: block;
-        }
-
-        /* Taarifa za Chaneli (Table) */
-        .section-title {
-            font-size: 12px;
-            font-weight: bold;
-            color: #f59e0b;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin: 25px 0 12px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        
+        /* Table Layout for Details */
         .info-table {
-            background: #0d1324;
-            border-radius: 12px;
+            background: #0f172a;
+            border-radius: 14px;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            margin-top: 15px;
         }
         .table-row {
             display: flex;
             justify-content: space-between;
             padding: 14px 16px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            font-size: 14px;
-            align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 13.5px;
         }
-        .table-row:last-child {
-            border-bottom: none;
-        }
-        .row-label {
-            color: #94a3b8;
-        }
-        .row-value {
-            font-weight: 600;
-            color: #f1f5f9;
-        }
-        
-        .status-online {
-            color: #10b981;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: bold;
-        }
-        .status-dot {
-            width: 6px;
-            height: 6px;
+        .table-row:last-child { border-bottom: none; }
+        .row-label { color: #94a3b8; }
+        .row-value { font-weight: 600; color: #f1f5f9; }
+
+        /* Toast Popup Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
             background: #10b981;
-            box-shadow: 0 0 8px #10b981;
-            border-radius: 50%;
-            display: inline-block;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            z-index: 10000000;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
         }
     </style>
 </head>
@@ -343,101 +439,110 @@
 
     <div class="container">
         
-        <!-- Header Navbar -->
-        <header>
-            <div class="brand">
-                <div class="logo-badge">BT</div>
-                <div class="brand-text">
-                    <span class="brand-title">BAM TECH SOLUTIONS</span>
-                    <span class="brand-subtitle">TELEVISION NETWORK</span>
+        <div class="header-wide">
+            <header>
+                <div class="brand">
+                    <div class="logo-badge">BT</div>
+                    <div class="brand-text">
+                        <span class="brand-title">BAM TECH SOLUTIONS</span>
+                        <span class="brand-subtitle">TELEVISION NETWORK</span>
+                    </div>
+                </div>
+                <div class="live-status-container">
+                    <div class="viewer-count">👁 <span id="viewers">1,240</span> Watazamaji</div>
+                    <div class="live-pill"><span class="live-dot"></span>LIVE</div>
+                </div>
+            </header>
+        </div>
+
+        <div class="hero-wide">
+            <div class="hero">
+                <h1>BAM TECH SOLUTIONS TV</h1>
+                <p>Chaneli ya Kimataifa ya Ubunifu, Sayansi na Habari za Kidijitali kutoka Tanzania.</p>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="player-container-wrapper">
+                <div class="player-glow"></div>
+                <div class="player-wrapper" id="player-wrapper">
+                    
+                    <div class="channel-bug">
+                        <img src="172392.png" id="tv-logo" alt="BAM TECH TV" onerror="handleLogoError()">
+                        <div class="logo-text-fallback" id="text-logo">BAM TECH TV</div>
+                    </div>
+                    
+                    <video id="video" autoplay muted playsinline></video>
+
+                    <div class="custom-controls">
+                        <div class="control-group">
+                            <button class="control-btn" id="play-btn" onclick="togglePlay()">❚❚ Sitisha</button>
+                            <button class="control-btn" id="mute-btn" onclick="toggleMute()">🔇 Washa Sauti</button>
+                        </div>
+                        <div class="control-group">
+                            <button class="control-btn share-btn" onclick="shareWebsite()">🔗 Share</button>
+                            <button class="control-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="live-pill">
-                <span class="live-dot"></span>LIVE
+
+            <div class="quality-container">
+                <span class="quality-label">⚙️ UBORA WA MKURURO (RESOLUTIONS):</span>
+                <select class="quality-select" id="quality-select">
+                    <option value="-1">Auto (Kiotomatiki)</option>
+                </select>
             </div>
-        </header>
 
-        <!-- Utambulisho wa Juu -->
-        <div class="hero">
-            <h1>BAM TECH SOLUTIONS TV</h1>
-            <p>Chaneli yako ya teknolojia, habari za kidijitali na burudani — Innovating Tanzania Digitally</p>
-        </div>
-
-        <!-- Fremu ya Kicheza Video Maalum -->
-        <div class="player-wrapper" id="player-wrapper">
-            <!-- HAPA NDIO SEHEMU ILIPO LOGO YAKO MPYA ULIYO-UPLOAD -->
-            <div class="channel-bug">
-                <img src="File_00000000ab0471f4b8826dc4531855ca.png" alt="BAM TECH TV">
+            <div class="card">
+                <span class="card-title-sub">▶ INACHEZWA SASA hivi</span>
+                <div class="card-main-text">International Tech Insights & Digital Performance</div>
             </div>
-            
-            <!-- Video Tag -->
-            <video id="video" autoplay muted playsinline onclick="togglePlay()"></video>
 
-            <!-- Custom Controls za Ndani ya Skrini -->
-            <div class="custom-controls" id="custom-controls">
-                <button class="control-btn" id="play-btn" onclick="togglePlay()">❚❚ Sitisha</button>
-                <button class="control-btn" id="mute-btn" onclick="toggleMute()">🔇 Washa Sauti</button>
-                <button class="control-btn" onclick="toggleFullscreen()">⛶ Skrini Nzima</button>
-            </div>
-        </div>
-
-        <!-- Sanduku la Kuchagua Ubora wa Video -->
-        <div class="quality-container">
-            <span class="quality-label">⚙️ CHAGUA UBORA (RESOLUTION):</span>
-            <select class="quality-select" id="quality-select">
-                <option value="-1">Auto (Inajiseti yenyewe)</option>
-            </select>
-        </div>
-
-        <!-- Inacheza Sasa Card -->
-        <div class="card">
-            <div class="card-icon">📺</div>
-            <div class="card-details">
-                <span class="card-tag">▶ INACHEZWA SASA</span>
-                <span class="card-title">Maudhui ya Teknolojia & Matukio Mubashara</span>
-                <span class="card-sub">IPTV Pure Live Stream</span>
+            <div class="info-table">
+                <div class="table-row">
+                    <span class="row-label">Hali ya Matangazo</span>
+                    <span class="row-value" style="color: #10b981;">● HEWANI (ONLINE)</span>
+                </div>
+                <div class="table-row">
+                    <span class="row-label">Teknoloji ya Seva</span>
+                    <span class="row-value">HLS Pro IPTV M3U8</span>
+                </div>
+                <div class="table-row">
+                    <span class="row-label">Ubora wa Picha</span>
+                    <span class="row-value" id="current-quality-view">Inatafuta...</span>
+                </div>
             </div>
         </div>
 
-        <!-- Sehemu ya Ratiba -->
-        <div class="ratiba-box">
-            <div class="ratiba-header" onclick="toggleRatiba()">
-                <span>Ratiba ya Vipindi</span>
-                <span id="arr-icon">▼</span>
-            </div>
-            <div class="ratiba-content" id="ratiba-content">
-                <p style="margin-top: 10px;">• 04:00 AM - Habari za Kidijitali</p>
-                <p style="margin-top: 8px;">• 08:00 AM - Tech Trends & Innovations</p>
-                <p style="margin-top: 8px;">• 02:00 PM - Kipindi Maalum cha BAM Tech</p>
-                <p style="margin-top: 8px;">• 08:00 PM - Burudani na Muziki</p>
-            </div>
-        </div>
-
-        <!-- Taarifa za Chaneli Section -->
-        <div class="section-title">📊 TAARIFA ZA CHANELI</div>
-        <div class="info-table">
-            <div class="table-row">
-                <span class="row-label">Hali ya Utangazaji</span>
-                <span class="status-online"><span class="status-dot"></span>HEWANI</span>
-            </div>
-            <div class="table-row">
-                <span class="row-label">Mfumo</span>
-                <span class="row-value">Pure IPTV (HLS)</span>
-            </div>
-            <div class="table-row">
-                <span class="row-label">Ubora wa Sasa</span>
-                <span class="row-value" id="current-quality-view">Kutafuta...</span>
+        <div class="sidebar-content">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <span>LIVE CHAT MAONI</span>
+                    <span class="chat-pulse"></span>
+                </div>
+                <div class="chat-messages" id="chat-box">
+                    <div class="chat-msg"><span class="chat-user">Juma_Tech:</span><span class="chat-text">Hii web inacheza smooth sana! 🔥</span></div>
+                    <div class="chat-msg"><span class="chat-user">Anna_Dgtl:</span><span class="chat-text">Hongera sana BAM TECH kwa hatua hii.</span></div>
+                    <div class="chat-msg"><span class="chat-user">Alex_M:</span><span class="chat-text">Ubora wa video upo vizuri kabisa.</span></div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" placeholder="Andika maoni yako hapa..." id="chat-input">
+                    <button class="chat-send" onclick="sendFakeMessage()">Tuma</button>
+                </div>
             </div>
         </div>
 
     </div>
 
+    <div class="toast" id="toast-notif">Link imekopiwa! Tuma kwa marafiki.</div>
+
     <script>
         // =================================================================
-        // Hapa kuna Video nzuri sana ya majaribio ya Teknolojia/VFX (HD 1080p Mux Stream)
-        // Ukipata link yako ya IPTV (.m3u8) ya baadae, utaifuta hii na kuweka yako hapa.
+        // VIDEO MPYA YA MAJARIBIO: Hii ni Live Stream nzuri ya Kimataifa ya matamasha ya Muziki/Mwangaza (Sio katuni)
+        // Pindi ukipata link yako ya IPTV (.m3u8), utafuta hii na kuweka yako hapa katikati ya alama ''
         // =================================================================
-        const STREAM_URL = 'https://dash.akamaized.net/akamai/test/isoffmpeg/CLIPS/TearsOfSteel/tears_of_steel_1080p.m3u8'; 
+        const STREAM_URL = 'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8';
         // =================================================================
 
         const video = document.getElementById('video');
@@ -447,7 +552,15 @@
         const qualitySelect = document.getElementById('quality-select');
         const currentQualityView = document.getElementById('current-quality-view');
 
-        // Mfumo wa HLS
+        // SMART LOGO FALLBACK FUNCTION
+        // Kama faili lako la picha lina shida ya kutopatikana, mfumo unafuta icon mbaya na kuweka maandishi safi ya Neon!
+        function handleLogoError() {
+            document.getElementById('tv-logo').style.display = 'none';
+            document.getElementById('text-logo').style.display = 'block';
+            console.log("Nembo ya picha haijapatikana, nembo ya maandishi imewezeshwa kwa usalama.");
+        }
+
+        // Engine ya IPTV (HLS Playback)
         if (Hls.isSupported()) {
             const hls = new Hls();
             hls.loadSource(STREAM_URL);
@@ -461,7 +574,7 @@
             hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
                 const activeLevel = hls.levels[data.level];
                 if (activeLevel) {
-                    currentQualityView.innerText = activeLevel.height + "p HD";
+                    currentQualityView.innerText = activeLevel.height + "p Ultra HD";
                 }
             });
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
@@ -470,11 +583,11 @@
                 video.play().catch(() => {});
             });
             qualitySelect.innerHTML = '<option>Auto (Inasomwa na iOS)</option>';
-            currentQualityView.innerText = "Kiotomatiki (iOS)";
+            currentQualityView.innerText = "Kiotomatiki (Apple iOS)";
         }
 
         function setupQualitySelector(hlsInstance) {
-            qualitySelect.innerHTML = '<option value="-1">Auto (Inajirekebisha yenyewe)</option>';
+            qualitySelect.innerHTML = '<option value="-1">Auto (Inajirekebisha)</option>';
             hlsInstance.levels.forEach((level, index) => {
                 const name = level.height ? level.height + "p" : "Ubora " + (index + 1);
                 const option = document.createElement('option');
@@ -488,6 +601,7 @@
             });
         }
 
+        // Custom Control Operations
         function togglePlay() {
             if (video.paused) {
                 video.play();
@@ -524,25 +638,55 @@
             }
         }
 
-        let controlsTimeout;
-        playerWrapper.addEventListener('click', () => {
-            const controls = document.getElementById('custom-controls');
-            controls.style.opacity = '1';
-            clearTimeout(controlsTimeout);
-            controlsTimeout = setTimeout(() => {
-                controls.style.opacity = '0';
+        // Share Feature na Toast Popup ya Kimataifa
+        function shareWebsite() {
+            navigator.clipboard.writeText(window.location.href);
+            const toast = document.getElementById('toast-notif');
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
             }, 3000);
-        });
+        }
 
-        function toggleRatiba() {
-            const content = document.getElementById('ratiba-content');
-            const icon = document.getElementById('arr-icon');
-            if (content.classList.contains('open')) {
-                content.classList.remove('open');
-                icon.innerText = '▼';
-            } else {
-                content.classList.add('open');
-                icon.innerText = '▲';
+        // Dynamic Simulation features (Viewer Counter & Live Chat)
+        setInterval(() => {
+            const viewersSpan = document.getElementById('viewers');
+            let currentViewers = parseInt(viewersSpan.innerText.replace(',', ''));
+            let fluctuation = Math.floor(Math.random() * 11) - 5; 
+            viewersSpan.innerText = (currentViewers + fluctuation).toLocaleString();
+        }, 4000);
+
+        // Auto Rolling Chat Simulation
+        const fakeUsers = ['Baraka_Tech', 'Kelvin_BAM', 'Grace_L', 'David_M', 'Said_Omari', 'Innovator_TZ'];
+        const fakeTexts = ['Safi sana hii nembo inavutia!', 'BAM Tech kiboko yao 🙌', 'Huu ndio uwekezaji wa kidijitali wa kweli.', 'Mizigo inacheza bila kukwama kaka.', 'Morogoro ipo hewani kucheki tech! 🇹🇿', 'App inayofuata lini inatoka?'];
+        
+        setInterval(() => {
+            const chatBox = document.getElementById('chat-box');
+            const randomUser = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
+            const randomText = fakeTexts[Math.floor(Math.random() * fakeTexts.length)];
+            
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'chat-msg';
+            msgDiv.innerHTML = `<span class="chat-user">${randomUser}:</span><span class="chat-text">${randomText}</span>`;
+            
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            
+            if(chatBox.children.length > 25) {
+                chatBox.removeChild(chatBox.children[0]);
+            }
+        }, 6000);
+
+        function sendFakeMessage() {
+            const input = document.getElementById('chat-input');
+            if(input.value.trim() !== "") {
+                const chatBox = document.getElementById('chat-box');
+                const msgDiv = document.createElement('div');
+                msgDiv.className = 'chat-msg';
+                msgDiv.innerHTML = `<span class="chat-user" style="color: #f59e0b;">Wewe:</span><span class="chat-text">${input.value}</span>`;
+                chatBox.appendChild(msgDiv);
+                chatBox.scrollTop = chatBox.scrollHeight;
+                input.value = "";
             }
         }
     </script>
