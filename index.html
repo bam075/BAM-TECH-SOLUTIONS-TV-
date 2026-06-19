@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BAM TECH SOLUTIONS TV</title>
-    <!-- HLS.js Maktaba ya kuchezesha video za .m3u8 kwenye browser zote -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        /* Mipangilio ya Msingi ya Muonekano (Dark Premium Theme) */
+        /* Msingi wa Muonekano wa Kichawi (Premium Dark Theme) */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -67,7 +66,7 @@
             margin-top: 2px;
         }
         
-        /* Bango la Juu la Live Sasa lenye Swichi */
+        /* Bango la LIVE SASA */
         .live-pill {
             background: rgba(220, 38, 38, 0.2);
             color: #ef4444;
@@ -95,7 +94,7 @@
             100% { opacity: 0.4; }
         }
 
-        /* Maandishi ya Utambulisho wa Chaneli */
+        /* Maandishi ya Utambulisho */
         .hero {
             text-align: center;
             margin: 30px 0 20px 0;
@@ -115,7 +114,7 @@
             line-height: 1.6;
         }
 
-        /* Fremu ya Video Player */
+        /* Fremu ya Kicheza Video (Inayolinda Nembo Isipotee) */
         .player-wrapper {
             position: relative;
             width: 100%;
@@ -125,30 +124,97 @@
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+        }
+        /* Hii inahakikisha hata ikijaa skrini nzima vitu vinabaki salama */
+        .player-wrapper:fullscreen {
+            width: 100vw;
+            height: 100vh;
+            border-radius: 0;
         }
         video {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            cursor: pointer;
         }
         
-        /* NEMBO MPYA UPANDE WA JUU KULIA WA VIDEO */
+        /* Nembo ya TV (Ipo Juu Kulia ya Video Daima) */
         .channel-bug {
             position: absolute;
             top: 12px;
             right: 12px;
-            z-index: 10;
+            z-index: 999999; 
             pointer-events: none;
-            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
+            filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.8));
         }
         .channel-bug img {
-            height: 32px;
+            height: 35px; /* Unaweza kuongeza au kupunguza saizi hapa */
             width: auto;
             display: block;
         }
 
-        /* Kadi ya Kipindi Kinachocheza Sasa */
+        /* Vidhibiti Maalum (Custom Controls) */
+        .custom-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            z-index: 999999;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .player-wrapper:hover .custom-controls,
+        .player-wrapper:active .custom-controls {
+            opacity: 1;
+        }
+        .control-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 8px;
+            gap: 4px;
+        }
+
+        /* Sehemu ya Kuchagua Ubora wa IPTV (HLS Quality Selector) */
+        .quality-container {
+            background: #0d1324;
+            border-radius: 10px;
+            padding: 10px 15px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .quality-label {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+        .quality-select {
+            background: #101726;
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Kadi ya Kipindi */
         .card {
             background: #0d1324;
             border-radius: 12px;
@@ -256,16 +322,8 @@
             color: #f1f5f9;
         }
         
-        /* Mitindo ya Hali (Online/Offline) */
         .status-online {
             color: #10b981;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: bold;
-        }
-        .status-offline {
-            color: #64748b;
             display: flex;
             align-items: center;
             gap: 6px;
@@ -274,15 +332,10 @@
         .status-dot {
             width: 6px;
             height: 6px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .status-online .status-dot {
             background: #10b981;
             box-shadow: 0 0 8px #10b981;
-        }
-        .status-offline .status-dot {
-            background: #64748b;
+            border-radius: 50%;
+            display: inline-block;
         }
     </style>
 </head>
@@ -290,7 +343,6 @@
 
     <div class="container">
         
-        <!-- Header Section -->
         <header>
             <div class="brand">
                 <div class="logo-badge">BT</div>
@@ -299,40 +351,46 @@
                     <span class="brand-subtitle">TELEVISION NETWORK</span>
                 </div>
             </div>
-            <!-- Bango la LIVE SASA linalodhibitiwa na Swichi kule chini -->
-            <div class="live-pill" id="live-pill">
-                <span class="live-dot"></span>LIVE SASA
+            <div class="live-pill">
+                <span class="live-dot"></span>LIVE
             </div>
         </header>
 
-        <!-- Hero Texts -->
         <div class="hero">
             <h1>BAM TECH SOLUTIONS TV</h1>
             <p>Chaneli yako ya teknolojia, habari za kidijitali na burudani — Innovating Tanzania Digitally</p>
         </div>
 
-        <!-- Video Player Section -->
-        <div class="player-wrapper">
-            <!-- Nembo yako mpya juu kulia kwa video -->
+        <div class="player-wrapper" id="player-wrapper">
             <div class="channel-bug">
-                <img src="172392_2.png" alt="BAM TECH TV">
+                <img src="172392.png" alt="BAM TECH TV">
             </div>
             
-            <!-- Element ya Video yenyewe -->
-            <video id="video" controls autoplay muted playsinline></video>
+            <video id="video" autoplay muted playsinline onclick="togglePlay()"></video>
+
+            <div class="custom-controls" id="custom-controls">
+                <button class="control-btn" id="play-btn" onclick="togglePlay()">❚❚ Sitisha</button>
+                <button class="control-btn" id="mute-btn" onclick="toggleMute()">🔇 Washa Sauti</button>
+                <button class="control-btn" onclick="toggleFullscreen()">⛶ Skrini Nzima</button>
+            </div>
         </div>
 
-        <!-- Inacheza Sasa Card -->
+        <div class="quality-container">
+            <span class="quality-label">⚙️ CHAGUA UBORA (RESOLUTION):</span>
+            <select class="quality-select" id="quality-select">
+                <option value="-1">Auto (Inajiseti yenyewe)</option>
+            </select>
+        </div>
+
         <div class="card">
             <div class="card-icon">📺</div>
             <div class="card-details">
                 <span class="card-tag">▶ INACHEZWA SASA</span>
-                <span class="card-title">Maudhui Maalum</span>
-                <span class="card-sub">Muda wa Kipindi</span>
+                <span class="card-title">Maudhui ya Teknolojia & Matukio Mubashara</span>
+                <span class="card-sub">IPTV Pure Live Stream</span>
             </div>
         </div>
 
-        <!-- Sehemu ya Ratiba -->
         <div class="ratiba-box">
             <div class="ratiba-header" onclick="toggleRatiba()">
                 <span>Ratiba ya Vipindi</span>
@@ -346,67 +404,136 @@
             </div>
         </div>
 
-        <!-- Taarifa za Chaneli Section -->
         <div class="section-title">📊 TAARIFA ZA CHANELI</div>
         <div class="info-table">
             <div class="table-row">
-                <span class="row-label">Hali</span>
-                <span id="channel-status"></span>
+                <span class="row-label">Hali ya Utangazaji</span>
+                <span class="status-online"><span class="status-dot"></span>HEWANI</span>
             </div>
             <div class="table-row">
-                <span class="row-label">Watazamaji</span>
-                <span class="row-value">134</span>
+                <span class="row-label">Mfumo</span>
+                <span class="row-value">Pure IPTV (HLS)</span>
             </div>
             <div class="table-row">
-                <span class="row-label">Ubora</span>
-                <span class="row-value">HD 720p</span>
+                <span class="row-label">Ubora wa Sasa</span>
+                <span class="row-value" id="current-quality-view">Kutafuta...</span>
             </div>
         </div>
 
     </div>
 
-    <!-- Script za Kuendesha Mfumo na Swichi -->
     <script>
         // =================================================================
-        //   MIPANGILIO KUU (BADILISHA HAPA TU)
+        // Weka Link yako ya IPTV (.m3u8) hapa chini kati ya alama hizi ''
         // =================================================================
-        const STREAM_URL = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'; // Weka link ya m3u8 hapa
-        const IS_LIVE    = false; // WEKA true KUWEKA LIVE SASA, WEKA false KUFICHA
+        const STREAM_URL = 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8'; 
         // =================================================================
 
-
-        // 1. Mfumo wa Kudhibiti Swichi ya LIVE SASA na Hali ya Chaneli
-        const livePill = document.getElementById('live-pill');
-        const channelStatus = document.getElementById('channel-status');
-
-        if (IS_LIVE) {
-            // Kama ipo Live
-            livePill.style.display = 'flex';
-            channelStatus.innerHTML = '<span class="status-online"><span class="status-dot"></span>HEWANI</span>';
-        } else {
-            // Kama haipo Live
-            livePill.style.display = 'none';
-            channelStatus.innerHTML = '<span class="status-offline"><span class="status-dot"></span>HAIPO HEWANI</span>';
-        }
-
-        // 2. Mfumo wa Kuchezesha Video ya HLS (.m3u8)
         const video = document.getElementById('video');
+        const playerWrapper = document.getElementById('player-wrapper');
+        const playBtn = document.getElementById('play-btn');
+        const muteBtn = document.getElementById('mute-btn');
+        const qualitySelect = document.getElementById('quality-select');
+        const currentQualityView = document.getElementById('current-quality-view');
+
+        // Mfumo wa HLS na usomaji wa Quality zote zilizopo kwenye Link
         if (Hls.isSupported()) {
             const hls = new Hls();
             hls.loadSource(STREAM_URL);
             hls.attachMedia(video);
+            
             hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                video.play();
+                video.play().catch(() => {});
+                setupQualitySelector(hls);
+            });
+
+            // Inasoma ubora gani unaocheza kwa sasa kulingana na kasi ya internet ya mtu
+            hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
+                const activeLevel = hls.levels[data.level];
+                if (activeLevel) {
+                    currentQualityView.innerText = activeLevel.height + "p HD";
+                }
             });
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            // Kwa ajili ya Safari browser (iPhone/Mac) ambazo zina sapoti ya ndani kwa ndani
+            // Maalum kwa ajili ya Safari ya iPhone/iPad ambayo ina mifumo yake ya ndani
             video.src = STREAM_URL;
             video.addEventListener('loadedmetadata', function() {
-                video.play();
+                video.play().catch(() => {});
+            });
+            qualitySelect.innerHTML = '<option>Auto (Inasomwa na iOS)</option>';
+            currentQualityView.innerText = "Kiotomatiki (iOS)";
+        }
+
+        // Kujaza machaguo ya chini na juu ya video kwenye Dropdown kiotomatiki
+        function setupQualitySelector(hlsInstance) {
+            qualitySelect.innerHTML = '<option value="-1">Auto (Inajirekebisha yenyewe)</option>';
+            
+            hlsInstance.levels.forEach((level, index) => {
+                const name = level.height ? level.height + "p" : "Ubora " + (index + 1);
+                const option = document.createElement('option');
+                option.value = index;
+                option.innerText = name;
+                qualitySelect.appendChild(option);
+            });
+
+            // Mtumiaji akibadilisha yeye mwenyewe ubora
+            qualitySelect.addEventListener('change', (e) => {
+                const selectedLevel = parseInt(e.target.value);
+                hlsInstance.currentLevel = selectedLevel; 
             });
         }
 
-        // 3. Mfumo wa kufungua na kufunga Ratiba (Accordion Toggle)
+        // Mifumo ya Vidhibiti (Custom Audio/Video Actions)
+        function togglePlay() {
+            if (video.paused) {
+                video.play();
+                playBtn.innerText = '❚❚ Sitisha';
+            } else {
+                video.pause();
+                playBtn.innerText = '▶ Cheza';
+            }
+        }
+
+        function toggleMute() {
+            if (video.muted) {
+                video.muted = false;
+                muteBtn.innerText = '🔊 Zima Sauti';
+            } else {
+                video.muted = true;
+                muteBtn.innerText = '🔇 Washa Sauti';
+            }
+        }
+
+        // MKAKATI WA KUZUIA NEMBO ISIPOTEE KWENYE ROTATION:
+        // Tunalazimisha "fremu nzima" (Player Wrapper) iingie Fullscreen badala ya video yenyewe pekee yake.
+        function toggleFullscreen() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                if (playerWrapper.requestFullscreen) {
+                    playerWrapper.requestFullscreen();
+                } else if (playerWrapper.webkitRequestFullscreen) { 
+                    playerWrapper.webkitRequestFullscreen(); // iOS Support
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen(); // iOS Support
+                }
+            }
+        }
+
+        // Kuficha bar ya chini ya controls baada ya sekunde 3 mtumiaji asipogusa screen
+        let controlsTimeout;
+        playerWrapper.addEventListener('click', () => {
+            const controls = document.getElementById('custom-controls');
+            controls.style.opacity = '1';
+            clearTimeout(controlsTimeout);
+            controlsTimeout = setTimeout(() => {
+                controls.style.opacity = '0';
+            }, 3000);
+        });
+
+        // Kufungua na kufunga kadi ya Ratiba (Accordion)
         function toggleRatiba() {
             const content = document.getElementById('ratiba-content');
             const icon = document.getElementById('arr-icon');
