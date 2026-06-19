@@ -9,112 +9,102 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Roboto, sans-serif;
-        }
-        body {
-            background: #020617;
-            color: #f8fafc;
-            min-height: 100vh;
-            padding-bottom: 70px;
-            overflow-x: hidden;
-        }
-        .container {
-            width: 100%;
-            max-width: 950px;
-            margin: 0 auto;
-            padding: 16px;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-        @media (min-width: 850px) {
-            .container { grid-template-columns: 1fr 320px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+        body { background: #020617; color: #f8fafc; min-height: 100vh; padding-bottom: 80px; overflow-x: hidden; }
+        
+        .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 16px; display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 900px) {
+            .container { grid-template-columns: 1fr 360px; }
             .main-content { grid-column: 1; }
             .sidebar-content { grid-column: 2; }
-            .header-wide { grid-column: 1 / span 2; }
-            .hero-wide { grid-column: 1 / span 2; }
+            .header-wide, .hero-wide { grid-column: 1 / span 2; }
         }
-        header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-        }
+
+        /* HEADER & NAVBAR */
+        header { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
         .brand { display: flex; align-items: center; gap: 6px; }
         .brand-text-group { display: flex; flex-direction: column; justify-content: center; line-height: 1; }
         .brand-title { font-size: 18px; font-weight: 900; color: #ffffff; letter-spacing: 0.8px; text-transform: uppercase; }
         .brand-subtitle { font-size: 11px; font-weight: 500; color: #64748b; text-transform: lowercase; letter-spacing: 1px; margin-top: 3px; }
-        .brand-tv {
-            font-size: 44px; font-weight: 950; font-style: italic;
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            line-height: 0.8; margin-left: 2px; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.6));
-        }
-        .header-program-badge {
-            background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2);
-            padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; color: #60a5fa; display: none;
-        }
+        .brand-tv { font-size: 42px; font-weight: 950; font-style: italic; background: linear-gradient(135deg, #3b82f6, #1d4ed8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 0.8; margin-left: 2px; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.5)); }
+        
         .live-status-container { display: flex; align-items: center; gap: 8px; }
-        .live-pill {
-            background: #dc2626; color: #ffffff; padding: 5px 10px; border-radius: 6px;
-            font-size: 10px; font-weight: bold; letter-spacing: 1px; display: none; align-items: center; gap: 4px;
-            box-shadow: 0 0 15px rgba(220, 38, 38, 0.4);
-        }
+        .live-pill { background: #dc2626; color: #ffffff; padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; letter-spacing: 1px; display: none; align-items: center; gap: 4px; box-shadow: 0 0 15px rgba(220, 38, 38, 0.4); }
         .live-dot { width: 7px; height: 7px; background: #ffffff; border-radius: 50%; animation: blink 1.2s infinite; }
-        .viewer-count { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); padding: 5px 8px; border-radius: 6px; font-size: 10px; color: #94a3b8; font-weight: 600; }
+        .viewer-count { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); padding: 6px 10px; border-radius: 6px; font-size: 11px; color: #94a3b8; font-weight: 600; display: flex; align-items: center; gap: 5px; }
         @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
         .hero { margin: 15px 0 5px 0; }
-        .hero h1 { font-size: 26px; font-weight: 850; color: #ffffff; margin-bottom: 6px; }
+        .hero h1 { font-size: 24px; font-weight: 850; color: #ffffff; margin-bottom: 4px; }
         .hero p { font-size: 13px; color: #94a3b8; }
+
+        /* VIDEO PLAYER & WATERMARK REKREBISHWA */
         .player-container-wrapper { position: relative; width: 100%; }
-        .player-glow { position: absolute; top: 5%; left: 5%; width: 90%; height: 90%; background: linear-gradient(135deg, #3b82f6, #1d4ed8); filter: blur(45px); opacity: 0.25; z-index: 1; pointer-events: none; }
-        .player-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; background: #000000; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); z-index: 2; }
+        .player-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; background: #000000; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7); z-index: 2; }
         video { width: 100%; height: 100%; object-fit: contain; }
-        .channel-bug { position: absolute; top: 15px; right: 15px; z-index: 9999; pointer-events: none; }
-        .channel-bug img { height: 35px; width: auto; filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8)); }
-        .logo-text-fallback { display: none; }
-        .fallback-container { display: flex; align-items: center; gap: 5px; }
-        .fallback-title { font-size: 14px; font-weight: 900; color: #ffffff; text-transform: uppercase; }
-        .fallback-subtitle { font-size: 9px; color: #94a3b8; text-transform: lowercase; }
-        .fallback-tv { font-size: 32px; font-weight: 950; color: #3b82f6; font-style: italic; }
-        .l-ad-box { position: absolute; bottom: 60px; left: 20px; width: 260px; background: linear-gradient(135deg, #ff9900, #ff6600); color: black; padding: 12px; border-radius: 8px; z-index: 9998; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.4); font-weight: bold; }
-        .custom-controls { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 100%); display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; z-index: 9999; opacity: 0; transition: opacity 0.3s ease; }
+        
+        /* Premium Watermark Overlay (Iliyozungushwa kwenye picha) */
+        .channel-bug-premium { position: absolute; top: 15px; right: 20px; z-index: 999; pointer-events: none; display: flex; align-items: center; gap: 4px; background: rgba(0, 0, 0, 0.2); padding: 4px 8px; border-radius: 6px; backdrop-filter: blur(4px); }
+        .bug-title { font-size: 13px; font-weight: 900; color: #ffffff; text-transform: uppercase; line-height: 1; }
+        .bug-subtitle { font-size: 8px; color: #94a3b8; text-transform: lowercase; line-height: 1; margin-top: 2px; }
+        .bug-tv { font-size: 28px; font-weight: 950; font-style: italic; background: linear-gradient(135deg, #3b82f6, #1d4ed8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 0.8; }
+
+        /* L-STYLE AD BOX */
+        .l-ad-box { position: absolute; bottom: 60px; left: 20px; width: 250px; background: linear-gradient(135deg, #1e3a8a, #1e40af); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 12px; border-radius: 8px; z-index: 998; display: none; box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        
+        /* CONTROLS */
+        .custom-controls { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%); display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; z-index: 999; opacity: 0; transition: opacity 0.3s ease; }
         .player-wrapper:hover .custom-controls { opacity: 1; }
-        .control-btn { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; font-size: 11px; font-weight: 600; cursor: pointer; padding: 6px 12px; border-radius: 6px; }
+        .control-btn { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; font-size: 12px; font-weight: 600; cursor: pointer; padding: 6px 14px; border-radius: 6px; }
         .control-btn:hover { background: rgba(255, 255, 255, 0.2); }
-        .quality-container { background: #0f172a; border-radius: 12px; padding: 10px 16px; margin-top: 12px; border: 1px solid rgba(255, 255, 255, 0.04); display: flex; align-items: center; justify-content: space-between; }
-        .quality-label { font-size: 11px; color: #94a3b8; font-weight: 600; }
-        .quality-select { background: #1e293b; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.1); padding: 4px 8px; border-radius: 6px; font-size: 11px; outline: none; cursor: pointer; }
-        .chat-container { background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 16px; height: 440px; display: flex; flex-direction: column; overflow: hidden; }
-        .chat-header { padding: 12px 16px; background: rgba(255, 255, 255, 0.01); border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
-        .chat-pulse { width: 6px; height: 6px; background: #10b981; border-radius: 50%; }
-        .chat-messages { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .chat-msg { font-size: 12px; line-height: 1.4; }
-        .chat-user { font-weight: 700; color: #60a5fa; margin-right: 4px; }
-        .chat-text { color: #e2e8f0; }
-        .chat-input-area-wrapper { border-top: 1px solid rgba(255, 255, 255, 0.05); padding: 10px; background: rgba(0,0,0,0.1); }
-        .chat-input-area { display: flex; gap: 6px; }
-        .chat-input { flex: 1; background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 8px 12px; color: white; font-size: 12px; outline: none; }
-        .chat-send { background: #2563eb; border: none; color: white; padding: 0 14px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+        /* BOXES & METADATA */
+        .selector-box { background: #0f172a; border-radius: 12px; padding: 12px 16px; margin-top: 12px; border: 1px solid rgba(255, 255, 255, 0.04); display: flex; align-items: center; justify-content: space-between; }
+        .selector-label { font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
+        .quality-select { background: #1e293b; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.1); padding: 5px 10px; border-radius: 6px; font-size: 11px; outline: none; cursor: pointer; }
+        
         .card { background: #0f172a; border-radius: 12px; padding: 14px; border: 1px solid rgba(255, 255, 255, 0.04); margin-top: 12px; }
-        .card-title-sub { font-size: 10px; color: #f59e0b; font-weight: bold; text-transform: uppercase; }
-        .card-main-text { font-size: 14px; font-weight: 700; color: #f8fafc; margin-top: 2px; }
+        .card-title-sub { font-size: 10px; color: #3b82f6; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; gap: 4px; }
+        .card-main-text { font-size: 14px; font-weight: 700; color: #f8fafc; margin-top: 4px; }
+
+        /* TABLES */
         .info-table { background: #0f172a; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); margin-top: 12px; }
         .table-row { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 12px; }
         .table-row:last-child { border-bottom: none; }
         .row-label { color: #94a3b8; }
         .row-value { font-weight: 600; }
+
+        /* RATIBA SECTION */
+        .schedule-box { background: #0f172a; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); padding: 16px; margin-top: 15px; }
+        .schedule-title { font-size: 12px; font-weight: 800; color: #60a5fa; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; }
+        .schedule-list { display: flex; flex-direction: column; gap: 10px; }
+        .schedule-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px; background: rgba(255,255,255,0.01); border-left: 3px solid #1e293b; border-radius: 0 8px 8px 0; }
+        .schedule-item.active { border-left-color: #10b981; background: rgba(16, 185, 129, 0.03); }
+        .sch-time { font-size: 11px; font-weight: 700; color: #10b981; white-space: nowrap; }
+        .schedule-item:not(.active) .sch-time { color: #64748b; }
+        .sch-desc { font-size: 12px; font-weight: 600; color: #e2e8f0; line-height: 1.3; }
+
+        /* CHAT SYSTEM */
+        .chat-container { background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 16px; height: 480px; display: flex; flex-direction: column; overflow: hidden; }
+        .chat-header { padding: 14px 16px; background: rgba(255, 255, 255, 0.01); border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; letter-spacing: 0.5px; }
+        .chat-pulse { width: 6px; height: 6px; background: #10b981; border-radius: 50%; animation: pulse G 1.5s infinite; }
+        .chat-messages { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .chat-msg { font-size: 12px; line-height: 1.4; background: rgba(255,255,255,0.02); padding: 6px 10px; border-radius: 8px; }
+        .chat-user { font-weight: 700; color: #3b82f6; margin-right: 4px; }
+        .chat-text { color: #e2e8f0; }
+        .chat-input-area-wrapper { border-top: 1px solid rgba(255, 255, 255, 0.05); padding: 12px; background: rgba(0,0,0,0.1); }
+        .chat-input-area { display: flex; gap: 6px; }
+        .chat-input { flex: 1; background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 8px 12px; color: white; font-size: 12px; outline: none; }
+        .chat-send { background: #2563eb; border: none; color: white; padding: 0 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
+
+        /* TICKER BAR */
         .dynamic-ticker-container { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f172a; border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 0; overflow: hidden; z-index: 99999; display: none; }
         .ticker-flex-wrapper { display: flex; align-items: center; }
         .ticker-badge-prefix { background: #2563eb; color: white; font-size: 10px; font-weight: bold; padding: 3px 8px; text-transform: uppercase; border-radius: 4px; margin-left: 15px; z-index: 10; }
         .ticker-scroll-frame { overflow: hidden; white-space: nowrap; width: 100%; }
-        .ticker-moving-text { display: inline-block; padding-left: 100%; animation: tickerMarquee 25s linear infinite; font-size: 12px; color: #e2e8f0; }
+        .ticker-moving-text { display: inline-block; padding-left: 100%; animation: tickerMarquee 28s linear infinite; font-size: 12px; color: #e2e8f0; font-weight: 500; }
         @keyframes tickerMarquee { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
     </style>
 </head>
@@ -130,10 +120,9 @@
                     </div>
                     <span class="brand-tv">TV</span>
                 </div>
-                <div class="header-program-badge" id="dyn-program-badge">Kipindi: Inapakia...</div>
                 <div class="live-status-container">
-                    <div class="viewer-count">👁 <span id="viewers">1,740</span> Watazamaji</div>
                     <div class="live-pill" id="dyn-live-pill"><span class="live-dot"></span><span id="dyn-live-text">LIVE</span></div>
+                    <div class="viewer-count">👁 <span id="viewers">1,740</span> Watazamaji</div>
                 </div>
             </header>
         </div>
@@ -147,23 +136,18 @@
 
         <div class="main-content">
             <div class="player-container-wrapper">
-                <div class="player-glow"></div>
                 <div class="player-wrapper">
-                    <div class="channel-bug">
-                        <img src="172392.png" id="tv-logo" alt="Logo" onerror="handleLogoError()">
-                        <div class="logo-text-fallback" id="text-logo">
-                            <div class="fallback-container">
-                                <div class="fallback-text-group">
-                                    <span class="fallback-title">BAM TECH</span>
-                                    <span class="fallback-subtitle">solutions</span>
-                                </div> <span class="fallback-tv">TV</span>
-                            </div>
+                    <div class="channel-bug-premium">
+                        <div class="brand-text-group">
+                            <span class="bug-title">BAM TECH</span>
+                            <span class="bug-subtitle">solutions</span>
                         </div>
+                        <span class="bug-tv">TV</span>
                     </div>
                     
                     <div class="l-ad-box" id="dyn-lstyle-box">
-                        <h4 style="margin-bottom:3px; font-size:11px; color:#000;">TANGAZO MAALUM</h4>
-                        <p id="dyn-lstyle-text" style="font-size:12px;"></p>
+                        <h4 style="margin-bottom:3px; font-size:10px; color:#60a5fa; letter-spacing:0.5px;">TANGAZO MAALUM</h4>
+                        <p id="dyn-lstyle-text" style="font-size:12px; line-height:1.3; font-weight:500;"></p>
                     </div>
                     
                     <video id="video" autoplay muted playsinline></video>
@@ -180,16 +164,16 @@
                 </div>
             </div>
 
-            <div class="quality-container">
-                <span class="quality-label">⚙️ UBORA WA PICHA (RESOLUTIONS):</span>
+            <div class="selector-box">
+                <span class="selector-label">⚙️ Ubora wa mkururo (Resolutions):</span>
                 <select class="quality-select" id="quality-select">
-                    <option value="-1">Auto (Kiotomatiki)</option>
+                    <option value="-1">Auto (Mabadiliko Halisi)</option>
                 </select>
             </div>
 
             <div class="card">
                 <span class="card-title-sub">▶ INACHEZWA SASA HIVI</span>
-                <div class="card-main-text" id="dyn-now-playing">International Tech Insights & Digital Performance</div>
+                <div class="card-main-text" id="dyn-now-playing">Inapakia maudhui...</div>
             </div>
 
             <div class="info-table">
@@ -198,8 +182,34 @@
                     <span class="row-value" style="color: #10b981;">● HEWANI (ONLINE)</span>
                 </div>
                 <div class="table-row">
+                    <span class="row-label">Aina ya Maudhui</span>
+                    <span class="row-value" id="dyn-content-type">Burudani & Teknolojia Halisi</span>
+                </div>
+                <div class="table-row">
                     <span class="row-label">Ubora wa Picha</span>
                     <span class="row-value" id="current-quality-view">Inapakia...</span>
+                </div>
+            </div>
+
+            <div class="schedule-box">
+                <div class="schedule-title">📅 Ratiba ya Vipindi ya Leo</div>
+                <div class="schedule-list">
+                    <div class="schedule-item active" id="sch-item-1">
+                        <div class="sch-time" id="sch-t1">08:00 AM - LIVE</div>
+                        <div class="sch-desc" id="sch-d1">Tech Insights & Global Innovation Performance</div>
+                    </div>
+                    <div class="schedule-item" id="sch-item-2">
+                        <div class="sch-time" id="sch-t2">02:00 PM</div>
+                        <div class="sch-desc" id="sch-d2">Cybersecurity Foundations & Mobile Coding Linux</div>
+                    </div>
+                    <div class="schedule-item" id="sch-item-3">
+                        <div class="sch-time" id="sch-t3">06:30 PM</div>
+                        <div class="sch-desc" id="sch-d3">BAM Tech Solutions Corporate Showcase</div>
+                    </div>
+                    <div class="schedule-item" id="sch-item-4">
+                        <div class="sch-time" id="sch-t4">09:00 PM</div>
+                        <div class="sch-desc" id="sch-d4">Digital Innovations in African Ecosystems</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -213,7 +223,7 @@
                 <div class="chat-messages" id="chat-box"></div>
                 <div class="chat-input-area-wrapper">
                     <div class="chat-input-area">
-                        <input type="text" class="chat-input" placeholder="Andika maoni yako..." id="chat-input">
+                        <input type="text" class="chat-input" placeholder="Andika maoni yako..." id="chat-input" onkeypress="handleChatKey(event)">
                         <button class="chat-send" onclick="sendRealMessage()">Tuma</button>
                     </div>
                 </div>
@@ -231,13 +241,13 @@
     </div>
 
     <script>
-        // FIREBASE CONFIGURATION (Weka credential zako kutoka Firebase Console hapa)
+        // CONFIGURATION YA FIREBASE KUTOKA DASHBOARD YAKO HALISI
         const firebaseConfig = {
           apiKey: "AIzaSyAh7LRqKy5RfLUr0tpqA47TV...", 
-          authDomain: "bam-tech-solutions-tv-default-rtdb.firebaseapp.com",
+          authDomain: "bam-tech-solutions-tv.firebaseapp.com",
           databaseURL: "https://bam-tech-solutions-tv-default-rtdb.firebaseio.com/",
-          projectId: "bam-tech-solutions-tv-default-rtdb",
-          storageBucket: "bam-tech-solutions-tv-default-rtdb.appspot.com",
+          projectId: "bam-tech-solutions-tv",
+          storageBucket: "bam-tech-solutions-tv.appspot.com",
           messagingSenderId: "1013751123351",
           appId: "1:1013751123351:web:173b1884f22..."
         };
@@ -247,7 +257,13 @@
 
         let STREAM_URL = 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8'; 
         
-        // KUTAFUTA STREAM URL KUTOKA FIREBASE
+        const video = document.getElementById('video');
+        const playBtn = document.getElementById('play-btn');
+        const muteBtn = document.getElementById('mute-btn');
+        const qualitySelect = document.getElementById('quality-select');
+        const currentQualityView = document.getElementById('current-quality-view');
+
+        // SINKI STREAM YA VIDEO KILA INAPOBADILIKA KUTOKA ADMIN
         database.ref('bam_stream_url').on('value', (snapshot) => {
             let forcedUrl = snapshot.val();
             if(forcedUrl && STREAM_URL !== forcedUrl) {
@@ -255,17 +271,6 @@
                 initPlayer();
             }
         });
-
-        const video = document.getElementById('video');
-        const playBtn = document.getElementById('play-btn');
-        const muteBtn = document.getElementById('mute-btn');
-        const qualitySelect = document.getElementById('quality-select');
-        const currentQualityView = document.getElementById('current-quality-view');
-
-        function handleLogoError() {
-            document.getElementById('tv-logo').style.display = 'none';
-            document.getElementById('text-logo').style.display = 'block';
-        }
 
         let hlsInstance;
         function initPlayer() {
@@ -281,19 +286,20 @@
                 });
                 hlsInstance.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
                     const activeLevel = hlsInstance.levels[data.level];
-                    if (activeLevel) {
-                        currentQualityView.innerText = activeLevel.height + "p High Quality";
-                    }
+                    database.ref('bam_tv_config/resolution_text').once('value').then(snap => {
+                        if(!snap.val()) {
+                            currentQualityView.innerText = activeLevel ? activeLevel.height + "p High Quality" : "Auto Dynamic";
+                        }
+                    });
                 });
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
                 video.src = STREAM_URL;
-                currentQualityView.innerText = "Auto (Apple Engine)";
             }
         }
         initPlayer();
 
         function setupQualitySelector(hls) {
-            qualitySelect.innerHTML = '<option value="-1">Auto (Kiotomatiki)</option>';
+            qualitySelect.innerHTML = '<option value="-1">Auto (Mabadiliko Halisi)</option>';
             hls.levels.forEach((level, index) => {
                 const option = document.createElement('option');
                 option.value = index;
@@ -303,40 +309,48 @@
             qualitySelect.addEventListener('change', (e) => { hls.currentLevel = parseInt(e.target.value); });
         }
 
-        // KUSINKI CONFIGURATION (ZINASIKILIZWA MARA MOJA TU BILA LEAKS)
+        // UNIVERSAL CONTROL DYNAMIC SYNC (KUDHIBITI KILA KONA YA PAGE)
         database.ref('bam_tv_config').on('value', (snapshot) => {
             let config = snapshot.val();
             if(config) {
-                let progBadge = document.getElementById('dyn-program-badge');
-                if(config.title) {
-                    progBadge.innerText = "Kipindi: " + config.title;
-                    progBadge.style.display = 'block';
-                    document.getElementById('dyn-now-playing').innerText = config.title;
-                } else {
-                    progBadge.style.display = 'none';
-                }
-
+                if(config.title) document.getElementById('dyn-now-playing').innerText = config.title;
+                if(config.contentType) document.getElementById('dyn-content-type').innerText = config.contentType;
+                if(config.resolution_text) currentQualityView.innerText = config.resolution_text;
+                
+                // Live Badge Control
                 let livePill = document.getElementById('dyn-live-pill');
                 if(config.showLive) {
                     document.getElementById('dyn-live-text').innerText = config.liveText || 'LIVE';
                     livePill.style.display = 'flex';
                 } else { livePill.style.display = 'none'; }
 
+                // L-Style Ad Box Control
                 let lstyleBox = document.getElementById('dyn-lstyle-box');
                 if(config.showLStyle && config.adText) {
                     document.getElementById('dyn-lstyle-text').innerText = config.adText;
                     lstyleBox.style.display = 'block';
                 } else { lstyleBox.style.display = 'none'; }
 
+                // Ticker Moving Text Control
                 let tickerBar = document.getElementById('dyn-ticker-bar');
                 if(config.showTicker && config.ticker) {
                     document.getElementById('dyn-ticker-text').innerText = config.ticker;
                     tickerBar.style.display = 'block';
                 } else { tickerBar.style.display = 'none'; }
+
+                // Ratiba Content Control (Kila kona ya vipindi)
+                if(config.sch_t1) document.getElementById('sch-t1').innerText = config.sch_t1;
+                if(config.sch_d1) document.getElementById('sch-d1').innerText = config.sch_d1;
+                if(config.sch_t2) document.getElementById('sch-t2').innerText = config.sch_t2;
+                if(config.sch_d2) document.getElementById('sch-d2').innerText = config.sch_d2;
+                if(config.sch_t3) document.getElementById('sch-t3').innerText = config.sch_t3;
+                if(config.sch_d3) document.getElementById('sch-d3').innerText = config.sch_d3;
+                if(config.sch_t4) document.getElementById('sch-t4').innerText = config.sch_t4;
+                if(config.sch_d4) document.getElementById('sch-d4').innerText = config.sch_d4;
             }
         });
 
-        // LIVE CHAT ENGINE
+        // MANAGEMENT YA LATEST CHATS
         database.ref('bam_tv_chats').on('value', (snapshot) => {
             const chatBox = document.getElementById('chat-box');
             let chats = snapshot.val();
@@ -345,11 +359,11 @@
                 Object.values(chats).forEach(item => {
                     const msgDiv = document.createElement('div');
                     msgDiv.className = 'chat-msg';
-                    let isAdmin = item.user === "BAM TECH (Admin)";
-                    let color = isAdmin ? "#f59e0b" : "#60a5fa";
-                    let bg = isAdmin ? "background: rgba(245,158,11,0.1); padding: 2px 6px; border-radius:4px;" : "";
+                    let isAdmin = item.user.includes("Admin") || item.user.includes("BAM TECH");
+                    let color = isAdmin ? "#f59e0b" : "#3b82f6";
+                    let weight = isAdmin ? "900" : "700";
                     
-                    msgDiv.innerHTML = `<span class="chat-user" style="color: ${color}; ${bg}">${item.user}:</span> <span class="chat-text">${item.text}</span>`;
+                    msgDiv.innerHTML = `<span class="chat-user" style="color: ${color}; font-weight: ${weight};">${item.user}:</span> <span class="chat-text">${item.text}</span>`;
                     chatBox.appendChild(msgDiv);
                 });
                 chatBox.scrollTop = chatBox.scrollHeight;
@@ -368,7 +382,9 @@
             }
         }
 
-        // WANANCHI COUTERS ENGINE (REKEMISHWA KUTOKOMEZA FREEZING)
+        function handleChatKey(e) { if(e.key === 'Enter') sendRealMessage(); }
+
+        // FORCED VIEWERS ENGINE KUZUIA FREEZING NYINGI
         database.ref('bam_forced_viewers').on('value', (snapshot) => {
             let forced = snapshot.val();
             if(forced) { document.getElementById('viewers').innerText = parseInt(forced).toLocaleString(); }
@@ -379,11 +395,11 @@
                 if(!snapshot.val()) {
                     const viewersSpan = document.getElementById('viewers');
                     let current = parseInt(viewersSpan.innerText.replace(/,/g, '')) || 1740;
-                    let change = Math.floor(Math.random() * 7) - 3;
+                    let change = Math.floor(Math.random() * 5) - 2;
                     viewersSpan.innerText = (current + change).toLocaleString();
                 }
             });
-        }, 5000);
+        }, 6000);
 
         function togglePlay() {
             if (video.paused) { video.play(); playBtn.innerText = '❚❚ Sitisha'; }
@@ -399,4 +415,4 @@
         }
     </script>
 </body>
-    </html>
+</html>
