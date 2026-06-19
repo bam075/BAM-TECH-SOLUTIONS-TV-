@@ -4,15 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BAM TECH solutions TV | Live</title>
-    
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
         body { background: #020617; color: #f8fafc; min-height: 100vh; padding-bottom: 80px; overflow-x: hidden; }
-        
         .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 16px; display: grid; grid-template-columns: 1fr; gap: 20px; }
         @media (min-width: 900px) {
             .container { grid-template-columns: 1fr 360px; }
@@ -20,75 +17,52 @@
             .sidebar-content { grid-column: 2; }
             .header-wide, .hero-wide { grid-column: 1 / span 2; }
         }
-
-        /* NAVBAR LOGO AS SHOWN IN 1781889822526.jpeg */
         header { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
         .brand { display: flex; align-items: center; gap: 6px; }
         .brand-text-group { display: flex; flex-direction: column; justify-content: center; line-height: 1.1; }
         .brand-title { font-size: 19px; font-weight: 900; color: #ffffff; letter-spacing: 0.5px; text-transform: uppercase; }
         .brand-subtitle { font-size: 11px; font-weight: 500; color: #64748b; text-transform: lowercase; letter-spacing: 0.8px; margin-top: 1px; }
         .brand-tv { font-size: 44px; font-weight: 950; font-style: italic; background: linear-gradient(135deg, #3b82f6, #1d4ed8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 0.8; margin-left: 2px; filter: drop-shadow(0 0 12px rgba(59, 130, 246, 0.5)); }
-        
         .live-status-container { display: flex; align-items: center; gap: 8px; }
         .live-pill { background: #dc2626; color: #ffffff; padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; letter-spacing: 1px; display: none; align-items: center; gap: 4px; box-shadow: 0 0 15px rgba(220, 38, 38, 0.4); }
         .live-dot { width: 7px; height: 7px; background: #ffffff; border-radius: 50%; animation: blink 1.2s infinite; }
         .viewer-count { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); padding: 6px 10px; border-radius: 6px; font-size: 11px; color: #94a3b8; font-weight: 600; display: flex; align-items: center; gap: 5px; }
         @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-
         .hero { margin: 15px 0 5px 0; }
         .hero h1 { font-size: 24px; font-weight: 850; color: #ffffff; margin-bottom: 4px; }
         .hero p { font-size: 13px; color: #94a3b8; }
-
-        /* VIDEO PLAYER & WATERMARK */
-        .player-container-wrapper { position: relative; width: 100%; }
-        .player-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; background: #000000; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7); z-index: 2; }
+        .player-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; background: #000000; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7); }
         video { width: 100%; height: 100%; object-fit: contain; background: #000; }
-        
         .channel-bug-premium { position: absolute; top: 15px; right: 20px; z-index: 999; pointer-events: none; display: flex; align-items: center; gap: 5px; background: rgba(0, 0, 0, 0.3); padding: 5px 10px; border-radius: 6px; backdrop-filter: blur(4px); }
         .bug-title { font-size: 14px; font-weight: 900; color: #ffffff; text-transform: uppercase; line-height: 1.1; }
-        .bug-subtitle { font-size: 9px; color: #94a3b8; text-transform: lowercase; line-height: 1.1; margin-top: 1px; }
-        .bug-tv { font-size: 32px; font-weight: 950; font-style: italic; background: linear-gradient(135deg, #3b82f6, #1d4ed8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 0.8; margin-left: 1px; }
-
-        /* L-STYLE AD BOX */
-        .l-ad-box { position: absolute; bottom: 55px; left: 20px; width: 230px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 8px; z-index: 998; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.6); overflow: hidden; }
+        .bug-subtitle { font-size: 9px; color: #94a3b8; text-transform: lowercase; line-height: 1.1; }
+        .bug-tv { font-size: 32px; font-weight: 950; font-style: italic; background: linear-gradient(135deg, #3b82f6, #1d4ed8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 0.8; }
+        .l-ad-box { position: absolute; bottom: 55px; left: 20px; width: 230px; background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 10px; border-radius: 8px; z-index: 998; display: none; }
         .l-ad-box img, .l-ad-box video { width: 100%; height: auto; display: block; border-radius: 4px; margin-top: 4px; }
-        
-        /* CONTROLS */
         .custom-controls { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%); display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; z-index: 999; opacity: 0; transition: opacity 0.3s ease; }
         .player-wrapper:hover .custom-controls { opacity: 1; }
         .control-btn { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; font-size: 12px; font-weight: 600; cursor: pointer; padding: 6px 14px; border-radius: 6px; }
-        .control-btn:hover { background: rgba(255, 255, 255, 0.2); }
-
         .selector-box { background: #0f172a; border-radius: 12px; padding: 12px 16px; margin-top: 12px; border: 1px solid rgba(255, 255, 255, 0.04); display: flex; align-items: center; justify-content: space-between; }
         .selector-label { font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
-        .quality-select { background: #1e293b; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.1); padding: 5px 10px; border-radius: 6px; font-size: 11px; outline: none; cursor: pointer; }
-        
+        .quality-select { background: #1e293b; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.1); padding: 5px 10px; border-radius: 6px; font-size: 11px; }
         .card { background: #0f172a; border-radius: 12px; padding: 14px; border: 1px solid rgba(255, 255, 255, 0.04); margin-top: 12px; }
         .card-title-sub { font-size: 10px; color: #3b82f6; font-weight: bold; text-transform: uppercase; }
         .card-main-text { font-size: 14px; font-weight: 700; color: #f8fafc; margin-top: 4px; }
-
         .info-table { background: #0f172a; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); margin-top: 12px; }
         .table-row { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 12px; }
-        .table-row:last-child { border-bottom: none; }
-        .row-label { color: #94a3b8; }
-        .row-value { font-weight: 600; }
-
-        /* CHAT & TICKER */
         .chat-container { background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 16px; height: 480px; display: flex; flex-direction: column; overflow: hidden; }
         .chat-header { padding: 14px 16px; background: rgba(255, 255, 255, 0.01); border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
-        .chat-pulse { width: 6px; height: 6px; background: #10b981; border-radius: 50%; }
         .chat-messages { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
         .chat-msg { font-size: 12px; background: rgba(255,255,255,0.02); padding: 6px 10px; border-radius: 8px; }
-        .chat-user { font-weight: 700; color: #3b82f6; margin-right: 4px; }
+        .chat-user { font-weight: 700; color: #3b82f6; }
         .chat-input-area { display: flex; gap: 6px; padding: 12px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
         .chat-input { flex: 1; background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 8px 12px; color: white; font-size: 12px; outline: none; }
         .chat-send { background: #2563eb; border: none; color: white; padding: 0 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
-
         .dynamic-ticker-container { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f172a; border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 0; overflow: hidden; z-index: 99999; display: none; }
         .ticker-flex-wrapper { display: flex; align-items: center; }
         .ticker-badge-prefix { background: #2563eb; color: white; font-size: 10px; font-weight: bold; padding: 3px 8px; text-transform: uppercase; border-radius: 4px; margin-left: 15px; z-index: 10; }
         .ticker-scroll-frame { overflow: hidden; white-space: nowrap; width: 100%; }
-        .ticker-moving-text { display: inline-block; padding-left: 100%; animation: tickerMarquee 28s linear infinite; font-size: 12px; color: #e2e8f0; font-weight: 500; }
+        .ticker-moving-text { display: inline-block; padding-left: 100%; animation: tickerMarquee 28s linear infinite; font-size: 12px; color: #e2e8f0; }
         @keyframes tickerMarquee { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
     </style>
 </head>
@@ -119,35 +93,26 @@
         </div>
 
         <div class="main-content">
-            <div class="player-container-wrapper">
-                <div class="player-wrapper">
-                    <div class="channel-bug-premium">
-                        <div class="brand-text-group">
-                            <span class="bug-title">BAM TECH</span>
-                            <span class="bug-subtitle">solutions</span>
-                        </div>
-                        <span class="bug-tv">TV</span>
+            <div class="player-wrapper">
+                <div class="channel-bug-premium">
+                    <div class="brand-text-group">
+                        <span class="bug-title">BAM TECH</span>
+                        <span class="bug-subtitle">solutions</span>
                     </div>
-                    
-                    <div class="l-ad-box" id="dyn-lstyle-box"></div>
-                    
-                    <!-- Kurekebisha Autoplay Policy -->
-                    <video id="video" autoplay muted playsinline crossorigin="anonymous"></video>
+                    <span class="bug-tv">TV</span>
+                </div>
+                <div class="l-ad-box" id="dyn-lstyle-box"></div>
+                
+                <video id="video" autoplay muted playsinline crossorigin="anonymous" controls></video>
 
-                    <div class="custom-controls">
-                        <div class="control-group">
-                            <button class="control-btn" id="play-btn" onclick="togglePlay()">❚❚ Sitisha</button>
-                            <button class="control-btn" id="mute-btn" onclick="toggleMute()">🔇 Washa Sauti</button>
-                        </div>
-                        <div class="control-group">
-                            <button class="control-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
-                        </div>
-                    </div>
+                <div class="custom-controls">
+                    <button class="control-btn" id="play-btn" onclick="togglePlay()">❚❚ Sitisha</button>
+                    <button class="control-btn" id="mute-btn" onclick="toggleMute()">🔇 Washa Sauti</button>
                 </div>
             </div>
 
             <div class="selector-box">
-                <span class="selector-label">⚙️ Ubora wa mkururo (Resolutions):</span>
+                <span class="selector-label">⚙️ Ubora (Resolutions):</span>
                 <select class="quality-select" id="quality-select">
                     <option value="-1">Auto (Mabadiliko Halisi)</option>
                 </select>
@@ -155,31 +120,19 @@
 
             <div class="card">
                 <span class="card-title-sub">▶ INACHEZWA SASA HIVI</span>
-                <div class="card-main-text" id="dyn-now-playing">Inapakia maudhui...</div>
+                <div class="card-main-text" id="dyn-now-playing">Majaribio ya Mfumo</div>
             </div>
 
             <div class="info-table">
-                <div class="table-row">
-                    <span class="row-label">Hali ya Matangazo</span>
-                    <span class="row-value" style="color: #10b981;">● HEWANI (ONLINE)</span>
-                </div>
-                <div class="table-row">
-                    <span class="row-label">Aina ya Maudhui</span>
-                    <span class="row-value" id="dyn-content-type">Burudani & Teknolojia Halisi</span>
-                </div>
-                <div class="table-row">
-                    <span class="row-label">Ubora wa Picha</span>
-                    <span class="row-value" id="current-quality-view">Inapakia...</span>
-                </div>
+                <div class="table-row"><span class="row-label">Hali ya Matangazo</span><span class="row-value" style="color: #10b981;">● ONLINE</span></div>
+                <div class="table-row"><span class="row-label">Aina ya Maudhui</span><span class="row-value" id="dyn-content-type">Burudani & Teknolojia</span></div>
+                <div class="table-row"><span class="row-label">Ubora wa Picha</span><span class="row-value" id="current-quality-view">Normal HD</span></div>
             </div>
         </div>
 
         <div class="sidebar-content">
             <div class="chat-container">
-                <div class="chat-header">
-                    <span>LIVE CHAT MAONI (HALISI)</span>
-                    <span class="chat-pulse"></span>
-                </div>
+                <div class="chat-header"><span>LIVE CHAT</span></div>
                 <div class="chat-messages" id="chat-box"></div>
                 <div class="chat-input-area">
                     <input type="text" class="chat-input" placeholder="Andika maoni..." id="chat-input" onkeypress="if(event.key==='Enter')sendRealMessage()">
@@ -191,95 +144,62 @@
 
     <div class="dynamic-ticker-container" id="dyn-ticker-bar">
         <div class="ticker-flex-wrapper">
-            <div class="ticker-badge-prefix">BAM TECH INFO</div>
-            <div class="ticker-scroll-frame">
-                <div class="ticker-moving-text" id="dyn-ticker-text"></div>
-            </div>
+            <div class="ticker-badge-prefix">INFO</div>
+            <div class="ticker-scroll-frame"><div class="ticker-moving-text" id="dyn-ticker-text"></div></div>
         </div>
     </div>
 
     <script>
+        // CONFIG YAKO HALISI IMEMALIZWA NA HUKU PIA
         const firebaseConfig = {
-          databaseURL: "https://bam-tech-solutions-tv-default-rtdb.firebaseio.com/"
+          apiKey: "AIzaSyAh7LRqKy5RfLUr0tpqA47TV7YnBvuB5F8",
+          authDomain: "bam-tech-solutions-tv.firebaseapp.com",
+          databaseURL: "https://bam-tech-solutions-tv-default-rtdb.firebaseio.com",
+          projectId: "bam-tech-solutions-tv",
+          storageBucket: "bam-tech-solutions-tv.firebasestorage.app",
+          messagingSenderId: "1013751123351",
+          appId: "1:1013751123351:web:173b1884f221699bb5c8d2",
+          measurementId: "G-NKZ07VGJX7"
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
         let currentStreamUrl = "";
-        let currentPlaybackMode = "hls";
+        let currentPlaybackMode = "mp4";
         let hlsInstance = null;
-
         const video = document.getElementById('video');
-        const playBtn = document.getElementById('play-btn');
-        const muteBtn = document.getElementById('mute-btn');
-        const qualitySelect = document.getElementById('quality-select');
-        const currentQualityView = document.getElementById('current-quality-view');
 
         database.ref('bam_stream_management').on('value', (snapshot) => {
             let data = snapshot.val();
-            if(data) {
-                let urlChanged = currentStreamUrl !== data.url;
-                let modeChanged = currentPlaybackMode !== data.mode;
-                
-                if(urlChanged || modeChanged) {
-                    currentStreamUrl = data.url;
-                    currentPlaybackMode = data.mode || "hls";
-                    runStationPlayer();
-                }
+            if(data && data.url) {
+                currentStreamUrl = data.url;
+                currentPlaybackMode = data.mode || "mp4";
+            } else {
+                // DEFAULT VIDEO ISIPOSOMA KITU
+                currentStreamUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+                currentPlaybackMode = "mp4";
             }
+            runStationPlayer();
         });
 
         function runStationPlayer() {
             if(hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
             video.pause();
             video.src = "";
-            video.load();
-
-            if(!currentStreamUrl || currentStreamUrl.trim() === "") {
-                currentQualityView.innerText = "Kituo Hakina Maudhui...";
-                return;
-            }
-
-            video.muted = true; // Hulinda usalama wa kivinjari kuzuia autoplay
 
             if (currentPlaybackMode === "mp4") {
                 video.src = currentStreamUrl;
                 video.load();
-                video.play().then(() => {
-                    playBtn.innerText = '❚❚ Sitisha';
-                }).catch((e)=>{ console.log("Play failed: ", e); });
-                qualitySelect.innerHTML = '<option value="-1">Video File (No Adaptive Stream)</option>';
-                currentQualityView.innerText = "Direct MP4 File";
+                video.play().catch((e)=>{ console.log(e); });
+                document.getElementById('current-quality-view').innerText = "Direct MP4 Video";
             } else {
                 if (Hls.isSupported()) {
                     hlsInstance = new Hls();
                     hlsInstance.loadSource(currentStreamUrl);
                     hlsInstance.attachMedia(video);
-                    hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
-                        video.play().catch(()=>{});
-                        setupQualitySelector(hlsInstance);
-                    });
-                    hlsInstance.on(Hls.Events.LEVEL_SWITCHED, (event, data) => {
-                        const lvl = hlsInstance.levels[data.level];
-                        currentQualityView.innerText = lvl ? lvl.height + "p High Quality" : "Auto Dynamic";
-                    });
-                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                    video.src = currentStreamUrl;
-                    video.play().catch(()=>{});
-                    currentQualityView.innerText = "Native HLS";
+                    hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => { video.play().catch(()=>{}); });
                 }
             }
-        }
-
-        function setupQualitySelector(hls) {
-            qualitySelect.innerHTML = '<option value="-1">Auto (Mabadiliko Halisi)</option>';
-            hls.levels.forEach((lvl, idx) => {
-                let opt = document.createElement('option');
-                opt.value = idx;
-                opt.innerText = lvl.height ? lvl.height + "p" : "Level " + (idx + 1);
-                qualitySelect.appendChild(opt);
-            });
-            qualitySelect.addEventListener('change', (e) => { hls.currentLevel = parseInt(e.target.value); });
         }
 
         database.ref('bam_tv_config').on('value', (snapshot) => {
@@ -297,22 +217,10 @@
                 let adBox = document.getElementById('dyn-lstyle-box');
                 if(config.showLStyle && config.adType) {
                     adBox.style.display = 'block';
-                    let titleHtml = `<h4 style="margin-bottom:4px; font-size:10px; color:#60a5fa; letter-spacing:0.5px; text-transform:uppercase;">TANGAZO MAALUM</h4>`;
-                    
-                    if(config.adType === "text") {
-                        adBox.innerHTML = titleHtml + `<p style="font-size:12px; line-height:1.3; font-weight:500;">${config.adText || ''}</p>`;
-                    } else if(config.adType === "image") {
-                        adBox.innerHTML = titleHtml + `<img src="${config.adUrl}" alt="Ad Banner">`;
-                    } else if(config.adType === "video") {
-                        adBox.innerHTML = titleHtml + `<video src="${config.adUrl}" autoplay loop muted playsinline></video>`;
-                    }
+                    if(config.adType === "text") adBox.innerHTML = `<p>${config.adText || ''}</p>`;
+                    else if(config.adType === "image") adBox.innerHTML = `<img src="${config.adUrl}">`;
+                    else if(config.adType === "video") adBox.innerHTML = `<video src="${config.adUrl}" autoplay loop muted></video>`;
                 } else { adBox.style.display = 'none'; }
-
-                let tickerBar = document.getElementById('dyn-ticker-bar');
-                if(config.showTicker && config.ticker) {
-                    document.getElementById('dyn-ticker-text').innerText = config.ticker;
-                    tickerBar.style.display = 'block';
-                } else { tickerBar.style.display = 'none'; }
             }
         });
 
@@ -323,9 +231,7 @@
                 Object.values(s.val()).forEach(item => {
                     const msgDiv = document.createElement('div');
                     msgDiv.className = 'chat-msg';
-                    let isAdmin = item.user.includes("Admin") || item.user.includes("BAM TECH");
-                    let color = isAdmin ? "#f59e0b" : "#3b82f6";
-                    msgDiv.innerHTML = `<span class="chat-user" style="color:${color};">${item.user}:</span> <span>${item.text}</span>`;
+                    msgDiv.innerHTML = `<span class="chat-user">${item.user}:</span> <span>${item.text}</span>`;
                     chatBox.appendChild(msgDiv);
                 });
                 chatBox.scrollTop = chatBox.scrollHeight;
@@ -335,27 +241,12 @@
         function sendRealMessage() {
             const input = document.getElementById('chat-input');
             if(input.value.trim() !== "") {
-                database.ref('bam_tv_chats').push({ user: "Mhudhuriaji", text: input.value });
+                database.ref('bam_tv_chats').push({ user: "Mzamiaji", text: input.value });
                 input.value = "";
             }
         }
-
-        function togglePlay() {
-            if (video.paused) { video.play(); playBtn.innerText = '❚❚ Sitisha'; }
-            else { video.pause(); playBtn.innerText = '▶ Cheza'; }
-        }
-        function toggleMute() {
-            if (video.muted) { video.muted = false; muteBtn.innerText = '🔊 Zima Sauti'; }
-            else { video.muted = true; muteBtn.innerText = '🔇 Washa Sauti'; }
-        }
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) { video.requestFullscreen().catch(()=>{}); }
-            else { document.exitFullscreen(); }
-        }
-
-        database.ref('bam_forced_viewers').on('value', s => {
-            if(s.val()) document.getElementById('viewers').innerText = parseInt(s.val()).toLocaleString();
-        });
+        function togglePlay() { if (video.paused) video.play(); else video.pause(); }
+        function toggleMute() { video.muted = !video.muted; }
     </script>
 </body>
 </html>
