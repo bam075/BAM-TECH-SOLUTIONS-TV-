@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BAM TECH TV - Ultimate Admin Command Center</title>
-    <!-- FIREBASE COMPAT LIBS -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
@@ -20,7 +19,7 @@
         @media(min-width: 600px) { .form-grid { grid-template-columns: 1fr 1fr; } .span-2 { grid-column: span 2; } }
         label { display: block; font-size: 11px; color: #94a3b8; margin-bottom: 5px; font-weight: 600; text-transform: uppercase; }
         input[type="text"], input[type="password"], select { width: 100%; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); padding: 10px 12px; border-radius: 8px; color: white; font-size: 12px; box-sizing: border-box; }
-        input[type="file"] { margin-top: 6px; font-size: 11px; color: #94a3b8; }
+        input[type="file"] { margin-top: 6px; font-size: 11px; color: #94a3b8; display: block; }
         button { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 12px 18px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 12px; text-transform: uppercase; }
         .btn-danger { background: #dc2626; }
         .chat-box-admin { height: 420px; overflow-y: auto; background: #020617; border-radius: 8px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
@@ -42,7 +41,6 @@
             <h1>PANELI YA KISASA YA MKURUGENZI: BAM TECH TV</h1>
         </div>
 
-        <!-- CONTROL SECTION -->
         <div class="card">
             <h2>📺 1. SOURCE & ADVANCED PLAYBACK OPTIONS</h2>
             <div class="form-grid">
@@ -59,9 +57,8 @@
                 </div>
                 <div class="span-2">
                     <label>Link ya Media / Video URL:</label>
-                    <input type="text" id="stream-url-field" placeholder="Weka link au chagua faili kutoka kwenye kifaa chako chini...">
-                    <!-- FILE IMPORT FOR MAIN VIDEO -->
-                    <input type="file" id="main-video-file" accept="video/mp4,video/mkv" onchange="uploadToFirebase('main-video-file', 'stream-url-field', 'main-status')">
+                    <input type="text" id="stream-url-field" placeholder="Weka link au chagua faili chini...">
+                    <input type="file" id="main-video-file" accept="video/mp4" onchange="uploadToFirebase('main-video-file', 'stream-url-field', 'main-status')">
                     <span id="main-status" class="upload-progress"></span>
                 </div>
                 <div>
@@ -74,7 +71,7 @@
                 </div>
             </div>
 
-            <h2>🚨 2. GLOBAL L-STYLE ADVERTISEMENTS (MANENO, PICHA & VIDEO)</h2>
+            <h2>🚨 2. GLOBAL L-STYLE ADVERTISEMENTS</h2>
             <div class="form-grid">
                 <div>
                     <label>Tangazo la L-Style Display:</label>
@@ -93,14 +90,13 @@
                 </div>
                 
                 <div class="span-2 ad-conditional-panel" id="ad-text-panel">
-                    <label>Maandishi ya Tangazo (Text Content):</label>
+                    <label>Maandishi ya Tangazo:</label>
                     <input type="text" id="lstyle-text-field" placeholder="Andika ujumbe hapa...">
                 </div>
 
                 <div class="span-2 ad-conditional-panel" id="ad-media-panel" style="display:none;">
                     <label>Link ya Faili la Tangazo (Image/Video URL):</label>
-                    <input type="text" id="lstyle-media-url-field" placeholder="Link itajazwa hapa baada ya kuchagua faili chini...">
-                    <!-- FILE IMPORT FOR ADVERTISEMENTS -->
+                    <input type="text" id="lstyle-media-url-field" placeholder="Link itajazwa hapa baada ya kuchagua faili...">
                     <input type="file" id="ad-media-file" accept="image/*,video/mp4" onchange="uploadToFirebase('ad-media-file', 'lstyle-media-url-field', 'ad-status')">
                     <span id="ad-status" class="upload-progress"></span>
                 </div>
@@ -139,7 +135,6 @@
             <button onclick="publishLiveChanges()" style="width: 100%; padding:14px; margin-top:10px;">🚀 Tuma Maboresho Kwenye TV</button>
         </div>
 
-        <!-- CHAT MODERATION -->
         <div class="card">
             <h2>💬 MAONI YA CHAT & MAJIBU</h2>
             <div class="chat-box-admin" id="admin-chat-viewer"></div>
@@ -152,8 +147,16 @@
     </div>
 
     <script>
+        // CONFIG YAKO HALISI IMEMALIZWA HAPA
         const firebaseConfig = {
-          databaseURL: "https://bam-tech-solutions-tv-default-rtdb.firebaseio.com/"
+          apiKey: "AIzaSyAh7LRqKy5RfLUr0tpqA47TV7YnBvuB5F8",
+          authDomain: "bam-tech-solutions-tv.firebaseapp.com",
+          databaseURL: "https://bam-tech-solutions-tv-default-rtdb.firebaseio.com",
+          projectId: "bam-tech-solutions-tv",
+          storageBucket: "bam-tech-solutions-tv.firebasestorage.app",
+          messagingSenderId: "1013751123351",
+          appId: "1:1013751123351:web:173b1884f221699bb5c8d2",
+          measurementId: "G-NKZ07VGJX7"
         };
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
@@ -167,34 +170,33 @@
             } else { alert("PIN Sio Sahihi!"); }
         }
 
-        // BIASHARA YA UPLOAD DIRECT KUTOKA KWENYE FILE MANAGER YA SIMU/PC
         function uploadToFirebase(fileInputId, targetTextFieldId, statusSpanId) {
             const fileInput = document.getElementById(fileInputId);
             const statusSpan = document.getElementById(statusSpanId);
             if (fileInput.files.length === 0) return;
 
             const file = fileInput.files[0];
-            statusSpan.style.color = "#10b981";
-            statusSpan.innerText = "Inapakia faili: 0%...";
+            statusSpan.style.color = "#3b82f6";
+            statusSpan.innerText = "Inaanzisha upakiaji...";
 
-            // Kutengeneza jina la kipekee kwenye Cloud Storage
             const storageRef = storage.ref('bam_tv_media/' + Date.now() + '_' + file.name);
             const uploadTask = storageRef.put(file);
 
             uploadTask.on('state_changed', 
                 (snapshot) => {
                     const progress = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    statusSpan.style.color = "#10b981";
                     statusSpan.innerText = `Inapakia faili: ${progress}%...`;
                 }, 
                 (error) => {
                     statusSpan.style.color = "#dc2626";
-                    statusSpan.innerText = "Imeshindwa kupakia! Hakikisha Storage imewashwa Firebase Console.";
+                    statusSpan.innerText = "Imefeli! Hakikisha 'Rules' za Storage ziko set kuwa public (allow read, write: if true;).";
                     console.error(error);
                 }, 
                 () => {
                     uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
                         document.getElementById(targetTextFieldId).value = downloadURL;
-                        statusSpan.innerText = "Faili limepakiwa kikamilifu kwenye seva yako! ✓";
+                        statusSpan.innerText = "Imepakiwa kikamilifu! ✓ Bofya 'Tuma Maboresho' hapa chini.";
                     });
                 }
             );
@@ -285,7 +287,7 @@
                 sch_t3: document.getElementById('sch-t3').value, sch_d3: document.getElementById('sch-d3').value,
                 sch_t4: document.getElementById('sch-t4').value, sch_d4: document.getElementById('sch-d4').value
             });
-            alert("Mabadiliko ya kisasa yamerushwa kwenye TV! ✓");
+            alert("Mabadiliko yamerushwa kwenye TV! ✓");
         }
 
         function sendAdminReply() {
