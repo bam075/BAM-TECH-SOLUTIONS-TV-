@@ -4,104 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BAM TECH SOLUTIONS TV</title>
+    <!-- Maktaba ya HLS kwa ajili ya kuchezesha Live Stream za IPTV na M3U8 -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #000; color: white; font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; height: 100vh; }
         
-        /* Enzi la Video (Full Screen) */
-        .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background: #000; }
-        video { width: 100%; height: 100%; object-fit: cover; }
+        /* Enzi la Video halisi */
+        .video-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; background: #000; }
+        video { width: 100%; height: 100%; object-fit: contain; }
 
         /* Muundo wa Juu (Overlays) */
-        .header-overlay { position: absolute; top: 15px; left: 15px; right: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
+        .top-bar { position: absolute; top: 20px; left: 20px; right: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10; pointer-events: none; }
+        .logo { background: #0022aa; padding: 10px 20px; font-weight: bold; font-size: 16px; border-radius: 5px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); pointer-events: auto; }
         
-        /* Nembo ya BAM TECH */
-        .main-logo { background: linear-gradient(135deg, #0033aa, #0056b3); padding: 10px 20px; font-weight: bold; font-size: 18px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.5); letter-spacing: 1px; }
+        .right-side { display: flex; gap: 10px; align-items: center; }
+        .program-title { background: rgba(0, 0, 0, 0.75); padding: 10px 20px; border-radius: 5px; font-size: 14px; border: 1px solid #333; display: none; backdrop-filter: blur(5px); }
+        .live-badge { background: red; padding: 8px 15px; border-radius: 5px; font-weight: bold; font-size: 14px; display: none; animation: blink 1.5s infinite; box-shadow: 0 0 10px red; }
         
-        /* Kulia: Jina la Kipindi na Live Badge */
-        .right-meta { display: flex; align-items: center; gap: 10px; }
-        .program-box { background: rgba(0, 0, 0, 0.75); padding: 10px 18px; border-radius: 6px; font-size: 15px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(5px); display: none; }
-        .live-tag { background: #ff0000; color: white; padding: 8px 15px; border-radius: 6px; font-weight: bold; font-size: 14px; box-shadow: 0 0 10px #ff0000; display: none; animation: pulse 1.5s infinite; }
-
-        /* Tangazo la L-Style (Inakaa Kushoto) */
-        .l-ad-box { position: absolute; bottom: 70px; left: 15px; width: 280px; background: linear-gradient(135deg, #ff9900, #ff6600); color: #000; padding: 15px; border-radius: 8px; z-index: 5; display: none; box-shadow: 5px 5px 20px rgba(0,0,0,0.6); border-left: 5px solid #fff; }
-        .l-ad-box h4 { margin-bottom: 5px; font-size: 16px; text-transform: uppercase; }
-        .l-ad-box p { font-size: 14px; font-weight: 500; }
+        /* Tangazo la L-Style */
+        .l-ad-box { position: absolute; bottom: 70px; left: 20px; width: 280px; background: linear-gradient(135deg, #ff9900, #ff6600); color: black; padding: 15px; border-radius: 8px; z-index: 5; display: none; box-shadow: 5px 5px 15px rgba(0,0,0,0.5); font-weight: bold; }
 
         /* Maandishi ya chini kabisa (Ticker) */
-        .ticker-bar { position: absolute; bottom: 0; left: 0; width: 100%; background: rgba(0, 34, 119, 0.95); border-top: 2px solid #0056b3; padding: 10px 0; overflow: hidden; z-index: 10; backdrop-filter: blur(3px); }
-        .ticker-wrap { display: inline-block; white-space: nowrap; padding-left: 100%; animation: marquee 25s linear infinite; }
-        .ticker-item { display: inline-block; font-size: 16px; font-weight: 600; letter-spacing: 0.5px; }
+        .ticker { position: absolute; bottom: 0; left: 0; width: 100%; background: #0022aa; padding: 12px 0; overflow: hidden; z-index: 10; border-top: 1px solid #0044ff; }
+        .ticker-text { display: inline-block; padding-left: 100%; animation: scroll 22s linear infinite; font-size: 16px; font-weight: bold; }
 
-        /* Anamations */
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
-        @keyframes marquee { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+        @keyframes scroll { 0% { transform: translate3d(0,0,0); } 100% { transform: translate3d(-100%,0,0); } }
     </style>
 </head>
 <body>
 
-    <!-- Sehemu ya Video Player -->
-    <div class="video-wrapper">
-        <!-- Hii ni video ya mfano ili isikae tupu, unaweza kubadilisha 'src' na kuweka link yako halisi ya kurusha live -->
-        <video id="tv-player" autoplay muted loop playsinline>
-            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
-        </video>
+    <!-- Sehemu ya Video Engine -->
+    <div class="video-container">
+        <video id="video" autoplay muted playsinline loop></video>
     </div>
 
-    <!-- Sehemu ya Juu: Logo na Maelezo -->
-    <div class="header-overlay">
-        <div class="main-logo">BAM TECH SOLUTIONS</div>
-        <div class="right-meta">
-            <div class="program-box" id="view-title">Kipindi: ...</div>
-            <div class="live-tag" id="view-live">LIVE</div>
+    <!-- Sehemu ya Juu kama ilivyo kwenye muonekano wako -->
+    <div class="top-bar">
+        <div class="logo">BAM TECH SOLUTIONS</div>
+        <div class="right-side">
+            <div class="program-title" id="display-title">Kipindi: ...</div>
+            <div class="live-badge" id="display-live">LIVE</div>
         </div>
     </div>
 
     <!-- Eneo la Tangazo la L-Style -->
-    <div class="l-ad-box" id="view-lstyle">
-        <h4>Tangazo Maalum</h4>
-        <p id="view-ad-text">Nafasi ya Tangazo ipo wazi! Wasiliana na BAM TECH SOLUTIONS.</p>
+    <div class="l-ad-box" id="display-lstyle">
+        <h4 style="margin-bottom:5px; text-transform: uppercase;">Tangazo Maalum</h4>
+        <p id="display-ad-text">Nafasi ya tangazo ipo wazi! Wasiliana nasi.</p>
     </div>
 
-    <!-- Maandishi Yanayotembea Chini -->
-    <div class="ticker-bar">
-        <div class="ticker-wrap">
-            <div class="ticker-item" id="view-ticker">Karibu kwenye mfumo wa majaribio wa BAM TECH SOLUTIONS TV...</div>
-        </div>
+    <!-- Ticker ya Chini -->
+    <div class="ticker">
+        <div class="ticker-text" id="display-ticker">Karibu BAM TECH SOLUTIONS TV...</div>
     </div>
 
     <script>
-        // Kusoma maelekezo kutoka Admin kila sekunde 1
+        // Hii ni link halisi ya Live Stream ya majaribio (.m3u8). Video itacheza hapa yenyewe!
+        const STREAM_URL = 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
+        const video = document.getElementById('video');
+
+        if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(STREAM_URL);
+            hls.attachMedia(video);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() { video.play().catch(()=>{}); });
+        } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = STREAM_URL;
+            video.addEventListener('loadedmetadata', function() { video.play().catch(()=>{}); });
+        }
+
+        // Mfumo wa kusikiliza amri kutoka kwenye admin.html kila sekunde 1
         setInterval(() => {
             let config = JSON.parse(localStorage.getItem('bam_tv_config'));
             if(config) {
-                // Ticker
-                if(config.ticker) {
-                    document.getElementById('view-ticker').innerText = config.ticker;
-                }
+                // Sasisha Ticker
+                document.getElementById('display-ticker').innerText = config.ticker || 'Karibu BAM TECH SOLUTIONS TV...';
                 
-                // Jina la Kipindi
+                // Sasisha Jina la Kipindi
                 if(config.title) {
-                    document.getElementById('view-title').innerText = config.title;
-                    document.getElementById('view-title').style.display = 'block';
+                    document.getElementById('display-title').innerText = config.title;
+                    document.getElementById('display-title').style.display = 'block';
                 } else {
-                    document.getElementById('view-title').style.display = 'none';
+                    document.getElementById('display-title').style.display = 'none';
                 }
-                
-                // Live au Mubashara Status
-                if(config.showLive) {
-                    document.getElementById('view-live').innerText = config.liveText;
-                    document.getElementById('view-live').style.display = 'block';
-                } else {
-                    document.getElementById('view-live').style.display = 'none';
-                }
-                
-                // L-Style Ad Control
+
+                // Sasisha Alama ya Live
+                document.getElementById('display-live').style.display = config.showLive ? 'block' : 'none';
+                document.getElementById('display-live').innerText = config.liveText || 'LIVE';
+
+                // Sasisha L-Style
                 if(config.showLStyle) {
-                    if(config.adText) { document.getElementById('view-ad-text').innerText = config.adText; }
-                    document.getElementById('view-lstyle').style.display = 'block';
+                    if(config.adText) { document.getElementById('display-ad-text').innerText = config.adText; }
+                    document.getElementById('display-lstyle').style.display = 'block';
                 } else {
-                    document.getElementById('view-lstyle').style.display = 'none';
+                    document.getElementById('display-lstyle').style.display = 'none';
                 }
             }
         }, 1000);
