@@ -3,416 +3,375 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BAM TECH solutions TV | Live</title>
-    
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    
+    <title>CinemaApp - Tazama Movies Online</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
-        body { background: #020617; color: #f8fafc; min-height: 100vh; padding-bottom: 80px; overflow-x: hidden; }
-        
-        .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 16px; display: grid; grid-template-columns: 1fr; gap: 20px; }
-        @media (min-width: 900px) {
-            .container { grid-template-columns: 1fr 360px; }
-            .main-content { grid-column: 1; }
-            .sidebar-content { grid-column: 2; }
-            .header-wide, .hero-wide { grid-column: 1 / span 2; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        /* HEADER & NAVBAR */
-        header { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
-        .brand { display: flex; align-items: center; gap: 8px; }
-        .brand-text-group { display: flex; flex-direction: column; justify-content: center; line-height: 1.1; }
-        .brand-title { font-size: 19px; font-weight: 900; color: #ffffff; letter-spacing: 0.8px; text-transform: uppercase; margin: 0; }
-        .brand-subtitle { font-size: 11px; font-weight: 600; color: #64748b; text-transform: lowercase; letter-spacing: 1.5px; margin: 0; padding-left: 2px; }
-        .brand-tv { font-size: 44px; font-weight: 950; font-style: italic; background: linear-gradient(135deg, #3b82f6, #1d4ed8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 0.8; display: inline-block; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.5)); margin-left: 2px; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .auth-section {
+            background: rgba(255,255,255,0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 40px;
+        }
+        .hidden { display: none !important; }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+        }
+        .btn {
+            background: #ff6b6b;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+        .btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+        .btn-secondary { background: #4ecdc4; }
+        .btn-secondary:hover { background: #45b7aa; }
         
-        .live-status-container { display: flex; align-items: center; gap: 8px; }
-        .live-pill { background: #dc2626; color: #ffffff; padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; letter-spacing: 1px; display: none; align-items: center; gap: 4px; box-shadow: 0 0 15px rgba(220, 38, 38, 0.4); }
-        .live-dot { width: 7px; height: 7px; background: #ffffff; border-radius: 50%; animation: blink 1.2s infinite; }
-        .viewer-count { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); padding: 6px 10px; border-radius: 6px; font-size: 11px; color: #94a3b8; font-weight: 600; display: flex; align-items: center; gap: 5px; }
-        @keyframes blink { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-
-        .hero { margin: 15px 0 5px 0; }
-        .hero h1 { font-size: 24px; font-weight: 850; color: #ffffff; margin-bottom: 4px; }
-        .hero p { font-size: 13px; color: #94a3b8; }
-
-        /* VIDEO PLAYER & WATERMARK OVERLAY */
-        .player-container-wrapper { position: relative; width: 100%; }
-        .player-wrapper { position: relative; width: 100%; aspect-ratio: 16/9; background: #000000; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.1); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7); z-index: 2; }
-        video { width: 100%; height: 100%; object-fit: contain; }
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        .movie-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .movie-card:hover { transform: translateY(-5px); }
+        .movie-poster {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+        }
+        .movie-info { padding: 20px; }
+        .movie-title { font-size: 1.3em; margin-bottom: 10px; font-weight: bold; }
+        .movie-price { font-size: 1.4em; color: #4ecdc4; font-weight: bold; margin-bottom: 15px; }
+        .movie-description { opacity: 0.8; margin-bottom: 20px; line-height: 1.5; font-size: 0.95em; }
         
-        /* Premium Watermark Layout Fixed */
-        .channel-bug-premium { position: absolute; top: 15px; right: 20px; z-index: 999; pointer-events: none; display: flex; align-items: center; gap: 4px; background: rgba(0, 0, 0, 0.4); padding: 4px 10px; border-radius: 6px; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.05); }
-        .bug-title { font-size: 13px; font-weight: 900; color: #ffffff; text-transform: uppercase; line-height: 1.1; margin: 0; }
-        .bug-subtitle { font-size: 8px; color: #94a3b8; text-transform: lowercase; line-height: 1; margin: 0; padding-left: 1px; }
-        .bug-tv { font-size: 30px; font-weight: 950; font-style: italic; background: linear-gradient(135deg, #3b82f6, #1d4ed8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 0.8; margin-left: 1px; }
-
-        /* ADVANCED DYNAMIC L-STYLE AD BOX */
-        .l-ad-box { position: absolute; bottom: 60px; left: 20px; width: 260px; background: linear-gradient(135deg, #0f172a, #1e293b); border: 1px solid rgba(59, 130, 246, 0.3); color: white; padding: 12px; border-radius: 10px; z-index: 998; display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
-        .l-ad-box img, .l-ad-box video { width: 100%; border-radius: 6px; margin-top: 5px; display: block; border: 1px solid rgba(255,255,255,0.05); }
-        
-        /* CONTROLS */
-        .custom-controls { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 100%); display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; z-index: 999; opacity: 0; transition: opacity 0.3s ease; }
-        .player-wrapper:hover .custom-controls { opacity: 1; }
-        .control-btn { background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; font-size: 12px; font-weight: 600; cursor: pointer; padding: 6px 14px; border-radius: 6px; }
-        .control-btn:hover { background: rgba(255, 255, 255, 0.2); }
-
-        /* BOXES & METADATA */
-        .selector-box { background: #0f172a; border-radius: 12px; padding: 12px 16px; margin-top: 12px; border: 1px solid rgba(255, 255, 255, 0.04); display: flex; align-items: center; justify-content: space-between; }
-        .selector-label { font-size: 11px; color: #94a3b8; font-weight: 700; text-transform: uppercase; }
-        .quality-select { background: #1e293b; color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.1); padding: 5px 10px; border-radius: 6px; font-size: 11px; outline: none; cursor: pointer; }
-        
-        .card { background: #0f172a; border-radius: 12px; padding: 14px; border: 1px solid rgba(255, 255, 255, 0.04); margin-top: 12px; }
-        .card-title-sub { font-size: 10px; color: #3b82f6; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; gap: 4px; }
-        .card-main-text { font-size: 14px; font-weight: 700; color: #f8fafc; margin-top: 4px; }
-
-        /* TABLES */
-        .info-table { background: #0f172a; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); margin-top: 12px; }
-        .table-row { display: flex; justify-content: space-between; padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); font-size: 12px; }
-        .table-row:last-child { border-bottom: none; }
-        .row-label { color: #94a3b8; }
-        .row-value { font-weight: 600; }
-
-        /* RATIBA SECTION */
-        .schedule-box { background: #0f172a; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.04); padding: 16px; margin-top: 15px; }
-        .schedule-title { font-size: 12px; font-weight: 800; color: #60a5fa; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; text-transform: uppercase; }
-        .schedule-list { display: flex; flex-direction: column; gap: 10px; }
-        .schedule-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px; background: rgba(255,255,255,0.01); border-left: 3px solid #1e293b; border-radius: 0 8px 8px 0; }
-        .schedule-item.active { border-left-color: #10b981; background: rgba(16, 185, 129, 0.03); }
-        .sch-time { font-size: 11px; font-weight: 700; color: #10b981; white-space: nowrap; }
-        .schedule-item:not(.active) .sch-time { color: #64748b; }
-        .sch-desc { font-size: 12px; font-weight: 600; color: #e2e8f0; line-height: 1.3; }
-
-        /* CHAT SYSTEM */
-        .chat-container { background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.04); border-radius: 16px; height: 480px; display: flex; flex-direction: column; overflow: hidden; }
-        .chat-header { padding: 14px 16px; background: rgba(255, 255, 255, 0.01); border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; letter-spacing: 0.5px; }
-        .chat-pulse { width: 6px; height: 6px; background: #10b981; border-radius: 50%; animation: pulse G 1.5s infinite; }
-        .chat-messages { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .chat-msg { font-size: 12px; line-height: 1.4; background: rgba(255,255,255,0.02); padding: 6px 10px; border-radius: 8px; }
-        .chat-user { font-weight: 700; color: #3b82f6; margin-right: 4px; }
-        .chat-text { color: #e2e8f0; }
-        .chat-input-area-wrapper { border-top: 1px solid rgba(255, 255, 255, 0.05); padding: 12px; background: rgba(0,0,0,0.1); }
-        .chat-input-area { display: flex; gap: 6px; }
-        .chat-input { flex: 1; background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 8px 12px; color: white; font-size: 12px; outline: none; }
-        .chat-send { background: #2563eb; border: none; color: white; padding: 0 16px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; }
-
-        /* TICKER BAR */
-        .dynamic-ticker-container { position: fixed; bottom: 0; left: 0; width: 100%; background: #0f172a; border-top: 1px solid rgba(255, 255, 255, 0.08); padding: 8px 0; overflow: hidden; z-index: 99999; display: none; }
-        .ticker-flex-wrapper { display: flex; align-items: center; }
-        .ticker-badge-prefix { background: #2563eb; color: white; font-size: 10px; font-weight: bold; padding: 3px 8px; text-transform: uppercase; border-radius: 4px; margin-left: 15px; z-index: 10; }
-        .ticker-scroll-frame { overflow: hidden; white-space: nowrap; width: 100%; }
-        .ticker-moving-text { display: inline-block; padding-left: 100%; animation: tickerMarquee 28s linear infinite; font-size: 12px; color: #e2e8f0; font-weight: 500; }
-        @keyframes tickerMarquee { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        .payment-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .payment-modal.active { display: flex; }
+        .payment-content {
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        .video-container {
+            margin-top: 30px;
+            background: #000;
+            padding: 10px;
+            border-radius: 10px;
+        }
+        .video-container iframe, .video-container video {
+            width: 100%;
+            height: 450px;
+            border: none;
+        }
+        .user-info {
+            background: rgba(255,255,255,0.1);
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="header-wide">
-            <header>
-                <div class="brand">
-                    <div class="brand-text-group">
-                        <span class="brand-title">BAM TECH</span>
-                        <span class="brand-subtitle">solutions</span>
-                    </div>
-                    <span class="brand-tv">TV</span>
-                </div>
-                <div class="live-status-container">
-                    <div class="live-pill" id="dyn-live-pill"><span class="live-dot"></span><span id="dyn-live-text">LIVE</span></div>
-                    <div class="viewer-count">👁 <span id="viewers">1,740</span> Watazamaji</div>
-                </div>
-            </header>
-        </div>
-
-        <div class="hero-wide">
-            <div class="hero">
-                <h1>BAM TECH SOLUTIONS TV</h1>
-                <p>Chaneli ya Kimataifa ya Ubunifu, Sayansi na Habari za Kidijitali kutoka Tanzania.</p>
-            </div>
-        </div>
-
-        <div class="main-content">
-            <div class="player-container-wrapper">
-                <div class="player-wrapper">
-                    <div class="channel-bug-premium">
-                        <div class="brand-text-group">
-                            <span class="bug-title">BAM TECH</span>
-                            <span class="bug-subtitle">solutions</span>
-                        </div>
-                        <span class="bug-tv">TV</span>
-                    </div>
-                    
-                    <div class="l-ad-box" id="dyn-lstyle-box">
-                        <h4 style="margin-bottom:3px; font-size:10px; color:#60a5fa; letter-spacing:0.5px; text-transform:uppercase;">TANGAZO MAALUM</h4>
-                        <div id="dyn-lstyle-content"></div>
-                    </div>
-                    
-                    <video id="video" autoplay muted playsinline></video>
-
-                    <div class="custom-controls">
-                        <div class="control-group">
-                            <button class="control-btn" id="play-btn" onclick="togglePlay()">❚❚ Sitisha</button>
-                            <button class="control-btn" id="mute-btn" onclick="toggleMute()">🔇 Washa Sauti</button>
-                        </div>
-                        <div class="control-group">
-                            <button class="control-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="selector-box">
-                <span class="selector-label">⚙️ Ubora wa mkururo (Resolutions):</span>
-                <select class="quality-select" id="quality-select">
-                    <option value="-1">Auto (Mabadiliko Halisi)</option>
-                </select>
-            </div>
-
-            <div class="card">
-                <span class="card-title-sub">▶ INACHEZWA SASA HIVI</span>
-                <div class="card-main-text" id="dyn-now-playing">Inapakia maudhui...</div>
-            </div>
-
-            <div class="info-table">
-                <div class="table-row">
-                    <span class="row-label">Hali ya Matangazo</span>
-                    <span class="row-value" style="color: #10b981;">● HEWANI (ONLINE)</span>
-                </div>
-                <div class="table-row">
-                    <span class="row-label">Aina ya Maudhui</span>
-                    <span class="row-value" id="dyn-content-type">Burudani &amp; Teknolojia Halisi</span>
-                </div>
-                <div class="table-row">
-                    <span class="row-label">Ubora wa Picha</span>
-                    <span class="row-value" id="current-quality-view">Inapakia...</span>
-                </div>
-            </div>
-
-            <div class="schedule-box">
-                <div class="schedule-title">📅 Ratiba ya Vipindi ya Leo</div>
-                <div class="schedule-list">
-                    <div class="schedule-item active" id="sch-item-1">
-                        <div class="sch-time" id="sch-t1">08:00 AM - LIVE</div>
-                        <div class="sch-desc" id="sch-d1">Tech Insights &amp; Global Innovation Performance</div>
-                    </div>
-                    <div class="schedule-item" id="sch-item-2">
-                        <div class="sch-time" id="sch-t2">02:00 PM</div>
-                        <div class="sch-desc" id="sch-d2">Cybersecurity Foundations &amp; Mobile Coding Linux</div>
-                    </div>
-                    <div class="schedule-item" id="sch-item-3">
-                        <div class="sch-time" id="sch-t3">06:30 PM</div>
-                        <div class="sch-desc" id="sch-d3">BAM Tech Solutions Corporate Showcase</div>
-                    </div>
-                    <div class="schedule-item" id="sch-item-4">
-                        <div class="sch-time" id="sch-t4">09:00 PM</div>
-                        <div class="sch-desc" id="sch-d4">Digital Innovations in African Ecosystems</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="sidebar-content">
-            <div class="chat-container">
-                <div class="chat-header">
-                    <span>LIVE CHAT MAONI (HALISI)</span>
-                    <span class="chat-pulse"></span>
-                </div>
-                <div class="chat-messages" id="chat-box"></div>
-                <div class="chat-input-area-wrapper">
-                    <div class="chat-input-area">
-                        <input type="text" class="chat-input" placeholder="Andika maoni yako..." id="chat-input" onkeypress="handleChatKey(event)">
-                        <button class="chat-send" onclick="sendRealMessage()">Tuma</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+<div class="container">
+    <div class="header">
+        <h1>🎬 CinemaApp</h1>
+        <p>Tazama Movies Bora Online - Lipa na Ufurahie!</p>
     </div>
 
-    <div class="dynamic-ticker-container" id="dyn-ticker-bar">
-        <div class="ticker-flex-wrapper">
-            <div class="ticker-badge-prefix">BAM TECH INFO</div>
-            <div class="ticker-scroll-frame">
-                <div class="ticker-moving-text" id="dyn-ticker-text"></div>
-            </div>
+    <div id="authSection" class="auth-section">
+        <h2 id="authTitle" style="margin-bottom: 20px;">Ingia Kwenye Akaunti</h2>
+        <div class="form-group">
+            <label>Barua Pepe (Email):</label>
+            <input type="email" id="authEmail" placeholder="mfano@gmail.com">
         </div>
+        <div class="form-group">
+            <label>Neno la Siri (Password):</label>
+            <input type="password" id="authPassword" placeholder="Weka password">
+        </div>
+        <button class="btn" id="mainAuthBtn" onclick="handleAuth()">Ingia</button>
+        <button class="btn btn-secondary" id="switchAuthBtn" onclick="toggleAuthMode()">Sina Akaunti? Jisajili</button>
     </div>
 
-    <script>
-        // CONFIGURATION YA FIREBASE YAKO
-        const firebaseConfig = {
-          apiKey: "AIzaSyAh7LRqKy5RfLUr0tpqA47TV7v221699bb5c8d2", 
-          authDomain: "bam-tech-solutions-tv.firebaseapp.com",
-          databaseURL: "https://bam-tech-solutions-tv-default-rtdb.firebaseio.com/",
-          projectId: "bam-tech-solutions-tv",
-          storageBucket: "bam-tech-solutions-tv.appspot.com",
-          messagingSenderId: "101371123351",
-          appId: "1:101371123351:web:173b1884f221699bb5c8d2"
-        };
+    <div id="userInfo" class="user-info hidden">
+        <div>
+            <h3>Karibu, <span id="userName" style="color: #4ecdc4;">Mteja</span>!</h3>
+            <p>Hali ya Akaunti: <span style="color: #98ff98;">Ipo Tayari</span></p>
+        </div>
+        <button class="btn btn-danger" style="background: #ff4a4a;" onclick="logout()">Toka</button>
+    </div>
+
+    <div id="videoPlayerSection" class="video-container hidden">
+        <h2 id="playingTitle" style="margin-bottom: 15px;">Inacheza...</h2>
+        <div id="playerWrapper"></div>
+        <button class="btn" style="margin-top: 15px;" onclick="closePlayer()">Funga Kichezaji</button>
+    </div>
+
+    <div id="moviesSection" class="hidden">
+        <h2 style="border-bottom: 2px solid rgba(255,255,255,0.2); padding-bottom: 10px;">Mkusanyiko wa Movies</h2>
+        <div class="movies-grid" id="moviesGrid">
+            </div>
+    </div>
+</div>
+
+<div id="paymentModal" class="payment-modal">
+    <div class="payment-content">
+        <h3 style="margin-bottom: 15px; color: #1e3c72;">Lipa ili Utazame</h3>
+        <p id="paymentMovieName" style="font-weight: bold; margin-bottom: 10px;"></p>
+        <p style="margin-bottom: 20px; color: #666;">Kiasi: <span id="paymentAmount" style="color: #ff6b6b; font-weight: bold;"></span></p>
         
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+        <div class="form-group" style="text-align: left;">
+            <label style="color: #333;">Namba ya Simu (M-Pesa/Tigo Pesa/Airtel Money):</label>
+            <input type="tel" id="payPhone" placeholder="07XXXXXXXX" style="border: 1px solid #ccc;">
+        </div>
+        
+        <button class="btn" onclick="processPayment()">Kamilisha Malipo</button>
+        <button class="btn btn-secondary" style="background: #aaa;" onclick="closePaymentModal()">Ghairi</button>
+    </div>
+</div>
 
-        let STREAM_URL = ''; 
-        const video = document.getElementById('video');
-        const playBtn = document.getElementById('play-btn');
-        const muteBtn = document.getElementById('mute-btn');
-        const qualitySelect = document.getElementById('quality-select');
-        const currentQualityView = document.getElementById('current-quality-view');
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-        // SINKI LINK YA VIDEO KUTOKA KWENYE REALTIME DATABASE
-        database.ref('bam_stream_url').on('value', (snapshot) => {
-            let forcedUrl = snapshot.val();
-            if(forcedUrl && STREAM_URL !== forcedUrl) {
-                STREAM_URL = forcedUrl;
-                initPlayer();
-            }
-        });
+<script>
+    // WEKA CONFIGURATION ZAKO ZA FIREBASE HAPA
+    const firebaseConfig = {
+        apiKey: "AIzaSyYOUR_ACTUAL_API_KEY",
+        authDomain: "your-project-id.firebaseapp.com",
+        databaseURL: "https://your-project-id-default-rtdb.firebaseio.com",
+        projectId: "your-project-id",
+        storageBucket: "your-project-id.appspot.com",
+        messagingSenderId: "1234567890",
+        appId: "1:1234567890:web:abcdef"
+    };
+    
+    // Anzisha Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-        let hlsInstance;
-        function initPlayer() {
-            if(hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+    let isSignUpMode = false;
+    let selectedMovieId = null;
+    let selectedMovieData = null;
 
-            // Kugundua kiotomatiki kama ni Stream (.m3u8) au ni file la kawaida (.mp4)
-            if (STREAM_URL.includes('.m3u8') && Hls.isSupported()) {
-                hlsInstance = new Hls();
-                hlsInstance.loadSource(STREAM_URL);
-                hlsInstance.attachMedia(video);
-                hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() {
-                    video.play().catch(() => {});
-                    setupQualitySelector(hlsInstance);
-                });
-                hlsInstance.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
-                    const activeLevel = hlsInstance.levels[data.level];
-                    database.ref('bam_tv_config/resolution_text').once('value').then(snap => {
-                        if(!snap.val()) {
-                            currentQualityView.innerText = activeLevel ? activeLevel.height + "p High Quality" : "Auto Dynamic";
-                        }
-                    });
-                });
-            } else {
-                // Ikiwa ni file la kawaida la video (.mp4 au link ya klipu yoyote ya kawaida)
-                qualitySelect.innerHTML = '<option value="-1">Ubora wa Faili (Mabadiliko Imara)</option>';
-                video.src = STREAM_URL;
-                video.load();
-                video.play().catch(() => {});
-            }
+    // Angalia kama mtumiaji ameingia
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('userInfo').classList.remove('hidden');
+            document.getElementById('moviesSection').classList.remove('hidden');
+            document.getElementById('userName').innerText = user.email.split('@')[0];
+            loadMovies();
+        } else {
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('userInfo').classList.add('hidden');
+            document.getElementById('moviesSection').classList.add('hidden');
+            document.getElementById('videoPlayerSection').classList.add('hidden');
+        }
+    });
+
+    function toggleAuthMode() {
+        isSignUpMode = !isSignUpMode;
+        document.getElementById('authTitle').innerText = isSignUpMode ? "Unda Akaunti Mpya" : "Ingia Kwenye Akaunti";
+        document.getElementById('mainAuthBtn').innerText = isSignUpMode ? "Sajili" : "Ingia";
+        document.getElementById('switchAuthBtn').innerText = isSignUpMode ? "Tayari una akaunti? Ingia" : "Sina Akaunti? Jisajili";
+    }
+
+    function handleAuth() {
+        const email = document.getElementById('authEmail').value;
+        const password = document.getElementById('authPassword').value;
+
+        if(!email || !password) {
+            alert("Tafadhali jaza barua pepe na password!");
+            return;
         }
 
-        function setupQualitySelector(hls) {
-            qualitySelect.innerHTML = '<option value="-1">Auto (Mabadiliko Halisi)</option>';
-            hls.levels.forEach((level, index) => {
-                const option = document.createElement('option');
-                option.value = index;
-                option.innerText = level.height ? level.height + "p" : "Ubora " + (index + 1);
-                qualitySelect.appendChild(option);
+        if (isSignUpMode) {
+            auth.createUserWithEmailAndPassword(email, password)
+                .then(() => alert("Akaunti imeundwa kwa mafanikio!"))
+                .catch(err => alert("Hitilafu ya Usajili: " + err.message));
+        } else {
+            auth.signInWithEmailAndPassword(email, password)
+                .catch(err => alert("Hitilafu ya Kuingia: " + err.message));
+        }
+    }
+
+    function logout() {
+        auth.signOut();
+    }
+
+    function loadMovies() {
+        db.ref('movies').on('value', snapshot => {
+            const grid = document.getElementById('moviesGrid');
+            grid.innerHTML = '';
+            const movies = snapshot.val();
+            
+            if(!movies) {
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center;">Hakuna movie zilizowekwa bado.</p>';
+                return;
+            }
+
+            for (let id in movies) {
+                const movie = movies[id];
+                const card = document.createElement('div');
+                card.className = 'movie-card';
+                card.innerHTML = `
+                    <div class="movie-poster">${movie.icon || '🎬'}</div>
+                    <div class="movie-info">
+                        <div class="movie-title">${movie.title}</div>
+                        <div class="movie-price">TSh ${parseInt(movie.price).toLocaleString()}</div>
+                        <div class="movie-description">${movie.description || 'Haina maelezo.'}</div>
+                        <button class="btn" style="width:100%; margin:0;" onclick="openPayment('${id}', '${movie.title}', ${movie.price})">Lipia na Utazame</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+        });
+    }
+
+    function openPayment(id, title, price) {
+        selectedMovieId = id;
+        // Chukua data kamili ya filamu hiyo
+        db.ref('movies/' + id).once('value', snapshot => {
+            selectedMovieData = snapshot.val();
+            document.getElementById('paymentMovieName').innerText = title;
+            document.getElementById('paymentAmount').innerText = "TSh " + parseInt(price).toLocaleString();
+            document.getElementById('paymentModal').classList.add('active');
+        });
+    }
+
+    function closePaymentModal() {
+        document.getElementById('paymentModal').classList.remove('active');
+    }
+
+    function processPayment() {
+        const phone = document.getElementById('payPhone').value;
+        if(!phone || phone.length < 10) {
+            alert("Weka namba ya simu sahihi ya malipo!");
+            return;
+        }
+
+        alert("Ombi la malipo limetumwa kwenda namba " + phone + ". Tafadhali weka namba yako ya siri ya mtandao kwenye simu yako kukamilisha.");
+
+        setTimeout(() => {
+            // Rekodi mauzo Firebase kwa ajili ya Admin Dashboard
+            const saleRef = db.ref('sales').push();
+            saleRef.set({
+                userEmail: auth.currentUser.email,
+                movieTitle: selectedMovieData.title,
+                amount: parseInt(selectedMovieData.price),
+                timestamp: firebase.database.ServerValue.TIMESTAMP
             });
-            qualitySelect.addEventListener('change', (e) => { hls.currentLevel = parseInt(e.target.value); });
-        }
 
-        // CONTROL DYNAMIC SYNC KUTOKA ADMIN PANEL
-        database.ref('bam_tv_config').on('value', (snapshot) => {
-            let config = snapshot.val();
-            if(config) {
-                if(config.title) document.getElementById('dyn-now-playing').innerText = config.title;
-                if(config.contentType) document.getElementById('dyn-content-type').innerText = config.contentType;
-                if(config.resolution_text) currentQualityView.innerText = config.resolution_text;
-                
-                // Live Badge Control
-                let livePill = document.getElementById('dyn-live-pill');
-                if(config.showLive) {
-                    document.getElementById('dyn-live-text').innerText = config.liveText || 'LIVE';
-                    livePill.style.display = 'flex';
-                } else { livePill.style.display = 'none'; }
+            closePaymentModal();
+            playMovie(selectedMovieData);
+        }, 3000); 
+    }
 
-                // AD BOX ADVANCED REKREBISHWA (Maneno, Picha, Video)
-                let lstyleBox = document.getElementById('dyn-lstyle-box');
-                let lstyleContent = document.getElementById('dyn-lstyle-content');
-                if(config.showLStyle && config.adType) {
-                    lstyleBox.style.display = 'block';
-                    if(config.adType === 'text') {
-                        lstyleContent.innerHTML = `<p style="font-size:12px; line-height:1.3; font-weight:500; color:#e2e8f0; margin-top:4px;">${config.adText || ''}</p>`;
-                    } else if(config.adType === 'image') {
-                        lstyleContent.innerHTML = `<img src="${config.adImageUrl || ''}" alt="Tangazo">`;
-                    } else if(config.adType === 'video') {
-                        lstyleContent.innerHTML = `<video src="${config.adVideoUrl || ''}" autoplay muted loop playsinline></video>`;
-                    }
-                } else { lstyleBox.style.display = 'none'; }
-
-                // Ticker Moving Text Control
-                let tickerBar = document.getElementById('dyn-ticker-bar');
-                if(config.showTicker && config.ticker) {
-                    document.getElementById('dyn-ticker-text').innerText = config.ticker;
-                    tickerBar.style.display = 'block';
-                } else { tickerBar.style.display = 'none'; }
-
-                // Ratiba Content Control
-                if(config.sch_t1) document.getElementById('sch-t1').innerText = config.sch_t1;
-                if(config.sch_d1) document.getElementById('sch-d1').innerText = config.sch_d1;
-                if(config.sch_t2) document.getElementById('sch-t2').innerText = config.sch_t2;
-                if(config.sch_d2) document.getElementById('sch-d2').innerText = config.sch_d2;
-                if(config.sch_t3) document.getElementById('sch-t3').innerText = config.sch_t3;
-                if(config.sch_d3) document.getElementById('sch-d3').innerText = config.sch_d3;
-                if(config.sch_t4) document.getElementById('sch-t4').innerText = config.sch_t4;
-                if(config.sch_d4) document.getElementById('sch-d4').innerText = config.sch_d4;
+    function playMovie(movie) {
+        const playerWrapper = document.getElementById('playerWrapper');
+        document.getElementById('playingTitle').innerText = `Inacheza sasa: ${movie.title}`;
+        
+        // Angalia kama link ni ya YouTube au faili ya moja kwa moja (MP4)
+        if(movie.videoUrl.includes('youtube.com') || movie.videoUrl.includes('youtu.be')) {
+            let embedUrl = movie.videoUrl;
+            if(movie.videoUrl.includes('watch?v=')) {
+                embedUrl = movie.videoUrl.replace('watch?v=', 'embed/');
+            } else if(movie.videoUrl.includes('youtu.be/')) {
+                embedUrl = movie.videoUrl.replace('youtu.be/', 'youtube.com/embed/');
             }
-        });
-
-        // MANAGEMENT YA LATEST CHATS
-        database.ref('bam_tv_chats').on('value', (snapshot) => {
-            const chatBox = document.getElementById('chat-box');
-            let chats = snapshot.val();
-            chatBox.innerHTML = '';
-            if(chats) {
-                Object.values(chats).forEach(item => {
-                    const msgDiv = document.createElement('div');
-                    msgDiv.className = 'chat-msg';
-                    let isAdmin = item.user.includes("Admin") || item.user.includes("BAM TECH");
-                    let color = isAdmin ? "#f59e0b" : "#3b82f6";
-                    let weight = isAdmin ? "900" : "700";
-                    
-                    msgDiv.innerHTML = `<span class="chat-user" style="color: ${color}; font-weight: ${weight};">${item.user}:</span> <span class="chat-text">${item.text}</span>`;
-                    chatBox.appendChild(msgDiv);
-                });
-                chatBox.scrollTop = chatBox.scrollHeight;
-            }
-        });
-
-        function sendRealMessage() {
-            const input = document.getElementById('chat-input');
-            if(input.value.trim() !== "") {
-                database.ref('bam_tv_chats').push({
-                    user: "Mhudhuriaji",
-                    text: input.value,
-                    time: new Date().toLocaleTimeString()
-                });
-                input.value = "";
-            }
+            playerWrapper.innerHTML = `<iframe src="${embedUrl}?autoplay=1" allowfullscreen allow="autoplay"></iframe>`;
+        } else {
+            playerWrapper.innerHTML = `<video src="${movie.videoUrl}" controls autoplay></video>`;
         }
 
-        function handleChatKey(e) { if(e.key === 'Enter') sendRealMessage(); }
+        const section = document.getElementById('videoPlayerSection');
+        section.classList.remove('hidden');
+        section.scrollIntoView({ behavior: 'smooth' });
+    }
 
-        // FORCED VIEWERS ENGINE
-        database.ref('bam_forced_viewers').on('value', (snapshot) => {
-            let forced = snapshot.val();
-            if(forced) { document.getElementById('viewers').innerText = parseInt(forced).toLocaleString(); }
-        });
-
-        function togglePlay() {
-            if (video.paused) { video.play(); playBtn.innerText = '❚❚ Sitisha'; }
-            else { video.pause(); playBtn.innerText = '▶ Cheza'; }
-        }
-        function toggleMute() {
-            if (video.muted) { video.muted = false; muteBtn.innerText = '🔊 Zima Sauti'; }
-            else { video.muted = true; muteBtn.innerText = '🔇 Washa Sauti'; }
-        }
-        function toggleFullscreen() {
-            if (!document.fullscreenElement) { video.requestFullscreen().catch(() => {}); }
-            else { document.exitFullscreen(); }
-        }
-    </script>
+    function closePlayer() {
+        document.getElementById('playerWrapper').innerHTML = '';
+        document.getElementById('videoPlayerSection').classList.add('hidden');
+    }
+</script>
 </body>
 </html>
