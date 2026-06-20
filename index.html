@@ -261,6 +261,93 @@
             animation: toggleLogoVisibility 15s infinite ease-in-out;
         }
 
+        /* On-screen overlay: LIVE badge + jina la kipindi - kona ya juu kushoto, kama TV halisi */
+        .onscreen-top-left {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 999996;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 6px;
+            pointer-events: none;
+        }
+        .onscreen-live-pill {
+            background: #dc2626;
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            display: none;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+        }
+        .onscreen-program-badge {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            backdrop-filter: blur(4px);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #60a5fa;
+            display: none;
+            white-space: nowrap;
+            max-width: 60vw;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* On-screen ticker - ndani ya video, juu ya custom-controls */
+        .onscreen-ticker {
+            position: absolute;
+            bottom: 58px;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(4px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 6px 0;
+            overflow: hidden;
+            z-index: 999995;
+            display: none;
+        }
+        .onscreen-ticker-flex {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+        .onscreen-ticker-badge {
+            background: #2563eb;
+            color: white;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 3px 8px;
+            text-transform: uppercase;
+            border-radius: 4px;
+            margin-left: 10px;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+        .onscreen-ticker-frame {
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+            padding-left: 14px;
+        }
+        .onscreen-ticker-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: tickerMarquee 22s linear infinite;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
         @keyframes toggleLogoVisibility {
             0% { opacity: 0; }
             3% { opacity: 1; }
@@ -320,7 +407,7 @@
 
         .l-ad-box {
             position: absolute;
-            bottom: 70px;
+            bottom: 95px;
             left: 20px;
             width: 280px;
             max-width: 70%;
@@ -671,50 +758,6 @@
             color: #e2e8f0;
         }
 
-        .dynamic-ticker-container {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #0f172a;
-            border-top: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 10px 0;
-            overflow: hidden;
-            z-index: 9999999;
-            display: none;
-        }
-        .ticker-flex-wrapper {
-            display: flex;
-            align-items: center;
-            width: 100%;
-        }
-        .ticker-badge-prefix {
-            background: #2563eb;
-            color: white;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 4px 10px;
-            text-transform: uppercase;
-            border-radius: 4px;
-            margin-left: 15px;
-            z-index: 10;
-            flex-shrink: 0;
-            box-shadow: 3px 0 10px rgba(0,0,0,0.5);
-        }
-        .ticker-scroll-frame {
-            overflow: hidden;
-            white-space: nowrap;
-            width: 100%;
-            padding-left: 20px;
-        }
-        .ticker-moving-text {
-            display: inline-block;
-            padding-left: 100%;
-            animation: tickerMarquee 25s linear infinite;
-            font-size: 13px;
-            font-weight: 600;
-            color: #e2e8f0;
-        }
         @keyframes tickerMarquee {
             0% { transform: translate3d(0, 0, 0); }
             100% { transform: translate3d(-100%, 0, 0); }
@@ -752,11 +795,8 @@
                     <span class="brand-tv">TV</span>
                 </div>
 
-                <div class="header-program-badge" id="dyn-program-badge">Kipindi: ...</div>
-
                 <div class="live-status-container">
                     <div class="viewer-count">👁 <span id="viewers">0</span> Watazamaji</div>
-                    <div class="live-pill" id="dyn-live-pill"><span class="live-dot"></span><span id="dyn-live-text">LIVE</span></div>
                 </div>
             </header>
         </div>
@@ -773,6 +813,11 @@
                 <div class="player-glow"></div>
                 <div class="player-split-row" id="player-split-row">
                 <div class="player-wrapper" id="player-wrapper">
+
+                    <div class="onscreen-top-left">
+                        <div class="onscreen-live-pill" id="dyn-live-pill"><span class="live-dot"></span><span id="dyn-live-text">LIVE</span></div>
+                        <div class="onscreen-program-badge" id="dyn-program-badge">Kipindi: ...</div>
+                    </div>
 
                     <div class="channel-bug">
                         <img src="172392.png" id="tv-logo" alt="Logo" onerror="handleLogoError()">
@@ -798,6 +843,15 @@
                     </div>
 
                     <video id="video" autoplay muted playsinline></video>
+
+                    <div class="onscreen-ticker" id="dyn-ticker-bar">
+                        <div class="onscreen-ticker-flex">
+                            <span class="onscreen-ticker-badge">BAM TECH</span>
+                            <div class="onscreen-ticker-frame">
+                                <div class="onscreen-ticker-text" id="dyn-ticker-text"></div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="custom-controls">
                         <div class="control-group">
@@ -899,15 +953,6 @@
             </div>
         </div>
 
-    </div>
-
-    <div class="dynamic-ticker-container" id="dyn-ticker-bar">
-        <div class="ticker-flex-wrapper">
-            <div class="ticker-badge-prefix">BAM TECH INFO</div>
-            <div class="ticker-scroll-frame">
-                <div class="ticker-moving-text" id="dyn-ticker-text"></div>
-            </div>
-        </div>
     </div>
 
     <div class="toast" id="toast-notif">Link imekopiwa kwa ajili ya kushare!</div>
@@ -1048,11 +1093,14 @@
         db.ref('breaking_news').on('value', (snapshot) => {
             const news = snapshot.val();
             const banner = document.getElementById('dyn-breaking-banner');
+            const topLeftZone = document.querySelector('.onscreen-top-left');
             if (news && news.active && news.text && news.text.trim() !== "") {
                 document.getElementById('dyn-breaking-text').innerText = news.text;
                 banner.style.display = 'flex';
+                topLeftZone.style.top = '50px';
             } else {
                 banner.style.display = 'none';
+                topLeftZone.style.top = '15px';
             }
         });
 
