@@ -246,6 +246,26 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8);
             z-index: 2;
         }
+
+        /* Fullscreen mode: hakikisha video na overlay zote zinakaa ndani ya screen moja */
+        .player-wrapper:fullscreen,
+        .player-wrapper:-webkit-full-screen {
+            width: 100vw;
+            height: 100vh;
+            aspect-ratio: unset;
+            border-radius: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+        .player-wrapper:fullscreen video,
+        .player-wrapper:-webkit-full-screen video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
         video {
             width: 100%;
             height: 100%;
@@ -405,20 +425,48 @@
             text-shadow: 0 0 12px rgba(59, 130, 246, 0.8), 0 2px 6px rgba(0, 0, 0, 1), 0 4px 12px rgba(0, 0, 0, 1);
         }
 
+        /* L-Style Media Box (picha/video ndogo, kama TV za kimataifa) */
         .l-ad-box {
             position: absolute;
-            bottom: 95px;
-            left: 20px;
-            width: 280px;
-            max-width: 70%;
-            background: linear-gradient(135deg, #ff9900, #ff6600);
-            color: black;
-            padding: 15px;
-            border-radius: 8px;
+            width: 200px;
+            aspect-ratio: 16/9;
+            background: rgba(10, 14, 25, 0.55);
+            backdrop-filter: blur(6px);
+            border: 1.5px solid rgba(245, 197, 24, 0.55);
+            border-radius: 10px;
             z-index: 999998;
             display: none;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
-            font-weight: bold;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.3);
+        }
+        .l-ad-box.pos-bottom-left { bottom: 95px; left: 16px; }
+        .l-ad-box.pos-bottom-right { bottom: 95px; right: 16px; }
+        .l-ad-box.pos-top-left { top: 70px; left: 16px; }
+        .l-ad-box.pos-top-right { top: 70px; right: 16px; }
+        .l-ad-box.pos-center {
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 240px;
+        }
+        .l-ad-box-media {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .l-ad-box-label {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            background: rgba(0,0,0,0.55);
+            color: #f5c518;
+            font-size: 8.5px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            z-index: 2;
         }
 
         .breaking-news-banner {
@@ -463,10 +511,12 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 15px 20px;
+            padding: 10px 12px;
             z-index: 999999;
             opacity: 0;
             transition: opacity 0.4s ease;
+            gap: 6px;
+            flex-wrap: wrap;
         }
         .player-wrapper:hover .custom-controls,
         .player-wrapper:focus-within .custom-controls {
@@ -475,20 +525,22 @@
         .control-group {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 6px;
+            flex-wrap: wrap;
         }
         .control-btn {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.05);
             color: #ffffff;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
             cursor: pointer;
-            padding: 8px 12px;
+            padding: 7px 9px;
             border-radius: 6px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 5px;
+            white-space: nowrap;
         }
         .control-btn:hover {
             background: rgba(255, 255, 255, 0.18);
@@ -496,6 +548,22 @@
         .share-btn {
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
             border: none;
+        }
+
+        /* Rotate transform kwa simu zinazokataa auto-rotate */
+        .player-wrapper.rotated {
+            transform: rotate(90deg);
+            transform-origin: center center;
+            width: 100vh;
+            max-width: 100vh;
+            height: 100vw;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            margin-top: calc(-50vw);
+            margin-left: calc(-50vh);
+            z-index: 99999999;
+            aspect-ratio: unset;
         }
 
         .quality-container {
@@ -833,8 +901,9 @@
                     </div>
 
                     <div class="l-ad-box" id="dyn-lstyle-box">
-                        <h4 style="margin-bottom:5px; text-transform: uppercase; font-size:12px; color:#000;">Tangazo Maalum</h4>
-                        <p id="dyn-lstyle-text" style="font-size:13px;"></p>
+                        <span class="l-ad-box-label">Tangazo</span>
+                        <img class="l-ad-box-media" id="dyn-lstyle-image" src="" alt="Tangazo" style="display:none;">
+                        <video class="l-ad-box-media" id="dyn-lstyle-video" muted loop autoplay playsinline style="display:none;"></video>
                     </div>
 
                     <div class="breaking-news-banner" id="dyn-breaking-banner">
@@ -859,6 +928,7 @@
                             <button class="control-btn" id="mute-btn" onclick="toggleMute()">🔇 Washa Sauti</button>
                         </div>
                         <div class="control-group">
+                            <button class="control-btn" id="rotate-btn" onclick="toggleRotate()">⟳ Pindua</button>
                             <button class="control-btn share-btn" onclick="shareWebsite()">🔗 Share</button>
                             <button class="control-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
                         </div>
@@ -1067,8 +1137,25 @@
             }
 
             let lstyleBox = document.getElementById('dyn-lstyle-box');
-            if (config.showLStyle && config.adText && config.adText.trim() !== "") {
-                document.getElementById('dyn-lstyle-text').innerText = config.adText;
+            const lstyleImg = document.getElementById('dyn-lstyle-image');
+            const lstyleVid = document.getElementById('dyn-lstyle-video');
+
+            if (config.showLStyle && config.adMediaUrl && config.adMediaUrl.trim() !== "") {
+                lstyleBox.classList.remove('pos-bottom-left', 'pos-bottom-right', 'pos-top-left', 'pos-top-right', 'pos-center');
+                lstyleBox.classList.add('pos-' + (config.adPosition || 'bottom-left'));
+
+                if (config.adMediaType === 'video') {
+                    if (lstyleVid.src !== config.adMediaUrl) {
+                        lstyleVid.src = config.adMediaUrl;
+                        lstyleVid.play().catch(() => {});
+                    }
+                    lstyleVid.style.display = 'block';
+                    lstyleImg.style.display = 'none';
+                } else {
+                    lstyleImg.src = config.adMediaUrl;
+                    lstyleImg.style.display = 'block';
+                    lstyleVid.style.display = 'none';
+                }
                 lstyleBox.style.display = 'block';
             } else {
                 lstyleBox.style.display = 'none';
@@ -1329,6 +1416,15 @@
         function toggleFullscreen() {
             if (!document.fullscreenElement) { playerWrapper.requestFullscreen().catch(() => {}); }
             else { document.exitFullscreen(); }
+        }
+
+        function toggleRotate() {
+            playerWrapper.classList.toggle('rotated');
+            if (playerWrapper.classList.contains('rotated')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
         }
 
         function shareWebsite() {
