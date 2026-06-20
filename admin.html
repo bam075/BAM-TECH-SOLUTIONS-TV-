@@ -87,6 +87,23 @@
             margin-bottom: 15px; font-size: 13px; font-family: inherit;
         }
         textarea { resize: vertical; min-height: 60px; }
+
+        .color-input {
+            width: 100%; height: 42px; background: #1e293b; border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; cursor: pointer; margin-bottom: 15px; padding: 4px;
+        }
+        input[type="range"] {
+            width: 100%; margin-bottom: 15px; accent-color: #3b82f6; cursor: pointer;
+        }
+        .ticker-preview-box {
+            background: #000; border-radius: 10px; padding: 0; margin-bottom: 18px;
+            border: 1px solid rgba(255,255,255,0.1); overflow: hidden; height: 44px;
+            display: flex; align-items: center; position: relative;
+        }
+        .ticker-preview-text {
+            white-space: nowrap; padding-left: 14px; font-size: 11.5px; font-weight: 600; color: #e2e8f0;
+        }
+
         button { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 13px; }
         button:hover { background: #1d4ed8; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -212,6 +229,7 @@
                 <div class="nav-item active" data-tab="broadcast" onclick="switchTab('broadcast')"><span class="nav-icon">📡</span> Broadcast</div>
                 <div class="nav-item" data-tab="layout" onclick="switchTab('layout')"><span class="nav-icon">🖥️</span> Mpangilio wa Player</div>
                 <div class="nav-item" data-tab="breaking" onclick="switchTab('breaking')"><span class="nav-icon">🚨</span> Breaking News</div>
+                <div class="nav-item" data-tab="ticker" onclick="switchTab('ticker')"><span class="nav-icon">📜</span> Ticker (Maandishi)</div>
 
                 <div class="nav-section-label">Maudhui</div>
                 <div class="nav-item" data-tab="ads" onclick="switchTab('ads')"><span class="nav-icon">🎬</span> Maktaba ya Matangazo</div>
@@ -246,14 +264,7 @@
                             <option value="MUBASHARA">Washa na Uandike "MUBASHARA"</option>
                         </select>
 
-                        <label>4. Maandishi ya chini yanayopita (Ticker):</label>
-                        <input type="text" id="ticker-text-field" placeholder="Andika habari au ujumbe...">
-                        <select id="ticker-status-selector">
-                            <option value="OFF">Ficha Ticker Bar Yote</option>
-                            <option value="ON">Washa Ticker Bar Sasa Hivi</option>
-                        </select>
-
-                        <p class="hint-text">Kumbuka: Tangazo la L-Style sasa linadhibitiwa kwenye tab "Maktaba ya Matangazo" (kando, upande wa kushoto kwenye menu).</p>
+                        <p class="hint-text">Kumbuka: Ticker (maandishi ya kupita chini) sasa inadhibitiwa kwenye tab "📜 Ticker", na L-Style kwenye tab "🎬 Maktaba ya Matangazo".</p>
 
                         <button onclick="publishLiveChanges()" style="width: 100%; padding:14px; font-size:14px;">🚀 RUSHA MABADILIKO HEWANI SASA HIVI</button>
                     </div>
@@ -324,6 +335,58 @@
                     </div>
                 </div>
 
+                <!-- ============ TAB: TICKER ============ -->
+                <div class="tab-panel" id="tab-ticker">
+                    <div class="card">
+                        <h2>📜 Ticker (Maandishi ya Kupita Chini)</h2>
+                        <p class="hint-text" style="margin-top:-5px;">Dhibiti maandishi yanayopita chini ya video - ukubwa, mwendo, font, rangi, na uwazi.</p>
+
+                        <div class="ticker-preview-box" id="ticker-preview-box">
+                            <span class="ticker-preview-text" id="ticker-preview-text">Mfano wa maandishi yatakavyoonekana...</span>
+                        </div>
+
+                        <label>Maandishi ya Ticker:</label>
+                        <input type="text" id="ticker-text-field" placeholder="Andika habari au ujumbe...">
+
+                        <label>Onyesha Ticker:</label>
+                        <select id="ticker-status-selector">
+                            <option value="OFF">Ficha Ticker Bar Yote</option>
+                            <option value="ON">Washa Ticker Bar Sasa Hivi</option>
+                        </select>
+
+                        <label>Ukubwa wa Maandishi (Font Size): <span id="ticker-size-display">11.5px</span></label>
+                        <input type="range" id="ticker-font-size" min="8" max="24" step="0.5" value="11.5">
+
+                        <label>Mwendo wa Maandishi (Speed): <span id="ticker-speed-display">22s (Kawaida)</span></label>
+                        <input type="range" id="ticker-speed" min="6" max="45" step="1" value="22">
+                        <p class="hint-text" style="margin-top:-10px;">Namba ndogo = mwendo wa kasi zaidi. Namba kubwa = mwendo wa polepole zaidi.</p>
+
+                        <label>Aina ya Font (Font Family):</label>
+                        <select id="ticker-font-family">
+                            <option value="'Segoe UI', Roboto, Helvetica, Arial, sans-serif">Segoe UI (Default)</option>
+                            <option value="'Arial', sans-serif">Arial</option>
+                            <option value="'Georgia', serif">Georgia (Serif)</option>
+                            <option value="'Courier New', monospace">Courier New (Monospace)</option>
+                            <option value="'Verdana', sans-serif">Verdana</option>
+                            <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                        </select>
+
+                        <label>Rangi ya Maandishi:</label>
+                        <input type="color" id="ticker-text-color" value="#e2e8f0" class="color-input">
+
+                        <label>Rangi ya Background (Mandhari ya Ticker):</label>
+                        <input type="color" id="ticker-bg-color" value="#0f172a" class="color-input">
+
+                        <label>Uwazi wa Background (Opacity): <span id="ticker-opacity-display">92%</span></label>
+                        <input type="range" id="ticker-bg-opacity" min="0" max="100" step="5" value="92">
+
+                        <label>Unene wa Ticker Bar: <span id="ticker-height-display">6px</span></label>
+                        <input type="range" id="ticker-bar-height" min="3" max="20" step="1" value="6">
+
+                        <button onclick="publishTickerChanges()" style="width:100%; padding:14px; font-size:14px; margin-top:10px;">🚀 RUSHA TICKER MPYA HEWANI</button>
+                    </div>
+                </div>
+
                 <!-- ============ TAB: ADS LIBRARY ============ -->
                 <div class="tab-panel" id="tab-ads">
                     <div class="card">
@@ -372,6 +435,9 @@
                             <div class="empty-state">Inapakia ratiba...</div>
                         </div>
 
+                        <button class="btn-danger" onclick="deleteAllEpg()" style="width:100%; margin-bottom:20px;">🗑️ FUTA RATIBA YOTE SASA HIVI</button>
+
+                        <h3 style="border-top:1px solid rgba(255,255,255,0.06); padding-top:18px;">➕ Ongeza Kipindi Kimoja</h3>
                         <label>Saa (mfano: 08:00 AM):</label>
                         <input type="text" id="new-epg-time" placeholder="08:00 AM">
 
@@ -379,6 +445,22 @@
                         <input type="text" id="new-epg-name" placeholder="Mfano: Tech Insights na Bryan Alex">
 
                         <button onclick="addEpgItem()" style="width:100%;">➕ Ongeza Kwenye Ratiba</button>
+
+                        <h3 style="border-top:1px solid rgba(255,255,255,0.06); padding-top:18px; margin-top:20px;">📋 Ongeza Ratiba Nzima kwa Mara Moja</h3>
+                        <p class="hint-text" style="margin-top:-5px;">Andika kipindi kimoja kwa kila mstari, ukitumia mpangilio: <b>SAA - JINA LA KIPINDI</b></p>
+                        <textarea id="bulk-epg-input" rows="6" placeholder="08:00 AM - Tech Insights na Bryan Alex
+02:00 PM - Cybersecurity Foundations
+06:30 PM - BAM Tech Corporate Showcase
+09:00 PM - Digital Innovations Africa"></textarea>
+
+                        <label>Hii ratiba iwe ya:</label>
+                        <select id="bulk-epg-mode">
+                            <option value="replace">Badilisha Ratiba Yote (futa ya zamani kwanza)</option>
+                            <option value="append">Ongeza Juu ya Ratiba Iliyopo (bila kufuta)</option>
+                            <option value="week">Rudia Ratiba Hii kwa Siku 7 (Wiki Nzima)</option>
+                        </select>
+
+                        <button onclick="bulkAddEpg()" style="width:100%;">🚀 RUSHA RATIBA HII HEWANI</button>
                     </div>
                 </div>
 
@@ -550,6 +632,7 @@
                 recordAdminLogin();
                 loadCurrentConfigValues();
                 loadLayoutValues();
+                loadTickerValues();
                 startAdminChatListener();
                 startViewerCountListener();
                 startAdsLibraryListener();
@@ -636,23 +719,18 @@
                 const config = snap.val() || {};
                 document.getElementById('stream-url-field').value = config.streamUrl || '';
                 document.getElementById('program-title-field').value = config.programTitle || '';
-                document.getElementById('ticker-text-field').value = config.ticker || '';
                 document.getElementById('live-badge-selector').value = config.showLive ? (config.liveText || 'LIVE') : 'OFF';
-                document.getElementById('ticker-status-selector').value = config.showTicker ? 'ON' : 'OFF';
             });
         }
 
         function publishLiveChanges() {
             const liveSelector = document.getElementById('live-badge-selector').value;
-            const tickerSelector = document.getElementById('ticker-status-selector').value;
 
             const config = {
                 streamUrl: document.getElementById('stream-url-field').value.trim(),
                 programTitle: document.getElementById('program-title-field').value.trim(),
-                ticker: document.getElementById('ticker-text-field').value.trim(),
                 showLive: liveSelector !== 'OFF',
-                liveText: liveSelector !== 'OFF' ? liveSelector : 'LIVE',
-                showTicker: tickerSelector === 'ON'
+                liveText: liveSelector !== 'OFF' ? liveSelector : 'LIVE'
             };
 
             db.ref('tv_config').update(config).then(() => {
@@ -767,6 +845,82 @@
                 showToast(activate ? 'Breaking News Imewashwa! 🚨' : 'Breaking News Imezimwa');
                 db.ref('admin_logs').push({ time: Date.now(), action: activate ? 'Aliwasha Breaking News' : 'Alizima Breaking News' });
             });
+        }
+
+        /* ============== TICKER TAB ============== */
+        function hexToRgbAdmin(hex) {
+            hex = hex.replace('#', '');
+            if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+            const num = parseInt(hex, 16);
+            return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+        }
+
+        function loadTickerValues() {
+            db.ref('tv_config').once('value').then((snap) => {
+                const config = snap.val() || {};
+                document.getElementById('ticker-text-field').value = config.ticker || '';
+                document.getElementById('ticker-status-selector').value = config.showTicker ? 'ON' : 'OFF';
+                document.getElementById('ticker-font-size').value = config.tickerFontSize || 11.5;
+                document.getElementById('ticker-speed').value = config.tickerSpeed || 22;
+                document.getElementById('ticker-font-family').value = config.tickerFontFamily || "'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+                document.getElementById('ticker-text-color').value = config.tickerTextColor || '#e2e8f0';
+                document.getElementById('ticker-bg-color').value = config.tickerBgColor || '#0f172a';
+                document.getElementById('ticker-bg-opacity').value = (config.tickerBgOpacity !== undefined) ? Math.round(config.tickerBgOpacity * 100) : 92;
+                document.getElementById('ticker-bar-height').value = config.tickerBarHeight || 6;
+                updateTickerPreview();
+            });
+        }
+
+        function updateTickerPreview() {
+            const text = document.getElementById('ticker-text-field').value.trim() || 'Mfano wa maandishi yatakavyoonekana...';
+            const fontSize = document.getElementById('ticker-font-size').value;
+            const speed = document.getElementById('ticker-speed').value;
+            const fontFamily = document.getElementById('ticker-font-family').value;
+            const textColor = document.getElementById('ticker-text-color').value;
+            const bgColor = document.getElementById('ticker-bg-color').value;
+            const bgOpacity = document.getElementById('ticker-bg-opacity').value / 100;
+            const barHeight = document.getElementById('ticker-bar-height').value;
+
+            document.getElementById('ticker-size-display').innerText = fontSize + 'px';
+            document.getElementById('ticker-speed-display').innerText = speed + 's' + (speed < 15 ? ' (Kasi)' : speed > 30 ? ' (Polepole)' : ' (Kawaida)');
+            document.getElementById('ticker-opacity-display').innerText = Math.round(bgOpacity * 100) + '%';
+            document.getElementById('ticker-height-display').innerText = barHeight + 'px';
+
+            const previewBox = document.getElementById('ticker-preview-box');
+            const previewText = document.getElementById('ticker-preview-text');
+            const rgb = hexToRgbAdmin(bgColor);
+
+            previewBox.style.background = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${bgOpacity})`;
+            previewBox.style.padding = barHeight + 'px 0';
+            previewText.innerText = text;
+            previewText.style.fontSize = fontSize + 'px';
+            previewText.style.fontFamily = fontFamily;
+            previewText.style.color = textColor;
+        }
+
+        ['ticker-text-field', 'ticker-font-size', 'ticker-speed', 'ticker-font-family', 'ticker-text-color', 'ticker-bg-color', 'ticker-bg-opacity', 'ticker-bar-height'].forEach(id => {
+            const el = document.getElementById(id);
+            el.addEventListener('input', updateTickerPreview);
+            el.addEventListener('change', updateTickerPreview);
+        });
+
+        function publishTickerChanges() {
+            const config = {
+                ticker: document.getElementById('ticker-text-field').value.trim(),
+                showTicker: document.getElementById('ticker-status-selector').value === 'ON',
+                tickerFontSize: parseFloat(document.getElementById('ticker-font-size').value),
+                tickerSpeed: parseInt(document.getElementById('ticker-speed').value),
+                tickerFontFamily: document.getElementById('ticker-font-family').value,
+                tickerTextColor: document.getElementById('ticker-text-color').value,
+                tickerBgColor: document.getElementById('ticker-bg-color').value,
+                tickerBgOpacity: parseInt(document.getElementById('ticker-bg-opacity').value) / 100,
+                tickerBarHeight: parseInt(document.getElementById('ticker-bar-height').value)
+            };
+
+            db.ref('tv_config').update(config).then(() => {
+                showToast('Ticker Mpya Imerushwa Hewani! ✓');
+                db.ref('admin_logs').push({ time: Date.now(), action: 'Alibadilisha mipangilio ya Ticker' });
+            }).catch((err) => alert('Hitilafu: ' + err.message));
         }
 
         /* ============== ADS LIBRARY TAB ============== */
@@ -918,6 +1072,96 @@
         function deleteEpgItem(key) {
             if (confirm('Futa hiki kipindi kutoka kwenye ratiba?')) {
                 db.ref('epg/' + key).remove();
+            }
+        }
+
+        function deleteAllEpg() {
+            if (confirm('Una uhakika unataka kufuta RATIBA YOTE? Hatua hii haiwezi kurudishwa.')) {
+                db.ref('epg').remove().then(() => {
+                    showToast('Ratiba Yote Imefutwa ✓');
+                    db.ref('admin_logs').push({ time: Date.now(), action: 'Alifuta ratiba (EPG) yote' });
+                });
+            }
+        }
+
+        function parseBulkEpgText(rawText) {
+            // Kila mstari: "SAA - JINA LA KIPINDI"
+            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l !== "");
+            const items = [];
+            lines.forEach(line => {
+                const dashIndex = line.indexOf(' - ');
+                if (dashIndex === -1) return; // mstari batili, ruka
+                const time = line.substring(0, dashIndex).trim();
+                const name = line.substring(dashIndex + 3).trim();
+                if (time !== "" && name !== "") {
+                    items.push({ time, name });
+                }
+            });
+            return items;
+        }
+
+        function bulkAddEpg() {
+            const rawText = document.getElementById('bulk-epg-input').value;
+            const mode = document.getElementById('bulk-epg-mode').value;
+            const parsedItems = parseBulkEpgText(rawText);
+
+            if (parsedItems.length === 0) {
+                alert('Hakuna kipindi halali kilichosomwa. Hakikisha kila mstari una mpangilio: SAA - JINA LA KIPINDI');
+                return;
+            }
+
+            const daysOfWeek = ['Jumapili', 'Jumatatu', 'Jumanne', 'Jumatano', 'Alhamisi', 'Ijumaa', 'Jumamosi'];
+
+            function pushItems(startOrder) {
+                const updates = {};
+                let order = startOrder;
+                if (mode === 'week') {
+                    daysOfWeek.forEach(dayName => {
+                        parsedItems.forEach(item => {
+                            const newKey = db.ref().push().key;
+                            updates['epg/' + newKey] = {
+                                time: item.time,
+                                name: `[${dayName}] ${item.name}`,
+                                active: false,
+                                order: order++
+                            };
+                        });
+                    });
+                } else {
+                    parsedItems.forEach(item => {
+                        const newKey = db.ref().push().key;
+                        updates['epg/' + newKey] = {
+                            time: item.time,
+                            name: item.name,
+                            active: false,
+                            order: order++
+                        };
+                    });
+                }
+                return updates;
+            }
+
+            if (mode === 'replace') {
+                db.ref('epg').remove().then(() => {
+                    const updates = pushItems(1);
+                    db.ref().update(updates).then(() => {
+                        document.getElementById('bulk-epg-input').value = '';
+                        showToast(`Ratiba Mpya Imewekwa (${parsedItems.length} vipindi) ✓`);
+                        db.ref('admin_logs').push({ time: Date.now(), action: `Aliweka ratiba mpya (${parsedItems.length} vipindi, mode: replace)` });
+                    });
+                });
+            } else {
+                db.ref('epg').once('value').then(snap => {
+                    const data = snap.val() || {};
+                    const maxOrder = Object.values(data).reduce((m, it) => Math.max(m, it.order || 0), 0);
+                    const updates = pushItems(maxOrder + 1);
+                    db.ref().update(updates).then(() => {
+                        document.getElementById('bulk-epg-input').value = '';
+                        const count = mode === 'week' ? parsedItems.length * 7 : parsedItems.length;
+                        showToast(`Vipindi ${count} Vimeongezwa Kwenye Ratiba ✓`);
+                        db.ref('admin_logs').push({ time: Date.now(), action: `Aliongeza vipindi ${count} kwenye ratiba (mode: ${mode})` });
+                    });
+                });
             }
         }
 
