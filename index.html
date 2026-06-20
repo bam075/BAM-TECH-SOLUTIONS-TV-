@@ -1068,31 +1068,63 @@
         }
 
         /* ============== VIDEO PLAYER ============== */
-        let STREAM_URL = 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
-        const video = document.getElementById('video');
-        const playerWrapper = document.getElementById('player-wrapper');
-        const playBtn = document.getElementById('play-btn');
-        const muteBtn = document.getElementById('mute-btn');
-        const qualitySelect = document.getElementById('quality-select');
-        const currentQualityView = document.getElementById('current-quality-view');
-        let hls = null;
+ let currentStreamUrl = ''; // Itahifadhi link inayocheza sasa
+const video = document.getElementById('video');
+const playerWrapper = document.getElementById('playerWrapper');
+const playBtn = document.getElementById('play-btn');
+const muteBtn = document.getElementById('mute-btn');
+const qualitySelect = document.getElementById('quality-select');
+const currentQualityView = document.getElementById('current-quality-view');
+let hls = null;
 
-        function handleLogoError() {
-            document.getElementById('tv-logo').style.display = 'none';
-            document.getElementById('text-logo').style.display = 'block';
+function handleLogoError() {
+    document.getElementById('tv-logo').style.display = 'none';
+    document.getElementById('text-logo').style.display = 'block';
+}
+
+// Kazi hii sasa inapokea URL ya IPTV/Video yoyote
+function initPlayer(url) {
+    if (!url) return;
+    currentStreamUrl = url.trim();
+
+    // 1. Zima na futa player ya zamani kama ilikuwa inacheza
+    if (hls) { 
+        hls.destroy(); 
+        hls = null; 
+    }
+
+    // 2. Kama ni link ya HLS/IPTV (.m3u8 au link za aina hiyo)
+    if (currentStreamUrl.includes('.m3u8') || currentStreamUrl.includes('.m3u') || typeof Hls !== 'undefined') {
+        if (Hls.isSupported()) {
+            hls = new Hls();
+            hls.loadSource(currentStreamUrl);
+            hls.attachMedia(video);
+            
+            hls.on(Hls.Events.MANIFEST_PARSED, function() { 
+                video.play().catch(() => {
+                    console.log("Autoplay ilizuiliwa na kivinjari, mtumiaji anapaswa kubonyeza play.");
+                }); 
+            });
+
+            // Hapa inaendelea na setup ya ku-change ubora wa picha (quality)
+            if (typeof setupQualitySelector === 'function') {
+                setupQualitySelector(hls);
+            }
+        } 
+        // Kwa ajili ya vivinjari vya Apple (Safari/iOS) ambavyo vinasapoti m3u8 direct
+        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            video.src = currentStreamUrl;
+            video.addEventListener('loadedmetadata', function() { 
+                video.play().catch(() => {}); 
+            });
         }
-
-        function initPlayer() {
-            if (hls) { hls.destroy(); hls = null; }
-            if (Hls.isSupported()) {
-                hls = new Hls();
-                hls.loadSource(STREAM_URL);
-                hls.attachMedia(video);
-
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    video.play().catch(() => {});
-                    setupQualitySelector(hls);
-                });
+    } 
+    // 3. Kama ni link ya kawaida ya video (mfano MP4, WebM nk.)
+    else {
+        video.src = currentStreamUrl;
+        video.play().catch(() => {});
+    }
+}
 
                 hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
                     const activeLevel = hls.levels[data.level];
