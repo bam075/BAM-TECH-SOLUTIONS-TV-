@@ -135,6 +135,11 @@
         .ad-item-name { font-size: 13px; font-weight: 700; color: #f1f5f9; }
         .ad-item-meta { font-size: 11px; color: #64748b; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .ad-item-badge { font-size: 9px; font-weight: 800; background: #10b981; color: #000; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
+        .status-badge { font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
+        .status-badge.status-working { background: #10b981; color: #000; }
+        .status-badge.status-failed { background: #dc2626; color: #fff; }
+        .status-badge.status-testing { background: #64748b; color: #fff; }
+        .ad-item.status-row-failed { opacity: 0.5; }
         .ad-item-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
         /* EPG */
@@ -295,6 +300,13 @@
 
                         <h3 style="border-top:1px solid rgba(255,255,255,0.06); padding-top:16px;">📋 Channel Zilizopatikana</h3>
                         <input type="text" id="channel-search-field" placeholder="🔍 Tafuta channel kwa jina..." style="display:none;">
+
+                        <div class="flex-btns" id="test-all-controls" style="display:none; margin-bottom:15px;">
+                            <button class="btn-secondary" onclick="testAllChannels()" style="flex:1;">🔍 Pima Zote (Zinazoonekana)</button>
+                            <button class="btn-secondary" onclick="filterWorkingOnly()" style="flex:1;">✅ Onyesha Zinazofanya Kazi Tu</button>
+                        </div>
+                        <div id="testing-progress-msg" class="hint-text" style="display:none;"></div>
+
                         <div class="ads-list" id="playlist-channels-list">
                             <div class="empty-state">Pakua playlist hapo juu kwanza ili kuona channel zake hapa...</div>
                         </div>
@@ -829,6 +841,8 @@
             loadingMsg.style.display = 'block';
             errorMsg.style.display = 'none';
             channelsList.innerHTML = '';
+            document.getElementById('test-all-controls').style.display = 'none';
+            document.getElementById('testing-progress-msg').style.display = 'none';
 
             fetch(url)
                 .then(response => {
@@ -846,6 +860,7 @@
                     currentPlaylistChannels = channels;
                     searchField.style.display = 'block';
                     searchField.value = '';
+                    document.getElementById('test-all-controls').style.display = 'flex';
                     renderChannelsList(channels);
                     showToast(`Channel ${channels.length} Zimepatikana ✓`);
                 })
@@ -872,10 +887,19 @@
             displayChannels.forEach((ch) => {
                 const div = document.createElement('div');
                 div.className = 'ad-item';
+                div.dataset.channelUrl = ch.url;
                 const groupLabel = ch.group ? ` · ${escapeHTML(ch.group)}` : '';
+
+                let statusBadgeHtml = '';
+                if (ch.testStatus === 'working') statusBadgeHtml = '<span class="status-badge status-working">✓ INAFANYA KAZI</span>';
+                else if (ch.testStatus === 'failed') statusBadgeHtml = '<span class="status-badge status-failed">✗ HAIFANYI KAZI</span>';
+                else if (ch.testStatus === 'testing') statusBadgeHtml = '<span class="status-badge status-testing">⏳ INAPIMWA</span>';
+
+                if (ch.testStatus === 'failed') div.classList.add('status-row-failed');
+
                 div.innerHTML = `
                     <div class="ad-item-info">
-                        <div class="ad-item-name">${escapeHTML(ch.name)}</div>
+                        <div class="ad-item-name">${escapeHTML(ch.name)}${statusBadgeHtml}</div>
                         <div class="ad-item-meta">${escapeHTML(ch.url)}${groupLabel}</div>
                     </div>
                     <div class="ad-item-actions">
@@ -903,6 +927,54 @@
             const filtered = currentPlaylistChannels.filter(ch => ch.name.toLowerCase().includes(query));
             renderChannelsList(filtered);
         });
+
+        async function testAllChannels() {
+            const progressMsg = document.getElementById('testing-progress-msg');
+            // Pima zile 100 zinazoonyeshwa kwa sasa (zinazoonekana kwenye skrini)
+            const channelsToTest = currentPlaylistChannels.slice(0, 100);
+
+            progressMsg.style.display = 'block';
+
+            // Weka zote kuwa "testing" kwanza
+            channelsToTest.forEach(ch => { ch.testStatus = 'testing'; });
+            renderChannelsList(currentPlaylistChannels);
+
+            let testedCount = 0;
+            const CONCURRENT_LIMIT = 5; // pima 5 kwa wakati mmoja ili kuepuka kulemea
+
+            async function testOne(ch) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 6000);
+                    const response = await fetch(ch.url, { method: 'GET', signal: controller.signal });
+                    clearTimeout(timeoutId);
+                    ch.testStatus = response.ok ? 'working' : 'failed';
+                } catch (err) {
+                    ch.testStatus = 'failed';
+                }
+                testedCount++;
+                progressMsg.innerText = `⏳ Inapima... ${testedCount} / ${channelsToTest.length}`;
+                renderChannelsList(currentPlaylistChannels);
+            }
+
+            // Pima kwa makundi ya CONCURRENT_LIMIT ili kuepuka maombi mengi kwa wakati mmoja
+            for (let i = 0; i < channelsToTest.length; i += CONCURRENT_LIMIT) {
+                const batch = channelsToTest.slice(i, i + CONCURRENT_LIMIT);
+                await Promise.all(batch.map(testOne));
+            }
+
+            const workingCount = channelsToTest.filter(ch => ch.testStatus === 'working').length;
+            progressMsg.innerText = `✅ Upimaji Umekamilika: ${workingCount} kati ya ${channelsToTest.length} zinaonekana kufanya kazi.`;
+        }
+
+        function filterWorkingOnly() {
+            const workingChannels = currentPlaylistChannels.filter(ch => ch.testStatus === 'working');
+            if (workingChannels.length === 0) {
+                alert('Bado hujapima channel zozote, au hakuna iliyofanya kazi. Bofya "Pima Zote" kwanza.');
+                return;
+            }
+            renderChannelsList(workingChannels);
+        }
 
         function useChannelFromPlaylist(channel) {
             document.getElementById('stream-url-field').value = channel.url;
