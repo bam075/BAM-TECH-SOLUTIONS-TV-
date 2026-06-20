@@ -177,6 +177,64 @@
             pointer-events: none;
             border-radius: 16px;
         }
+
+        /* Split-screen layout (Picture-in-Picture / Side ad) */
+        .player-split-row {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+        .player-split-row.layout-bottom {
+            flex-direction: column;
+        }
+        .pip-zone {
+            position: relative;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            display: none;
+        }
+        .pip-zone img, .pip-zone video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .pip-zone-label {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.6);
+            color: #fbbf24;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 5;
+        }
+        /* Corner overlay positions */
+        .pip-zone.corner-br {
+            position: absolute;
+            bottom: 4%;
+            right: 4%;
+            width: 28%;
+            aspect-ratio: 16/9;
+            z-index: 10;
+        }
+        .pip-zone.corner-tr {
+            position: absolute;
+            top: 4%;
+            right: 4%;
+            width: 28%;
+            aspect-ratio: 16/9;
+            z-index: 10;
+        }
+
         .player-wrapper {
             position: relative;
             width: 100%;
@@ -274,6 +332,39 @@
             display: none;
             box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
             font-weight: bold;
+        }
+
+        .breaking-news-banner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(90deg, #dc2626, #991b1b);
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            z-index: 999997;
+            box-shadow: 0 4px 15px rgba(220, 38, 38, 0.5);
+        }
+        .breaking-news-tag {
+            background: #ffffff;
+            color: #dc2626;
+            font-size: 10px;
+            font-weight: 900;
+            padding: 3px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+        .breaking-news-text {
+            color: #ffffff;
+            font-size: 12.5px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .custom-controls {
@@ -680,6 +771,7 @@
         <div class="main-content">
             <div class="player-container-wrapper">
                 <div class="player-glow"></div>
+                <div class="player-split-row" id="player-split-row">
                 <div class="player-wrapper" id="player-wrapper">
 
                     <div class="channel-bug">
@@ -700,6 +792,11 @@
                         <p id="dyn-lstyle-text" style="font-size:13px;"></p>
                     </div>
 
+                    <div class="breaking-news-banner" id="dyn-breaking-banner">
+                        <span class="breaking-news-tag">DHARURA</span>
+                        <span class="breaking-news-text" id="dyn-breaking-text"></span>
+                    </div>
+
                     <video id="video" autoplay muted playsinline></video>
 
                     <div class="custom-controls">
@@ -712,6 +809,13 @@
                             <button class="control-btn" onclick="toggleFullscreen()">⛶ Fullscreen</button>
                         </div>
                     </div>
+                </div>
+
+                <div class="pip-zone" id="pip-zone">
+                    <span class="pip-zone-label">Tangazo</span>
+                    <img id="pip-image" src="" alt="Tangazo" style="display:none;">
+                    <video id="pip-video" muted loop autoplay playsinline style="display:none;"></video>
+                </div>
                 </div>
             </div>
 
@@ -744,7 +848,7 @@
 
             <div class="schedule-card">
                 <div class="schedule-title">📅 RATIBA YA VIPINDI YA LEO</div>
-                <div class="schedule-list">
+                <div class="schedule-list" id="dyn-schedule-list">
                     <div class="schedule-item active">
                         <span class="schedule-time">08:00 AM - LIVE</span>
                         <span class="schedule-name">Tech Insights & Global Innovation Performance</span>
@@ -939,6 +1043,95 @@
             if (url && url.trim() !== "") STREAM_URL = url;
             initPlayer();
         }).catch(() => initPlayer());
+
+        /* ============== FIREBASE: BREAKING NEWS (DHARURA) ============== */
+        db.ref('breaking_news').on('value', (snapshot) => {
+            const news = snapshot.val();
+            const banner = document.getElementById('dyn-breaking-banner');
+            if (news && news.active && news.text && news.text.trim() !== "") {
+                document.getElementById('dyn-breaking-text').innerText = news.text;
+                banner.style.display = 'flex';
+            } else {
+                banner.style.display = 'none';
+            }
+        });
+
+        /* ============== FIREBASE: EPG (RATIBA YA VIPINDI) ============== */
+        db.ref('epg').on('value', (snapshot) => {
+            const epgData = snapshot.val();
+            const listEl = document.getElementById('dyn-schedule-list');
+            if (!epgData) return;
+
+            const items = Object.values(epgData).sort((a, b) => (a.order || 0) - (b.order || 0));
+            if (items.length === 0) return;
+
+            listEl.innerHTML = '';
+            items.forEach((item) => {
+                const div = document.createElement('div');
+                div.className = 'schedule-item' + (item.active ? ' active' : '');
+                div.innerHTML = `<span class="schedule-time">${escapeHTML(item.time || '')}${item.active ? ' - LIVE' : ''}</span>
+                                  <span class="schedule-name">${escapeHTML(item.name || '')}</span>`;
+                listEl.appendChild(div);
+            });
+        });
+
+        /* ============== FIREBASE: LAYOUT / PICTURE-IN-PICTURE ============== */
+        const splitRow = document.getElementById('player-split-row');
+        const pipZone = document.getElementById('pip-zone');
+        const pipImage = document.getElementById('pip-image');
+        const pipVideo = document.getElementById('pip-video');
+        const playerWrapperEl = document.getElementById('player-wrapper');
+
+        db.ref('layout_config').on('value', (snapshot) => {
+            const cfg = snapshot.val();
+
+            // Reset classes/styles
+            splitRow.classList.remove('layout-bottom');
+            pipZone.classList.remove('corner-br', 'corner-tr');
+            pipZone.style.width = '';
+            pipZone.style.position = '';
+            playerWrapperEl.style.flex = '';
+            playerWrapperEl.style.width = '';
+
+            if (!cfg || !cfg.enabled || !cfg.mediaUrl || cfg.mediaUrl.trim() === "") {
+                pipZone.style.display = 'none';
+                pipImage.style.display = 'none';
+                pipVideo.style.display = 'none';
+                return;
+            }
+
+            const ratio = parseInt(cfg.mainRatio) || 75;
+            const position = cfg.position || 'right';
+
+            pipZone.style.display = 'block';
+
+            if (position === 'right') {
+                playerWrapperEl.style.flex = `0 0 ${ratio}%`;
+                pipZone.style.flex = `0 0 ${100 - ratio - 1}%`;
+                pipZone.style.aspectRatio = '16/9';
+            } else if (position === 'bottom') {
+                splitRow.classList.add('layout-bottom');
+                playerWrapperEl.style.flex = 'none';
+                playerWrapperEl.style.aspectRatio = '16/9';
+                pipZone.style.flex = 'none';
+                pipZone.style.aspectRatio = '16/5';
+            } else if (position === 'corner-br') {
+                pipZone.classList.add('corner-br');
+            } else if (position === 'corner-tr') {
+                pipZone.classList.add('corner-tr');
+            }
+
+            if (cfg.mediaType === 'video') {
+                pipVideo.src = cfg.mediaUrl;
+                pipVideo.style.display = 'block';
+                pipImage.style.display = 'none';
+                pipVideo.play().catch(() => {});
+            } else {
+                pipImage.src = cfg.mediaUrl;
+                pipImage.style.display = 'block';
+                pipVideo.style.display = 'none';
+            }
+        });
 
         /* ============== FIREBASE: IDADI HALISI YA WATAZAMAJI (PRESENCE) ============== */
         const myViewerRef = db.ref('presence/viewers').push();
