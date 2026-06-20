@@ -1089,6 +1089,19 @@
             return div.innerHTML;
         }
 
+        function hexToRgb(hex) {
+            hex = hex.replace('#', '');
+            if (hex.length === 3) {
+                hex = hex.split('').map(c => c + c).join('');
+            }
+            const num = parseInt(hex, 16);
+            return {
+                r: (num >> 16) & 255,
+                g: (num >> 8) & 255,
+                b: num & 255
+            };
+        }
+
         /* ============== VIDEO PLAYER ============== */
         let STREAM_URL = 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
         const video = document.getElementById('video');
@@ -1266,7 +1279,24 @@
 
             let tickerBar = document.getElementById('dyn-ticker-bar');
             if (config.showTicker && config.ticker && config.ticker.trim() !== "") {
-                document.getElementById('dyn-ticker-text').innerText = config.ticker;
+                const tickerTextEl = document.getElementById('dyn-ticker-text');
+                tickerTextEl.innerText = config.ticker;
+
+                // Ukubwa wa maandishi
+                tickerTextEl.style.fontSize = (config.tickerFontSize || 11.5) + 'px';
+                // Font family
+                tickerTextEl.style.fontFamily = config.tickerFontFamily || "'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+                // Rangi ya maandishi
+                tickerTextEl.style.color = config.tickerTextColor || '#e2e8f0';
+                // Mwendo (speed) - sekunde, ndogo zaidi = kasi zaidi
+                tickerTextEl.style.animationDuration = (config.tickerSpeed || 22) + 's';
+                // Rangi na uwazi wa background
+                const bgColor = config.tickerBgColor || '#0f172a';
+                const bgOpacity = (config.tickerBgOpacity !== undefined) ? config.tickerBgOpacity : 0.92;
+                const rgbVals = hexToRgb(bgColor);
+                tickerBar.style.background = `rgba(${rgbVals.r}, ${rgbVals.g}, ${rgbVals.b}, ${bgOpacity})`;
+                tickerBar.style.padding = (config.tickerBarHeight || 6) + 'px 0';
+
                 tickerBar.style.display = 'block';
             } else {
                 tickerBar.style.display = 'none';
