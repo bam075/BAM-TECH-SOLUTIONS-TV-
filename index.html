@@ -1067,10 +1067,10 @@
             return div.innerHTML;
         }
 
-        /* ============== VIDEO PLAYER ============== */
- let currentStreamUrl = ''; // Itahifadhi link inayocheza sasa
+        /* ============== VIDEO PLAYER ==============
+let currentStreamUrl = 'HAPA_WEKA_LINK_YAKO_YA_IPTV_YA_KAWADA_M3U8'; // Link itakayofunguka yenyewe mwanzoni
 const video = document.getElementById('video');
-const playerWrapper = document.getElementById('playerWrapper');
+const playerWrapper = document.getElementById('player-wrapper'); // Imeratibiwa ID sahihi yenye dashi
 const playBtn = document.getElementById('play-btn');
 const muteBtn = document.getElementById('mute-btn');
 const qualitySelect = document.getElementById('quality-select');
@@ -1084,8 +1084,13 @@ function handleLogoError() {
 
 // Kazi hii sasa inapokea URL ya IPTV/Video yoyote
 function initPlayer(url) {
-    if (!url) return;
-    currentStreamUrl = url.trim();
+    // Kama kuna url mpya imepitishwa (mfano mtu kabofya chaneli), inabadilisha ya zamani
+    if (url) {
+        currentStreamUrl = url.trim();
+    }
+
+    // Kama hakuna link yoyote kabisa, isifanye kitu kuzuia error
+    if (!currentStreamUrl) return;
 
     // 1. Zima na futa player ya zamani kama ilikuwa inacheza
     if (hls) { 
