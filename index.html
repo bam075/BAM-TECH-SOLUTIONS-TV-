@@ -8,7 +8,6 @@
     <meta http-equiv="Expires" content="0">
     <title>BAM TECH solutions TV | Live</title>
 
-    <!-- KUZUIA CACHE YA ZAMANI: futa Service Worker na Cache Storage zozote zilizosajiliwa awali -->
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function(registrations) {
@@ -26,7 +25,6 @@
 
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
-    <!-- FIREBASE SDK (script tag - haihitaji npm/build tools) -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
@@ -1067,88 +1065,74 @@
             return div.innerHTML;
         }
 
-        /* ============== VIDEO PLAYER ==============
-let currentStreamUrl = 'HAPA_WEKA_LINK_YAKO_YA_IPTV_YA_KAWADA_M3U8'; // Link itakayofunguka yenyewe mwanzoni
-const video = document.getElementById('video');
-const playerWrapper = document.getElementById('player-wrapper'); // Imeratibiwa ID sahihi yenye dashi
-const playBtn = document.getElementById('play-btn');
-const muteBtn = document.getElementById('mute-btn');
-const qualitySelect = document.getElementById('quality-select');
-const currentQualityView = document.getElementById('current-quality-view');
-let hls = null;
+        /* ============== VIDEO PLAYER ============== */
+        let STREAM_URL = 'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
+        const video = document.getElementById('video');
+        const playerWrapper = document.getElementById('player-wrapper');
+        const playBtn = document.getElementById('play-btn');
+        const muteBtn = document.getElementById('mute-btn');
+        const qualitySelect = document.getElementById('quality-select');
+        const currentQualityView = document.getElementById('current-quality-view');
+        let hls = null;
 
-function handleLogoError() {
-    document.getElementById('tv-logo').style.display = 'none';
-    document.getElementById('text-logo').style.display = 'block';
-}
-
-// Kazi hii sasa inapokea URL ya IPTV/Video yoyote
-function initPlayer(url) {
-    // Kama kuna url mpya imepitishwa (mfano mtu kabofya chaneli), inabadilisha ya zamani
-    if (url) {
-        currentStreamUrl = url.trim();
-    }
-
-    // Kama hakuna link yoyote kabisa, isifanye kitu kuzuia error
-    if (!currentStreamUrl) return;
-
-    // 1. Zima na futa player ya zamani kama ilikuwa inacheza
-    if (hls) { 
-        hls.destroy(); 
-        hls = null; 
-    }
-
-    // 2. Kama ni link ya HLS/IPTV (.m3u8 au link za aina hiyo)
-    if (currentStreamUrl.includes('.m3u8') || currentStreamUrl.includes('.m3u') || typeof Hls !== 'undefined') {
-        if (Hls.isSupported()) {
-            hls = new Hls();
-            hls.loadSource(currentStreamUrl);
-            hls.attachMedia(video);
-            
-            hls.on(Hls.Events.MANIFEST_PARSED, function() { 
-                video.play().catch(() => {
-                    console.log("Autoplay ilizuiliwa na kivinjari, mtumiaji anapaswa kubonyeza play.");
-                }); 
-            });
-
-            // Hapa inaendelea na setup ya ku-change ubora wa picha (quality)
-            if (typeof setupQualitySelector === 'function') {
-                setupQualitySelector(hls);
-            }
-        } 
-        // Kwa ajili ya vivinjari vya Apple (Safari/iOS) ambavyo vinasapoti m3u8 direct
-        else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-            video.src = currentStreamUrl;
-            video.addEventListener('loadedmetadata', function() { 
-                video.play().catch(() => {}); 
-            });
+        function handleLogoError() {
+            document.getElementById('tv-logo').style.display = 'none';
+            document.getElementById('text-logo').style.display = 'block';
         }
-    } 
-    // 3. Kama ni link ya kawaida ya video (mfano MP4, WebM nk.)
-    else {
-        video.src = currentStreamUrl;
-        video.play().catch(() => {});
-    }
-}
 
-                hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
-                    const activeLevel = hls.levels[data.level];
-                    if (activeLevel) {
-                        let levelHeight = activeLevel.height;
-                        let qualityLabel = levelHeight + "p";
-                        if (levelHeight >= 1080) qualityLabel += " Ultra Full HD";
-                        else if (levelHeight >= 720) qualityLabel += " HD High Quality";
-                        else qualityLabel += " SD Standard";
-                        currentQualityView.innerText = qualityLabel;
-                    }
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        function initPlayer() {
+            // Kama hakuna link, isifanye chochote kuzuia makosa
+            if (!STREAM_URL) return;
+
+            // Zima player ya zamani kama ilikuwa inacheza kuzuia mwingiliano
+            if (hls) { 
+                hls.destroy(); 
+                hls = null; 
+            }
+
+            // Tambua kama link ni ya IPTV (m3u8/m3u) au video ya kawaida
+            const isIPTV = STREAM_URL.toLowerCase().includes('.m3u8') || 
+                           STREAM_URL.toLowerCase().includes('.m3u') || 
+                           STREAM_URL.includes('amagi.tv') || 
+                           STREAM_URL.includes('akamaized.net');
+
+            if (isIPTV && typeof Hls !== 'undefined') {
+                if (Hls.isSupported()) {
+                    hls = new Hls();
+                    hls.loadSource(STREAM_URL);
+                    hls.attachMedia(video);
+
+                    hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                        video.play().catch(() => { console.log("Autoplay imechelewa"); });
+                        setupQualitySelector(hls);
+                    });
+
+                    hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
+                        const activeLevel = hls.levels[data.level];
+                        if (activeLevel) {
+                            let levelHeight = activeLevel.height;
+                            let qualityLabel = levelHeight + "p";
+                            if (levelHeight >= 1080) qualityLabel += " Ultra Full HD";
+                            else if (levelHeight >= 720) qualityLabel += " HD High Quality";
+                            else qualityLabel += " SD Standard";
+                            currentQualityView.innerText = qualityLabel;
+                        }
+                    });
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    // Kwa ajili ya vivinjari vya Apple (iOS/Safari)
+                    video.src = STREAM_URL;
+                    video.addEventListener('loadedmetadata', function() {
+                        video.play().catch(() => {});
+                    });
+                    qualitySelect.innerHTML = '<option>Auto (iOS Engine)</option>';
+                    currentQualityView.innerText = "Kiotomatiki (Apple)";
+                }
+            } else {
+                // Kwa ajili ya video za kawaida (MP4, WebM n.k) zisizo za IPTV
                 video.src = STREAM_URL;
-                video.addEventListener('loadedmetadata', function() {
-                    video.play().catch(() => {});
-                });
-                qualitySelect.innerHTML = '<option>Auto (iOS Engine)</option>';
-                currentQualityView.innerText = "Kiotomatiki (Apple)";
+                video.play().catch(() => {});
+                qualitySelect.innerHTML = '<option value="-1">Auto (Kawaida)</option>';
+                currentQualityView.innerText = "Kiotomatiki (Kawaida)";
             }
         }
 
@@ -1492,10 +1476,4 @@ function initPlayer(url) {
         }
     </script>
 </body>
-</html>
-
-// Agiza player ianze kucheza link ya mwanzoni ukurasa ukifunguka
-document.addEventListener('DOMContentLoaded', () => {
-    initPlayer();
-});
-
+    </html>
