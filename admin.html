@@ -227,6 +227,7 @@
             <nav class="sidebar-nav" id="sidebar-nav">
                 <div class="nav-section-label">Matangazo</div>
                 <div class="nav-item active" data-tab="broadcast" onclick="switchTab('broadcast')"><span class="nav-icon">📡</span> Broadcast</div>
+                <div class="nav-item" data-tab="playlist" onclick="switchTab('playlist')"><span class="nav-icon">📺</span> Playlist Browser</div>
                 <div class="nav-item" data-tab="layout" onclick="switchTab('layout')"><span class="nav-icon">🖥️</span> Mpangilio wa Player</div>
                 <div class="nav-item" data-tab="breaking" onclick="switchTab('breaking')"><span class="nav-icon">🚨</span> Breaking News</div>
                 <div class="nav-item" data-tab="ticker" onclick="switchTab('ticker')"><span class="nav-icon">📜</span> Ticker (Maandishi)</div>
@@ -267,6 +268,36 @@
                         <p class="hint-text">Kumbuka: Ticker (maandishi ya kupita chini) sasa inadhibitiwa kwenye tab "📜 Ticker", na L-Style kwenye tab "🎬 Maktaba ya Matangazo".</p>
 
                         <button onclick="publishLiveChanges()" style="width: 100%; padding:14px; font-size:14px;">🚀 RUSHA MABADILIKO HEWANI SASA HIVI</button>
+                    </div>
+                </div>
+
+                <!-- ============ TAB: PLAYLIST BROWSER ============ -->
+                <div class="tab-panel" id="tab-playlist">
+                    <div class="card">
+                        <h2>📺 Playlist Browser (M3U/M3U8)</h2>
+                        <p class="hint-text" style="margin-top:-5px;">Weka link ya playlist (faili lenye orodha ya channel nyingi) ili kuvinjari na kuchagua channel kwa haraka.</p>
+
+                        <label>Link ya Playlist (.m3u au .m3u8):</label>
+                        <input type="text" id="playlist-url-field" placeholder="https://iptv-org.github.io/iptv/countries/tz.m3u">
+
+                        <div class="flex-btns" style="margin-bottom:15px;">
+                            <button onclick="loadPlaylist()" style="flex:1;">📥 Pakua na Onyesha Channel</button>
+                            <button class="btn-secondary" onclick="savePlaylistToLibrary()" style="flex:1;">💾 Hifadhi Link Hii</button>
+                        </div>
+
+                        <div id="playlist-loading-msg" class="hint-text" style="display:none;">⏳ Inapakua playlist, subiri...</div>
+                        <div id="playlist-error-msg" class="hint-text" style="display:none; color:#f87171;"></div>
+
+                        <h3 style="border-top:1px solid rgba(255,255,255,0.06); padding-top:16px; margin-top:6px;">💾 Playlists Zilizohifadhiwa</h3>
+                        <div class="ads-list" id="saved-playlists-list">
+                            <div class="empty-state">Bado hakuna playlist iliyohifadhiwa...</div>
+                        </div>
+
+                        <h3 style="border-top:1px solid rgba(255,255,255,0.06); padding-top:16px;">📋 Channel Zilizopatikana</h3>
+                        <input type="text" id="channel-search-field" placeholder="🔍 Tafuta channel kwa jina..." style="display:none;">
+                        <div class="ads-list" id="playlist-channels-list">
+                            <div class="empty-state">Pakua playlist hapo juu kwanza ili kuona channel zake hapa...</div>
+                        </div>
                     </div>
                 </div>
 
@@ -633,6 +664,7 @@
                 loadCurrentConfigValues();
                 loadLayoutValues();
                 loadTickerValues();
+                startSavedPlaylistsListener();
                 startAdminChatListener();
                 startViewerCountListener();
                 startAdsLibraryListener();
@@ -744,6 +776,192 @@
             if (msg) toast.innerText = msg;
             toast.style.display = 'block';
             setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        /* ============== PLAYLIST BROWSER TAB ============== */
+        let currentPlaylistChannels = [];
+
+        function parseM3U(text) {
+            const lines = text.split('\n').map(l => l.trim());
+            const channels = [];
+            let pendingName = '';
+            let pendingLogo = '';
+            let pendingGroup = '';
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+                if (line.startsWith('#EXTINF')) {
+                    // Pata jina (baada ya comma ya mwisho)
+                    const commaIndex = line.lastIndexOf(',');
+                    pendingName = commaIndex !== -1 ? line.substring(commaIndex + 1).trim() : 'Channel Isiyo na Jina';
+
+                    const logoMatch = line.match(/tvg-logo="([^"]*)"/);
+                    pendingLogo = logoMatch ? logoMatch[1] : '';
+
+                    const groupMatch = line.match(/group-title="([^"]*)"/);
+                    pendingGroup = groupMatch ? groupMatch[1] : '';
+                } else if (line !== '' && !line.startsWith('#')) {
+                    // Hii ni URL ya stream
+                    channels.push({
+                        name: pendingName || 'Channel Isiyo na Jina',
+                        logo: pendingLogo,
+                        group: pendingGroup,
+                        url: line
+                    });
+                    pendingName = ''; pendingLogo = ''; pendingGroup = '';
+                }
+            }
+            return channels;
+        }
+
+        function loadPlaylist() {
+            const url = document.getElementById('playlist-url-field').value.trim();
+            if (url === "") {
+                alert('Weka link ya playlist kwanza.');
+                return;
+            }
+
+            const loadingMsg = document.getElementById('playlist-loading-msg');
+            const errorMsg = document.getElementById('playlist-error-msg');
+            const channelsList = document.getElementById('playlist-channels-list');
+            const searchField = document.getElementById('channel-search-field');
+
+            loadingMsg.style.display = 'block';
+            errorMsg.style.display = 'none';
+            channelsList.innerHTML = '';
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) throw new Error('Server imekataa ombi (status ' + response.status + ')');
+                    return response.text();
+                })
+                .then(text => {
+                    loadingMsg.style.display = 'none';
+                    const channels = parseM3U(text);
+                    if (channels.length === 0) {
+                        errorMsg.innerText = 'Hakuna channel zilizopatikana. Hakikisha link ni faili sahihi la M3U/M3U8.';
+                        errorMsg.style.display = 'block';
+                        return;
+                    }
+                    currentPlaylistChannels = channels;
+                    searchField.style.display = 'block';
+                    searchField.value = '';
+                    renderChannelsList(channels);
+                    showToast(`Channel ${channels.length} Zimepatikana ✓`);
+                })
+                .catch(err => {
+                    loadingMsg.style.display = 'none';
+                    errorMsg.innerText = 'Imeshindwa kupakua playlist: ' + err.message + '. Huenda seva ya playlist hii inazuia ufikiaji wa moja kwa moja (CORS), au link si sahihi.';
+                    errorMsg.style.display = 'block';
+                    channelsList.innerHTML = '<div class="empty-state">Imeshindwa kupakua. Jaribu link nyingine.</div>';
+                });
+        }
+
+        function renderChannelsList(channels) {
+            const channelsList = document.getElementById('playlist-channels-list');
+            channelsList.innerHTML = '';
+
+            if (channels.length === 0) {
+                channelsList.innerHTML = '<div class="empty-state">Hakuna channel zilizopatikana na hilo neno la utafutaji.</div>';
+                return;
+            }
+
+            // Onyesha max 100 kwa wakati mmoja ili kuepuka kulemea simu
+            const displayChannels = channels.slice(0, 100);
+
+            displayChannels.forEach((ch) => {
+                const div = document.createElement('div');
+                div.className = 'ad-item';
+                const groupLabel = ch.group ? ` · ${escapeHTML(ch.group)}` : '';
+                div.innerHTML = `
+                    <div class="ad-item-info">
+                        <div class="ad-item-name">${escapeHTML(ch.name)}</div>
+                        <div class="ad-item-meta">${escapeHTML(ch.url)}${groupLabel}</div>
+                    </div>
+                    <div class="ad-item-actions">
+                        <button class="btn-secondary btn-small" data-action="use">Tumia</button>
+                    </div>`;
+                div.querySelector('[data-action="use"]').addEventListener('click', () => useChannelFromPlaylist(ch));
+                channelsList.appendChild(div);
+            });
+
+            if (channels.length > 100) {
+                const moreNote = document.createElement('div');
+                moreNote.className = 'hint-text';
+                moreNote.style.textAlign = 'center';
+                moreNote.innerText = `Zinaonyeshwa 100 za kwanza kati ya ${channels.length}. Tumia utafutaji kupunguza orodha.`;
+                channelsList.appendChild(moreNote);
+            }
+        }
+
+        document.getElementById('channel-search-field').addEventListener('input', function() {
+            const query = this.value.trim().toLowerCase();
+            if (query === '') {
+                renderChannelsList(currentPlaylistChannels);
+                return;
+            }
+            const filtered = currentPlaylistChannels.filter(ch => ch.name.toLowerCase().includes(query));
+            renderChannelsList(filtered);
+        });
+
+        function useChannelFromPlaylist(channel) {
+            document.getElementById('stream-url-field').value = channel.url;
+            db.ref('tv_config/streamUrl').set(channel.url).then(() => {
+                showToast(`Channel "${channel.name}" Imewashwa Hewani! ✓`);
+                db.ref('admin_logs').push({ time: Date.now(), action: `Aliwasha channel kutoka playlist: ${channel.name}` });
+            }).catch(err => alert('Hitilafu: ' + err.message));
+        }
+
+        function savePlaylistToLibrary() {
+            const url = document.getElementById('playlist-url-field').value.trim();
+            if (url === "") {
+                alert('Weka link ya playlist kabla ya kuihifadhi.');
+                return;
+            }
+            const name = prompt('Jina la kumbukumbu kwa hii playlist (mfano: "IPTV-org Tanzania"):');
+            if (!name || name.trim() === "") return;
+
+            db.ref('saved_playlists').push({ name: name.trim(), url, createdAt: Date.now() }).then(() => {
+                showToast('Playlist Imehifadhiwa ✓');
+                document.getElementById('playlist-url-field').value = '';
+            });
+        }
+
+        function startSavedPlaylistsListener() {
+            db.ref('saved_playlists').on('value', (snapshot) => {
+                const data = snapshot.val();
+                const list = document.getElementById('saved-playlists-list');
+                list.innerHTML = '';
+
+                if (!data) {
+                    list.innerHTML = '<div class="empty-state">Bado hakuna playlist iliyohifadhiwa...</div>';
+                    return;
+                }
+
+                Object.entries(data).forEach(([key, pl]) => {
+                    const div = document.createElement('div');
+                    div.className = 'ad-item';
+                    div.innerHTML = `
+                        <div class="ad-item-info">
+                            <div class="ad-item-name">${escapeHTML(pl.name)}</div>
+                            <div class="ad-item-meta">${escapeHTML(pl.url)}</div>
+                        </div>
+                        <div class="ad-item-actions">
+                            <button class="btn-secondary btn-small" data-action="load">Pakua</button>
+                            <button class="btn-danger btn-small" data-action="delete">Futa</button>
+                        </div>`;
+                    div.querySelector('[data-action="load"]').addEventListener('click', () => {
+                        document.getElementById('playlist-url-field').value = pl.url;
+                        loadPlaylist();
+                    });
+                    div.querySelector('[data-action="delete"]').addEventListener('click', () => {
+                        if (confirm('Futa hii playlist kutoka kwenye maktaba?')) {
+                            db.ref('saved_playlists/' + key).remove();
+                        }
+                    });
+                    list.appendChild(div);
+                });
+            });
         }
 
         /* ============== LAYOUT / PiP TAB ============== */
