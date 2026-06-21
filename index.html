@@ -657,12 +657,32 @@
             justify-content: center;
             overflow: hidden;
         }
-        .rotate-fullscreen-wrapper.active .rotated-video-clone {
+        .rotated-inner-box {
+            position: relative;
+        }
+        .rotate-fullscreen-wrapper.active .rotated-inner-box {
             transform: rotate(90deg);
             width: 100vh;
             height: 100vw;
             max-width: 100vh;
             max-height: 100vw;
+        }
+        .rotated-inner-box .rotated-video-clone {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        .rotated-overlay-clone.channel-bug {
+            top: 12px;
+            right: 12px;
+        }
+        .rotated-overlay-clone.onscreen-top-left {
+            top: 12px;
+            left: 12px;
+        }
+        #rotated-tv-logo {
+            height: 30px;
         }
 
         .quality-container {
@@ -1138,8 +1158,19 @@
     <div class="toast" id="toast-notif">Link imekopiwa kwa ajili ya kushare!</div>
 
     <div class="rotate-fullscreen-wrapper" id="rotate-fullscreen-wrapper">
-        <video id="rotated-video-clone" class="rotated-video-clone" muted playsinline></video>
-        <button class="control-btn-icon" id="exit-rotate-btn" onclick="toggleRotate()" style="position:absolute; top:16px; right:16px; z-index:10;">✕</button>
+        <div class="rotated-inner-box" id="rotated-inner-box">
+            <video id="rotated-video-clone" class="rotated-video-clone" muted playsinline></video>
+
+            <div class="onscreen-top-left rotated-overlay-clone">
+                <div class="onscreen-live-pill" id="rotated-live-pill"><span class="live-dot"></span><span id="rotated-live-text">LIVE</span></div>
+                <div class="onscreen-program-badge" id="rotated-program-badge">Kipindi: ...</div>
+            </div>
+
+            <div class="channel-bug rotated-overlay-clone">
+                <img src="172392.png" id="rotated-tv-logo" alt="Logo" onerror="this.style.display='none';">
+            </div>
+        </div>
+        <button class="control-btn-icon" id="exit-rotate-btn" onclick="toggleRotate()" style="position:absolute; top:16px; right:16px; z-index:999999;">✕</button>
     </div>
 
     <script>
@@ -1265,6 +1296,7 @@
         const currentQualityView = document.getElementById('current-quality-view');
         let hls = null;
         let controlsHideTimer = null;
+        let isRotated = false;
 
         // Kwenye simu (touch), kubonyeza juu ya video kunaonyesha controls kwa
         // sekunde 3, kisha zinajifficha tena (hover haifanyi kazi kwenye touch).
@@ -1522,6 +1554,8 @@
             } else {
                 tickerBar.style.display = 'none';
             }
+
+            if (isRotated) syncRotatedOverlay();
         });
 
         db.ref('tv_config/streamUrl').once('value').then((snap) => {
@@ -1790,7 +1824,6 @@
         /* Rotate: tunatumia video "clone" inayopindishwa kwenye fullscreen overlay,
            badala ya kupindisha player-wrapper halisi (ambayo ina vitu vingi ndani
            kama chat/ticker/badges - kuvipindisha vyote kunaharibu mpangilio). */
-        let isRotated = false;
         function toggleRotate() {
             const rotateWrapper = document.getElementById('rotate-fullscreen-wrapper');
             const clonedVideo = document.getElementById('rotated-video-clone');
@@ -1803,6 +1836,7 @@
                 }
                 clonedVideo.muted = video.muted;
                 clonedVideo.play().catch(() => {});
+                syncRotatedOverlay();
                 rotateWrapper.classList.add('active');
                 document.body.style.overflow = 'hidden';
                 isRotated = true;
@@ -1813,6 +1847,26 @@
                 document.body.style.overflow = '';
                 isRotated = false;
             }
+        }
+
+        // Inanakili hali ya logo/LIVE/jina la kipindi kutoka view ya kawaida
+        // kwenda kwenye overlay ya rotate clone (kwa sababu tv_config inabadilika
+        // kwa wakati halisi, hivyo clone inahitaji kufuata mabadiliko hayo hayo)
+        function syncRotatedOverlay() {
+            const mainLogo = document.getElementById('tv-logo');
+            const rotatedLogo = document.getElementById('rotated-tv-logo');
+            rotatedLogo.src = mainLogo.src;
+            rotatedLogo.style.display = mainLogo.style.display === 'none' ? 'none' : 'block';
+
+            const mainLivePill = document.getElementById('dyn-live-pill');
+            const rotatedLivePill = document.getElementById('rotated-live-pill');
+            rotatedLivePill.style.display = mainLivePill.style.display;
+            document.getElementById('rotated-live-text').innerText = document.getElementById('dyn-live-text').innerText;
+
+            const mainProgBadge = document.getElementById('dyn-program-badge');
+            const rotatedProgBadge = document.getElementById('rotated-program-badge');
+            rotatedProgBadge.style.display = mainProgBadge.style.display;
+            rotatedProgBadge.innerText = mainProgBadge.innerText;
         }
 
         function shareWebsite() {
