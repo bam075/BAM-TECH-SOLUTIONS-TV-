@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ENG">
+<html lang="sw">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -225,6 +225,7 @@
         <button onclick="unlockDashboard()" style="width:100%;" id="unlock-btn">INGIA DASHBODI</button>
         <p class="lock-error" id="lock-error">❌ PIN sio sahihi! Jaribu tena.</p>
         <p class="lock-timer" id="lock-timer"></p>
+        <button onclick="forceResetLockout()" style="width:100%; margin-top:10px; background:#1e293b; border:1px solid rgba(255,255,255,0.1); font-size:11px; padding:8px;">🔓 Nimezuiwa Kimakosa - Futa Hii Restriction</button>
     </div>
 
     <div class="control-room" id="main-panel">
@@ -732,6 +733,15 @@
         }
         function setLockState(state) {
             localStorage.setItem('bam_admin_lock', JSON.stringify(state));
+        }
+
+        function forceResetLockout() {
+            localStorage.removeItem('bam_admin_lock');
+            document.getElementById('unlock-btn').disabled = false;
+            document.getElementById('unlock-btn').innerText = 'INGIA DASHBODI';
+            document.getElementById('lock-timer').style.display = 'none';
+            document.getElementById('lock-error').style.display = 'none';
+            alert('Sawa! Restriction imefutwa. Jaribu kuingia tena na PIN sahihi.');
         }
 
         function checkLockoutOnLoad() {
@@ -1797,22 +1807,4 @@
                     document.getElementById('stat-peak-viewers').innerText = peakViewers.toLocaleString();
                 }
                 viewerHistory.push({ t: Date.now(), v: count });
-                if (viewerHistory.length > 30) viewerHistory.shift();
-                drawViewerChart();
-            });
-        }
-
-        function startStatsListener() {
-            db.ref('chat_messages').on('value', (snapshot) => {
-                document.getElementById('stat-total-messages').innerText = snapshot.numChildren().toLocaleString();
-            });
-        }
-
-        function drawViewerChart() {
-            const canvas = document.getElementById('viewer-chart');
-            if (!canvas.getContext) return;
-            const ctx = canvas.getContext('2d');
-            const w = canvas.clientWidth || 300;
-            const h = 200;
-            canvas.width = w; canvas.height = h;
-            ctx.clearRe
+             
