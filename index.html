@@ -318,6 +318,11 @@
             right: 15px;
             z-index: 999999;
             pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .channel-bug.blink-mode {
             animation: toggleLogoVisibility 15s infinite ease-in-out;
         }
 
@@ -417,7 +422,7 @@
         }
 
         .channel-bug img {
-            height: 38px;
+            height: var(--logo-img-size, 38px);
             width: auto;
             display: block;
             filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
@@ -442,24 +447,24 @@
         }
         .fallback-title {
             text-transform: uppercase;
-            font-size: 15px;
+            font-size: calc(var(--logo-text-size, 100) * 0.15px);
             font-weight: 900;
-            color: #ffffff;
+            color: var(--logo-text-color, #ffffff);
             letter-spacing: 0.6px;
             text-shadow: 0 2px 6px rgba(0, 0, 0, 1), 0 4px 12px rgba(0, 0, 0, 0.9);
         }
         .fallback-subtitle {
             text-transform: lowercase;
-            font-size: 10px;
+            font-size: calc(var(--logo-text-size, 100) * 0.1px);
             font-weight: 600;
             color: #d1d5db;
             margin-top: 2px;
             text-shadow: 0 2px 6px rgba(0, 0, 0, 1), 0 4px 12px rgba(0, 0, 0, 0.9);
         }
         .fallback-tv {
-            font-size: 38px;
+            font-size: calc(var(--logo-text-size, 100) * 0.38px);
             font-weight: 950;
-            color: #3b82f6;
+            color: var(--logo-text-color, #3b82f6);
             font-style: italic;
             margin-left: 2px;
             text-shadow: 0 0 12px rgba(59, 130, 246, 0.8), 0 2px 6px rgba(0, 0, 0, 1), 0 4px 12px rgba(0, 0, 0, 1);
@@ -642,47 +647,32 @@
         }
         .lang-toggle-btn:hover { background: rgba(255, 255, 255, 0.12); }
 
-        /* Rotate: badala ya fixed positioning ngumu, tunatumia transform rahisi
-           ndani ya wrapper inayobaki sehemu yake ya kawaida ya document flow */
-        .rotate-fullscreen-wrapper {
-            display: none;
+        /* Rotate: tunapindisha .player-wrapper HALISI (yenye video/ticker/badges
+           zote ndani yake tayari) - hii ni kasi zaidi kwa sababu hakuna kupakia
+           upya stream, tunabadilisha tu jinsi kionyesho kinavyoonekana skrini. */
+        .player-wrapper.rotated {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            width: 100vh !important;
+            height: 100vw !important;
+            margin: 0 !important;
+            transform: translate(-50%, -50%) rotate(90deg) !important;
+            transform-origin: center center !important;
+            z-index: 999999999 !important;
+            border-radius: 0 !important;
+            aspect-ratio: unset !important;
+            background: #000;
         }
-        .rotate-fullscreen-wrapper.active {
-            display: flex;
+        body.rotate-active {
+            overflow: hidden;
+        }
+        body.rotate-active::before {
+            content: '';
             position: fixed;
             inset: 0;
             background: #000;
-            z-index: 99999999;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-        .rotated-inner-box {
-            position: relative;
-        }
-        .rotate-fullscreen-wrapper.active .rotated-inner-box {
-            transform: rotate(90deg);
-            width: 100vh;
-            height: 100vw;
-            max-width: 100vh;
-            max-height: 100vw;
-        }
-        .rotated-inner-box .rotated-video-clone {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            display: block;
-        }
-        .rotated-overlay-clone.channel-bug {
-            top: 12px;
-            right: 12px;
-        }
-        .rotated-overlay-clone.onscreen-top-left {
-            top: 12px;
-            left: 12px;
-        }
-        #rotated-tv-logo {
-            height: 30px;
+            z-index: 999999998;
         }
 
         .quality-container {
@@ -1007,15 +997,15 @@
                         <div class="onscreen-program-badge" id="dyn-program-badge">Kipindi: ...</div>
                     </div>
 
-                    <div class="channel-bug">
+                    <div class="channel-bug" id="channel-bug-container">
                         <img src="172392.png" id="tv-logo" alt="Logo" onerror="handleLogoError()">
                         <div class="logo-text-fallback" id="text-logo">
                             <div class="fallback-container">
                                 <div class="fallback-text-group">
-                                    <span class="fallback-title">BAM TECH</span>
-                                    <span class="fallback-subtitle">solutions</span>
+                                    <span class="fallback-title" id="logo-text-title">BAM TECH</span>
+                                    <span class="fallback-subtitle" id="logo-text-subtitle">solutions</span>
                                 </div>
-                                <span class="fallback-tv">TV</span>
+                                <span class="fallback-tv" id="logo-text-suffix">TV</span>
                             </div>
                         </div>
                     </div>
@@ -1157,21 +1147,7 @@
 
     <div class="toast" id="toast-notif">Link imekopiwa kwa ajili ya kushare!</div>
 
-    <div class="rotate-fullscreen-wrapper" id="rotate-fullscreen-wrapper">
-        <div class="rotated-inner-box" id="rotated-inner-box">
-            <video id="rotated-video-clone" class="rotated-video-clone" muted playsinline></video>
-
-            <div class="onscreen-top-left rotated-overlay-clone">
-                <div class="onscreen-live-pill" id="rotated-live-pill"><span class="live-dot"></span><span id="rotated-live-text">LIVE</span></div>
-                <div class="onscreen-program-badge" id="rotated-program-badge">Kipindi: ...</div>
-            </div>
-
-            <div class="channel-bug rotated-overlay-clone">
-                <img src="172392.png" id="rotated-tv-logo" alt="Logo" onerror="this.style.display='none';">
-            </div>
-        </div>
-        <button class="control-btn-icon" id="exit-rotate-btn" onclick="toggleRotate()" style="position:absolute; top:16px; right:16px; z-index:999999;">✕</button>
-    </div>
+    <button class="control-btn-icon" id="exit-rotate-btn" onclick="toggleRotate()" style="display:none; position:fixed; top:16px; right:16px; z-index:999999999;">✕</button>
 
     <script>
         /* ============== FIREBASE INIT ============== */
@@ -1297,21 +1273,72 @@
         let hls = null;
         let controlsHideTimer = null;
         let isRotated = false;
+        let controlsHideDuration = 3000; // default sekunde 3, admin anaweza kubadilisha
 
         // Kwenye simu (touch), kubonyeza juu ya video kunaonyesha controls kwa
-        // sekunde 3, kisha zinajifficha tena (hover haifanyi kazi kwenye touch).
+        // muda admin aliouweka, kisha zinajifficha tena (hover haifanyi kazi touch).
         playerWrapper.addEventListener('click', function(e) {
             if (e.target.closest('.custom-controls') || e.target.closest('.sound-overlay')) return;
             playerWrapper.classList.add('controls-visible');
             clearTimeout(controlsHideTimer);
             controlsHideTimer = setTimeout(() => {
                 playerWrapper.classList.remove('controls-visible');
-            }, 3000);
+            }, controlsHideDuration);
         });
 
         function handleLogoError() {
             document.getElementById('tv-logo').style.display = 'none';
             document.getElementById('text-logo').style.display = 'block';
+        }
+
+        // Inadhibiti muonekano wa logo (picha/maandishi/vyote), ukubwa, rangi,
+        // na hali ya kufifia kulingana na mipangilio ya admin (logoConfig).
+        function applyLogoConfig(config) {
+            const logoCfg = config.logoConfig || {};
+            const container = document.getElementById('channel-bug-container');
+            const imgEl = document.getElementById('tv-logo');
+            const textEl = document.getElementById('text-logo');
+
+            const mode = logoCfg.displayMode || 'both'; // 'image' | 'text' | 'both'
+            const blinkMode = logoCfg.blinkMode !== false; // default: ifife kwa mzunguko
+
+            // Ukubwa (img kwa px, maandishi kwa "scale" 50-200)
+            const imgSize = logoCfg.imageSize || 38;
+            const textSize = logoCfg.textSize || 100;
+            container.style.setProperty('--logo-img-size', imgSize + 'px');
+            container.style.setProperty('--logo-text-size', textSize);
+            if (logoCfg.textColor) {
+                container.style.setProperty('--logo-text-color', logoCfg.textColor);
+            }
+
+            // Maandishi ya logo (kama yapo)
+            if (logoCfg.titleText) document.getElementById('logo-text-title').innerText = logoCfg.titleText;
+            if (logoCfg.subtitleText) document.getElementById('logo-text-subtitle').innerText = logoCfg.subtitleText;
+            if (logoCfg.suffixText) document.getElementById('logo-text-suffix').innerText = logoCfg.suffixText;
+
+            // Picha ya logo (kama imewekwa na admin)
+            if (logoCfg.imageUrl && logoCfg.imageUrl.trim() !== '') {
+                imgEl.src = logoCfg.imageUrl;
+            }
+
+            // Onyesha kulingana na mode
+            if (mode === 'image') {
+                imgEl.style.display = 'block';
+                textEl.style.display = 'none';
+            } else if (mode === 'text') {
+                imgEl.style.display = 'none';
+                textEl.style.display = 'block';
+            } else { // both
+                imgEl.style.display = 'block';
+                textEl.style.display = 'block';
+                container.querySelector('.fallback-container').style.marginLeft = '8px';
+            }
+
+            // Hali ya kufifia (blink) au kuonekana daima
+            container.classList.toggle('blink-mode', blinkMode);
+
+            // Kuonyesha/kuficha logo yote kabisa (admin anaweza kuizima)
+            container.style.display = (logoCfg.hideCompletely === true) ? 'none' : 'flex';
         }
 
         function attemptPlayWithSound() {
@@ -1483,6 +1510,12 @@
             const config = snapshot.val();
             if (!config) return;
 
+            controlsHideDuration = (config.controlsHideSeconds && config.controlsHideSeconds > 0)
+                ? config.controlsHideSeconds * 1000
+                : 3000;
+
+            applyLogoConfig(config);
+
             if (config.streamUrl && config.streamUrl.trim() !== "" && config.streamUrl !== STREAM_URL) {
                 STREAM_URL = config.streamUrl;
                 initPlayer();
@@ -1554,8 +1587,6 @@
             } else {
                 tickerBar.style.display = 'none';
             }
-
-            if (isRotated) syncRotatedOverlay();
         });
 
         db.ref('tv_config/streamUrl').once('value').then((snap) => {
@@ -1821,52 +1852,22 @@
             else { document.exitFullscreen(); }
         }
 
-        /* Rotate: tunatumia video "clone" inayopindishwa kwenye fullscreen overlay,
-           badala ya kupindisha player-wrapper halisi (ambayo ina vitu vingi ndani
-           kama chat/ticker/badges - kuvipindisha vyote kunaharibu mpangilio). */
+        /* Rotate: tunapindisha .player-wrapper halisi (CSS transform tu, hivyo
+           video inaendelea kucheza bila kuhitaji kupakia upya - kasi zaidi). */
         function toggleRotate() {
-            const rotateWrapper = document.getElementById('rotate-fullscreen-wrapper');
-            const clonedVideo = document.getElementById('rotated-video-clone');
+            const exitBtn = document.getElementById('exit-rotate-btn');
 
             if (!isRotated) {
-                clonedVideo.src = video.src;
-                if (hls) {
-                    // Kama HLS.js inatumika, unganisha hls ile kwa clone pia
-                    hls.attachMedia(clonedVideo);
-                }
-                clonedVideo.muted = video.muted;
-                clonedVideo.play().catch(() => {});
-                syncRotatedOverlay();
-                rotateWrapper.classList.add('active');
-                document.body.style.overflow = 'hidden';
+                playerWrapper.classList.add('rotated');
+                document.body.classList.add('rotate-active');
+                exitBtn.style.display = 'flex';
                 isRotated = true;
             } else {
-                if (hls) { hls.attachMedia(video); }
-                rotateWrapper.classList.remove('active');
-                clonedVideo.pause();
-                document.body.style.overflow = '';
+                playerWrapper.classList.remove('rotated');
+                document.body.classList.remove('rotate-active');
+                exitBtn.style.display = 'none';
                 isRotated = false;
             }
-        }
-
-        // Inanakili hali ya logo/LIVE/jina la kipindi kutoka view ya kawaida
-        // kwenda kwenye overlay ya rotate clone (kwa sababu tv_config inabadilika
-        // kwa wakati halisi, hivyo clone inahitaji kufuata mabadiliko hayo hayo)
-        function syncRotatedOverlay() {
-            const mainLogo = document.getElementById('tv-logo');
-            const rotatedLogo = document.getElementById('rotated-tv-logo');
-            rotatedLogo.src = mainLogo.src;
-            rotatedLogo.style.display = mainLogo.style.display === 'none' ? 'none' : 'block';
-
-            const mainLivePill = document.getElementById('dyn-live-pill');
-            const rotatedLivePill = document.getElementById('rotated-live-pill');
-            rotatedLivePill.style.display = mainLivePill.style.display;
-            document.getElementById('rotated-live-text').innerText = document.getElementById('dyn-live-text').innerText;
-
-            const mainProgBadge = document.getElementById('dyn-program-badge');
-            const rotatedProgBadge = document.getElementById('rotated-program-badge');
-            rotatedProgBadge.style.display = mainProgBadge.style.display;
-            rotatedProgBadge.innerText = mainProgBadge.innerText;
         }
 
         function shareWebsite() {
