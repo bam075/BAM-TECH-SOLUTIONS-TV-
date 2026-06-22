@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sw">
+<html lang="ENG">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -716,6 +716,9 @@
         const LOCKOUT_MINUTES = 10;
 
         async function sha256Hex(text) {
+            if (!window.crypto || !window.crypto.subtle) {
+                throw new Error('crypto.subtle haipo kwenye browser hii (inahitaji HTTPS na browser ya kisasa)');
+            }
             const encoder = new TextEncoder();
             const data = encoder.encode(text);
             const hashBuffer = await crypto.subtle.digest('SHA-256', data);
@@ -759,9 +762,39 @@
             }, 1000);
         }
 
+        function debugLogPin(msg) {
+            let panel = document.getElementById('debug-pin-panel');
+            if (!panel) {
+                panel = document.createElement('div');
+                panel.id = 'debug-pin-panel';
+                panel.style.position = 'fixed';
+                panel.style.top = '0';
+                panel.style.left = '0';
+                panel.style.right = '0';
+                panel.style.maxHeight = '50vh';
+                panel.style.overflowY = 'auto';
+                panel.style.background = 'rgba(0,0,0,0.95)';
+                panel.style.color = '#10b981';
+                panel.style.fontSize = '11px';
+                panel.style.fontFamily = 'monospace';
+                panel.style.padding = '10px';
+                panel.style.zIndex = '999999999';
+                panel.style.borderBottom = '2px solid #10b981';
+                document.body.appendChild(panel);
+            }
+            const line = document.createElement('div');
+            line.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
+            line.style.padding = '3px 0';
+            line.innerText = msg;
+            panel.appendChild(line);
+            panel.scrollTop = panel.scrollHeight;
+        }
+
         async function unlockDashboard() {
+            debugLogPin('1. Kitufe kimebonyezwa');
             const state = getLockState();
             if (state.lockedUntil && Date.now() < state.lockedUntil) {
+                debugLogPin('2. BADO UMEZUIWA (lockout)');
                 disableLoginTemporarily(state.lockedUntil);
                 return;
             }
@@ -769,14 +802,31 @@
             const unlockBtn = document.getElementById('unlock-btn');
             unlockBtn.disabled = true;
             unlockBtn.innerText = 'Inathibitisha...';
+            debugLogPin('3. Kitufe kimewekwa disabled=true, kinahesabu hash...');
 
             const pin = document.getElementById('master-pin').value;
-            const pinHash = await sha256Hex(pin);
+            debugLogPin('4. PIN uliyoandika ina urefu wa: ' + pin.length);
+
+            let pinHash;
+            try {
+                pinHash = await sha256Hex(pin);
+                debugLogPin('5. Hash imehesabiwa: ' + pinHash.substring(0, 16) + '...');
+            } catch (err) {
+                debugLogPin('5b. ERROR kuhesabu hash: ' + err.message);
+                unlockBtn.disabled = false;
+                unlockBtn.innerText = 'INGIA DASHBODI';
+                document.getElementById('lock-error').innerText = '❌ Hitilafu ya kiufundi: ' + err.message + ' (jaribu browser nyingine au zima Private/Incognito mode)';
+                document.getElementById('lock-error').style.display = 'block';
+                return;
+            }
 
             unlockBtn.disabled = false;
             unlockBtn.innerText = 'INGIA DASHBODI';
+            debugLogPin('6. Kitufe kimerudishwa enabled=false (disabled), kulinganisha hash...');
+            debugLogPin('7. Je hash zinafanana? ' + (pinHash === MASTER_PIN_HASH));
 
             if (pinHash === MASTER_PIN_HASH) {
+                debugLogPin('8. PIN SAHIHI - kuendelea kuingia');
                 setLockState({ attempts: 0, lockedUntil: 0 });
                 document.getElementById('gatekeeper').style.display = 'none';
                 document.getElementById('main-panel').style.display = 'block';
@@ -1765,64 +1815,4 @@
             const w = canvas.clientWidth || 300;
             const h = 200;
             canvas.width = w; canvas.height = h;
-            ctx.clearRect(0, 0, w, h);
-
-            if (viewerHistory.length < 2) return;
-            const maxV = Math.max(...viewerHistory.map(p => p.v), 1);
-            const stepX = w / (viewerHistory.length - 1);
-
-            ctx.beginPath();
-            ctx.strokeStyle = '#3b82f6';
-            ctx.lineWidth = 2;
-            viewerHistory.forEach((point, i) => {
-                const x = i * stepX;
-                const y = h - (point.v / maxV) * (h - 20) - 10;
-                if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-            });
-            ctx.stroke();
-
-            ctx.lineTo(w, h);
-            ctx.lineTo(0, h);
-            ctx.closePath();
-            ctx.fillStyle = 'rgba(59,130,246,0.1)';
-            ctx.fill();
-        }
-
-        /* ============== LIVE CHAT TAB ============== */
-        let selectedReplyMsgId = null;
-        const renderedAdminMessages = {};
-
-        function startAdminChatListener() {
-            const viewer = document.getElementById('admin-chat-viewer');
-
-            db.ref('chat_messages').limitToLast(100).on('child_added', (snapshot) => {
-                renderAdminMessage(snapshot.key, snapshot.val(), viewer);
-            });
-
-            db.ref('chat_messages').on('child_changed', (snapshot) => {
-                renderAdminReplies(snapshot.key, snapshot.val());
-            });
-        }
-
-        function renderAdminMessage(msgId, data, viewer) {
-            if (renderedAdminMessages[msgId]) return;
-            renderedAdminMessages[msgId] = true;
-
-            const emptyState = viewer.querySelector('.empty-state');
-            if (emptyState) emptyState.remove();
-
-            const div = document.createElement('div');
-            div.className = 'chat-row';
-            div.id = 'admin-row-' + msgId;
-
-            const isAdmin = data.isAdmin === true;
-            const userLabel = isAdmin ? 'BAM TECH (Admin)' : (data.user || 'Mhudhuriaji');
-            const time = data.time ? new Date(data.time).toLocaleTimeString() : '';
-
-            div.innerHTML = `<span style="color:#64748b; font-size:10px;">[${time}]</span>
-                              <strong class="${isAdmin ? 'is-admin' : ''}">${escapeHTML(userLabel)}:</strong>
-                              <span>${escapeHTML(data.text)}</span>
-                              <span class="reply-link" data-msgid="${msgId}" data-userlabel="${escapeHTML(userLabel)}">[JIBU]</span>
-                              <div class="reply-thread-admin" id="admin-thread-${msgId}"></div>`;
-
-            div.querySelector('.reply-link').addEventListener('c
+            ctx.clearRe
