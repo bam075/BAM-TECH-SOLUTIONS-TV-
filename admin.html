@@ -100,6 +100,18 @@
             border: 1px solid rgba(255,255,255,0.1); overflow: hidden; height: 44px;
             display: flex; align-items: center; position: relative;
         }
+        .logo-preview-box {
+            background: linear-gradient(135deg, #1e3a8a, #0f172a); border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.1); height: 90px; margin-bottom: 18px;
+            display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+            padding: 0 16px; overflow: hidden;
+        }
+        .logo-preview-box img { height: 38px; width: auto; display: block; }
+        .logo-preview-text { display: flex; align-items: center; gap: 5px; line-height: 1; }
+        .logo-preview-text-group { display: flex; flex-direction: column; }
+        #logo-preview-title { text-transform: uppercase; font-size: 15px; font-weight: 900; color: #fff; }
+        #logo-preview-subtitle { text-transform: lowercase; font-size: 10px; font-weight: 600; color: #d1d5db; }
+        #logo-preview-suffix { font-size: 38px; font-weight: 950; font-style: italic; color: #3b82f6; margin-left: 2px; }
         .ticker-preview-text {
             white-space: nowrap; padding-left: 14px; font-size: 11.5px; font-weight: 600; color: #e2e8f0;
         }
@@ -235,6 +247,7 @@
                 <div class="nav-item" data-tab="playlist" onclick="switchTab('playlist')"><span class="nav-icon">📺</span> Playlist Browser</div>
                 <div class="nav-item" data-tab="layout" onclick="switchTab('layout')"><span class="nav-icon">🖥️</span> Mpangilio wa Player</div>
                 <div class="nav-item" data-tab="breaking" onclick="switchTab('breaking')"><span class="nav-icon">🚨</span> Breaking News</div>
+                <div class="nav-item" data-tab="logo" onclick="switchTab('logo')"><span class="nav-icon">🎨</span> Logo ya Channel</div>
                 <div class="nav-item" data-tab="ticker" onclick="switchTab('ticker')"><span class="nav-icon">📜</span> Ticker (Maandishi)</div>
 
                 <div class="nav-section-label">Maudhui</div>
@@ -269,6 +282,10 @@
                             <option value="LIVE">Washa na Uandike "LIVE"</option>
                             <option value="MUBASHARA">Washa na Uandike "MUBASHARA"</option>
                         </select>
+
+                        <label>4. Vitufe vya Player (Play/Mute/Fullscreen) vionekane kwa Sekunde Ngapi kabla ya Kufichwa?</label>
+                        <input type="number" id="controls-hide-seconds-field" placeholder="3" value="3" min="1" max="30">
+                        <p class="hint-text" style="margin-top:-10px;">Mtazamaji akibonyeza juu ya video, vitufe vinaonekana kwa hii muda, kisha vinajificha tena. Default: sekunde 3.</p>
 
                         <p class="hint-text">Kumbuka: Ticker (maandishi ya kupita chini) sasa inadhibitiwa kwenye tab "📜 Ticker", na L-Style kwenye tab "🎬 Maktaba ya Matangazo".</p>
 
@@ -375,6 +392,66 @@
                             <button onclick="publishBreakingNews(true)" style="flex:1;">🚨 WASHA SASA HIVI</button>
                             <button class="btn-danger" onclick="publishBreakingNews(false)" style="flex:1;">Zima Banner</button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- ============ TAB: LOGO YA CHANNEL ============ -->
+                <div class="tab-panel" id="tab-logo">
+                    <div class="card">
+                        <h2>🎨 Logo ya Channel</h2>
+                        <p class="hint-text" style="margin-top:-5px;">Dhibiti logo inayoonekana kona ya video - picha, maandishi, ukubwa, rangi, na mwonekano.</p>
+
+                        <div class="logo-preview-box" id="logo-preview-box">
+                            <img id="logo-preview-img" src="" alt="" style="display:none;">
+                            <div class="logo-preview-text" id="logo-preview-text-wrap">
+                                <div class="logo-preview-text-group">
+                                    <span id="logo-preview-title">BAM TECH</span>
+                                    <span id="logo-preview-subtitle">solutions</span>
+                                </div>
+                                <span id="logo-preview-suffix">TV</span>
+                            </div>
+                        </div>
+
+                        <label>Logo Ionekane Kama:</label>
+                        <select id="logo-display-mode">
+                            <option value="both">Picha na Maandishi - Vyote Pamoja</option>
+                            <option value="image">Picha Pekee</option>
+                            <option value="text">Maandishi Pekee</option>
+                        </select>
+
+                        <label>Link ya Picha ya Logo:</label>
+                        <input type="text" id="logo-image-url" placeholder="https://domain.com/logo.png">
+
+                        <label>Ukubwa wa Picha (px): <span id="logo-img-size-display">38px</span></label>
+                        <input type="range" id="logo-img-size" min="20" max="100" step="2" value="38">
+
+                        <label>Maandishi - Jina Kuu:</label>
+                        <input type="text" id="logo-title-text" placeholder="BAM TECH">
+
+                        <label>Maandishi - Maelezo Madogo:</label>
+                        <input type="text" id="logo-subtitle-text" placeholder="solutions">
+
+                        <label>Maandishi - Herufi za Mwisho (italiki kubwa):</label>
+                        <input type="text" id="logo-suffix-text" placeholder="TV">
+
+                        <label>Ukubwa wa Maandishi: <span id="logo-text-size-display">100%</span></label>
+                        <input type="range" id="logo-text-size" min="50" max="200" step="5" value="100">
+
+                        <label>Rangi ya Maandishi/Suffix:</label>
+                        <input type="color" id="logo-text-color" value="#3b82f6" class="color-input">
+
+                        <label>Mwonekano:</label>
+                        <select id="logo-blink-mode">
+                            <option value="blink">Ifife kwa Mzunguko (Inaonekana, Inafifia, Inarudia)</option>
+                            <option value="always">Ionekane Daima (Bila Kufifia)</option>
+                        </select>
+
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer; margin-bottom:15px;">
+                            <input type="checkbox" id="logo-hide-completely" style="width:auto; margin:0;">
+                            🚫 Ficha Logo Yote Kabisa (haionekani popote)
+                        </label>
+
+                        <button onclick="publishLogoChanges()" style="width:100%; padding:14px; font-size:14px;">🚀 RUSHA LOGO MPYA HEWANI</button>
                     </div>
                 </div>
 
@@ -619,11 +696,33 @@
             return div.innerHTML;
         }
 
-        /* ============== PIN KALI - SECURITY LOCK ============== */
-        // BADILISHA HII PIN kuwa namba/maandishi yako binafsi yenye urefu zaidi
-        const MASTER_PIN = "BamTech#2026Admin!";
+        /* ============== PIN KALI - SECURITY LOCK (SHA-256 HASHED) ==============
+           PIN halisi HAIHIFADHIWI humu kama maandishi wazi - tunahifadhi tu
+           "hash" yake (mfuatano usiosomeka unaotokana na hesabu ya crypto).
+           Hii inazuia mtu anayefungua "View Source" kuona PIN papo hapo kwa
+           macho. Bado siyo ulinzi kamili (PIN inawezekana "kubahatishwa" kwa
+           nguvu ya kompyuta - brute force - na mtu mwenye ujuzi wa kina), lakini
+           ni kizuizi cha kweli kwa watu wa kawaida.
+
+           JINSI YA KUBADILISHA PIN YAKO:
+           1. Fungua hii admin.html kwenye browser yoyote
+           2. Bonyeza F12 (au menu ya developer tools) -> Console
+           3. Andika: await sha256Hex("PIN_MPYA_UNAYOTAKA")
+           4. Copy matokeo (mfuatano mrefu wa herufi/namba)
+           5. Bandika hapo chini kwenye MASTER_PIN_HASH, badala ya uliopo
+        */
+        const MASTER_PIN_HASH = "b7a6493930e86946791bb06948efe4ca07e361c213b0f8faa0b8a57fd4983e2c";
         const MAX_ATTEMPTS = 5;
         const LOCKOUT_MINUTES = 10;
+
+        async function sha256Hex(text) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        window.sha256Hex = sha256Hex; // inafikika kwa Console (kuzalisha hash mpya)
 
         function getLockState() {
             return JSON.parse(localStorage.getItem('bam_admin_lock') || '{"attempts":0,"lockedUntil":0}');
@@ -660,15 +759,24 @@
             }, 1000);
         }
 
-        function unlockDashboard() {
+        async function unlockDashboard() {
             const state = getLockState();
             if (state.lockedUntil && Date.now() < state.lockedUntil) {
                 disableLoginTemporarily(state.lockedUntil);
                 return;
             }
 
+            const unlockBtn = document.getElementById('unlock-btn');
+            unlockBtn.disabled = true;
+            unlockBtn.innerText = 'Inathibitisha...';
+
             const pin = document.getElementById('master-pin').value;
-            if (pin === MASTER_PIN) {
+            const pinHash = await sha256Hex(pin);
+
+            unlockBtn.disabled = false;
+            unlockBtn.innerText = 'INGIA DASHBODI';
+
+            if (pinHash === MASTER_PIN_HASH) {
                 setLockState({ attempts: 0, lockedUntil: 0 });
                 document.getElementById('gatekeeper').style.display = 'none';
                 document.getElementById('main-panel').style.display = 'block';
@@ -676,6 +784,7 @@
                 loadCurrentConfigValues();
                 loadLayoutValues();
                 loadTickerValues();
+                loadLogoValues();
                 startSavedPlaylistsListener();
                 startAdminChatListener();
                 startViewerCountListener();
@@ -764,6 +873,7 @@
                 document.getElementById('stream-url-field').value = config.streamUrl || '';
                 document.getElementById('program-title-field').value = config.programTitle || '';
                 document.getElementById('live-badge-selector').value = config.showLive ? (config.liveText || 'LIVE') : 'OFF';
+                document.getElementById('controls-hide-seconds-field').value = config.controlsHideSeconds || 3;
             });
         }
 
@@ -774,7 +884,8 @@
                 streamUrl: document.getElementById('stream-url-field').value.trim(),
                 programTitle: document.getElementById('program-title-field').value.trim(),
                 showLive: liveSelector !== 'OFF',
-                liveText: liveSelector !== 'OFF' ? liveSelector : 'LIVE'
+                liveText: liveSelector !== 'OFF' ? liveSelector : 'LIVE',
+                controlsHideSeconds: parseInt(document.getElementById('controls-hide-seconds-field').value) || 3
             };
 
             db.ref('tv_config').update(config).then(() => {
@@ -1135,6 +1246,91 @@
                 showToast(activate ? 'Breaking News Imewashwa! 🚨' : 'Breaking News Imezimwa');
                 db.ref('admin_logs').push({ time: Date.now(), action: activate ? 'Aliwasha Breaking News' : 'Alizima Breaking News' });
             });
+        }
+
+        /* ============== LOGO YA CHANNEL TAB ============== */
+        function loadLogoValues() {
+            db.ref('tv_config/logoConfig').once('value').then((snap) => {
+                const cfg = snap.val() || {};
+                document.getElementById('logo-display-mode').value = cfg.displayMode || 'both';
+                document.getElementById('logo-image-url').value = cfg.imageUrl || '172392.png';
+                document.getElementById('logo-img-size').value = cfg.imageSize || 38;
+                document.getElementById('logo-title-text').value = cfg.titleText || 'BAM TECH';
+                document.getElementById('logo-subtitle-text').value = cfg.subtitleText || 'solutions';
+                document.getElementById('logo-suffix-text').value = cfg.suffixText || 'TV';
+                document.getElementById('logo-text-size').value = cfg.textSize || 100;
+                document.getElementById('logo-text-color').value = cfg.textColor || '#3b82f6';
+                document.getElementById('logo-blink-mode').value = (cfg.blinkMode === false) ? 'always' : 'blink';
+                document.getElementById('logo-hide-completely').checked = cfg.hideCompletely === true;
+                updateLogoPreview();
+            });
+        }
+
+        function updateLogoPreview() {
+            const mode = document.getElementById('logo-display-mode').value;
+            const imgUrl = document.getElementById('logo-image-url').value.trim();
+            const imgSize = document.getElementById('logo-img-size').value;
+            const titleText = document.getElementById('logo-title-text').value || 'BAM TECH';
+            const subtitleText = document.getElementById('logo-subtitle-text').value || 'solutions';
+            const suffixText = document.getElementById('logo-suffix-text').value || 'TV';
+            const textSize = document.getElementById('logo-text-size').value;
+            const textColor = document.getElementById('logo-text-color').value;
+
+            document.getElementById('logo-img-size-display').innerText = imgSize + 'px';
+            document.getElementById('logo-text-size-display').innerText = textSize + '%';
+
+            const previewImg = document.getElementById('logo-preview-img');
+            const previewTextWrap = document.getElementById('logo-preview-text-wrap');
+
+            if (mode === 'image') {
+                previewImg.style.display = 'block';
+                previewTextWrap.style.display = 'none';
+            } else if (mode === 'text') {
+                previewImg.style.display = 'none';
+                previewTextWrap.style.display = 'flex';
+            } else {
+                previewImg.style.display = 'block';
+                previewTextWrap.style.display = 'flex';
+            }
+
+            if (imgUrl) previewImg.src = imgUrl;
+            previewImg.style.height = imgSize + 'px';
+
+            document.getElementById('logo-preview-title').innerText = titleText;
+            document.getElementById('logo-preview-subtitle').innerText = subtitleText;
+            document.getElementById('logo-preview-suffix').innerText = suffixText;
+
+            const scale = textSize / 100;
+            document.getElementById('logo-preview-title').style.fontSize = (15 * scale) + 'px';
+            document.getElementById('logo-preview-subtitle').style.fontSize = (10 * scale) + 'px';
+            document.getElementById('logo-preview-suffix').style.fontSize = (38 * scale) + 'px';
+            document.getElementById('logo-preview-suffix').style.color = textColor;
+        }
+
+        ['logo-display-mode', 'logo-image-url', 'logo-img-size', 'logo-title-text', 'logo-subtitle-text', 'logo-suffix-text', 'logo-text-size', 'logo-text-color'].forEach(id => {
+            const el = document.getElementById(id);
+            el.addEventListener('input', updateLogoPreview);
+            el.addEventListener('change', updateLogoPreview);
+        });
+
+        function publishLogoChanges() {
+            const logoConfig = {
+                displayMode: document.getElementById('logo-display-mode').value,
+                imageUrl: document.getElementById('logo-image-url').value.trim(),
+                imageSize: parseInt(document.getElementById('logo-img-size').value),
+                titleText: document.getElementById('logo-title-text').value.trim(),
+                subtitleText: document.getElementById('logo-subtitle-text').value.trim(),
+                suffixText: document.getElementById('logo-suffix-text').value.trim(),
+                textSize: parseInt(document.getElementById('logo-text-size').value),
+                textColor: document.getElementById('logo-text-color').value,
+                blinkMode: document.getElementById('logo-blink-mode').value === 'blink',
+                hideCompletely: document.getElementById('logo-hide-completely').checked
+            };
+
+            db.ref('tv_config/logoConfig').set(logoConfig).then(() => {
+                showToast('Logo Mpya Imerushwa Hewani! ✓');
+                db.ref('admin_logs').push({ time: Date.now(), action: 'Alibadilisha mipangilio ya Logo' });
+            }).catch((err) => alert('Hitilafu: ' + err.message));
         }
 
         /* ============== TICKER TAB ============== */
@@ -1629,66 +1825,4 @@
                               <span class="reply-link" data-msgid="${msgId}" data-userlabel="${escapeHTML(userLabel)}">[JIBU]</span>
                               <div class="reply-thread-admin" id="admin-thread-${msgId}"></div>`;
 
-            div.querySelector('.reply-link').addEventListener('click', function() {
-                setupReplyTag(this.getAttribute('data-msgid'), this.getAttribute('data-userlabel'));
-            });
-
-            viewer.appendChild(div);
-            viewer.scrollTop = viewer.scrollHeight;
-
-            if (data.replies) renderAdminReplies(msgId, data);
-        }
-
-        function renderAdminReplies(msgId, data) {
-            const threadDiv = document.getElementById('admin-thread-' + msgId);
-            if (!threadDiv || !data.replies) return;
-            threadDiv.innerHTML = '';
-            Object.values(data.replies).forEach((reply) => {
-                const r = document.createElement('div');
-                r.className = 'reply-row';
-                r.innerText = '↳ Wewe: ' + reply.text;
-                threadDiv.appendChild(r);
-            });
-        }
-
-        function setupReplyTag(msgId, userLabel) {
-            selectedReplyMsgId = msgId;
-            document.getElementById('reply-target-label').innerText = `Unajibu @${userLabel}:`;
-            document.getElementById('admin-reply-input').placeholder = `Jibu kwa ${userLabel}...`;
-            document.getElementById('admin-reply-input').focus();
-        }
-
-        function sendAdminReplyDirect() {
-            const text = document.getElementById('admin-reply-input').value.trim();
-            if (text === "") return;
-
-            if (!selectedReplyMsgId) {
-                alert('Chagua [JIBU] kwenye ujumbe husika kwanza, kabla ya kutuma jibu.');
-                return;
-            }
-
-            const newReplyKey = db.ref().push().key;
-            db.ref('chat_messages/' + selectedReplyMsgId + '/replies/' + newReplyKey).set({
-                text: text,
-                time: Date.now(),
-                fromAdmin: true
-            }).then(() => {
-                document.getElementById('admin-reply-input').value = '';
-            }).catch((err) => alert('Hitilafu: ' + err.message));
-        }
-
-        document.getElementById('admin-reply-input').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') sendAdminReplyDirect();
-        });
-
-        function clearChatLog() {
-            if (confirm("Je, una uhakika unataka kufuta maoni yote kwenye orodha? Hatua hii haiwezi kurudishwa.")) {
-                db.ref('chat_messages').remove().then(() => {
-                    document.getElementById('admin-chat-viewer').innerHTML = '<div class="empty-state">Bado hakuna maoni...</div>';
-                    Object.keys(renderedAdminMessages).forEach(k => delete renderedAdminMessages[k]);
-                });
-            }
-        }
-    </script>
-</body>
-</html>
+            div.querySelector('.reply-link').addEventListener('c
